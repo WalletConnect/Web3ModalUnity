@@ -1,0 +1,41 @@
+:root {
+    flex-direction: row;
+    align-self: flex-start;
+    justify-content: center;
+    border-radius: 12;
+}
+
+#icon-link:hover {
+    background-color: var(--wui-gray-glass-005);
+}
+
+.icon-link--variant-main,
+.icon-link--variant-gray {
+    border-width: 1;
+}
+
+.icon-link--variant-main {
+    border-color: var(--wui-accent-glass-010);
+    background-color: var(--wui-accent-glass-010);
+}
+
+.icon-link--variant-gray {
+    border-color: var(--wui-gray-glass-005);
+    background-color: var(--wui-gray-glass-005);
+}
+
+#icon-link:active:hover {
+    background-color: var(--wui-gray-glass-010);
+}
+
+#icon-link__image {
+    padding: 10;
+}
+
+.icon-link--variant-shade > #icon-link__image {
+    --unity-image-tint-color: var(--wui-accent-glass-005);
+}
+
+.icon-link--variant-main > #icon-link__image {
+    --unity-image-tint-color: var(--wui-color-accent-100);
+}

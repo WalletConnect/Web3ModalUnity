@@ -1,0 +1,49 @@
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace WalletConnect.Web3Modal.Utils
+{
+    public static class StringExtensions
+    {
+        // Regular
+        public static string FontWeight400(this string value)
+        {
+            return $"<font-weight=\"400\">{value}</font-weight>";
+        }
+
+        // Medium
+        public static string FontWeight500(this string value)
+        {
+            return $"<font-weight=\"500\">{value}</font-weight>";
+        }
+
+        // Semi-bold
+        public static string FontWeight600(this string value)
+        {
+            return $"<font-weight=\"600\">{value}</font-weight>";
+        }
+
+        // Bold
+        public static string FontWeight700(this string value)
+        {
+            return $"<font-weight=\"700\">{value}</font-weight>";
+        }
+    }
+
+    public static class ScrollViewExtensions
+    {
+        public static void ForceUpdate(this ScrollView scrollView)
+        {
+            // https://forum.unity.com/threads/how-to-refresh-scrollview-scrollbars-to-reflect-changed-content-width-and-height.1260920/#post-8753383
+            scrollView.schedule.Execute(() =>
+            {
+                var fakeOldRect = Rect.zero;
+                var fakeNewRect = scrollView.layout;
+
+                using var evt = GeometryChangedEvent.GetPooled(fakeOldRect, fakeNewRect);
+                evt.target = scrollView.contentContainer;
+                scrollView.contentContainer.SendEvent(evt);
+            });
+        }
+    }
+}

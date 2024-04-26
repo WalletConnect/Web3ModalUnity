@@ -1,0 +1,122 @@
+@import url("unity-theme://default");
+
+* {
+    -unity-font-definition: resource("Fonts & Materials/Inter/Inter-Regular SDF");
+
+    --w3m-accent: #3396ff;
+    --w3m-default: #000;
+
+    --wui-color-success-100: #26d962;
+    --wui-color-error-100: #f25a67;
+
+    --wui-color-bg-success-100: rgba(38, 217, 98, 0.15);
+    --wui-color-bg-error-100: rgba(242, 90, 103, 0.15);
+
+
+    --wui-color-fg-100: #e4e7e7;
+    --wui-color-fg-125: #d0d5d5;
+    --wui-color-fg-150: #a8b1b1;
+    --wui-color-fg-175: #a8b0b0;
+    --wui-color-fg-200: #949e9e;
+    --wui-color-fg-225: #868f8f;
+    --wui-color-fg-250: #788080;
+    --wui-color-fg-275: #788181;
+    --wui-color-fg-300: #6e7777;
+
+    --wui-color-bg-100: #141414;
+    --wui-color-bg-125: #191a1a;
+    --wui-color-bg-150: #1e1f1f;
+    --wui-color-bg-175: #222525;
+    --wui-color-bg-200: #272a2a;
+    --wui-color-bg-225: #2c3030;
+    --wui-color-bg-250: #313535;
+    --wui-color-bg-275: #363b3b;
+    --wui-color-bg-300: #3b4040;
+
+    --wui-color-modal-bg: rgb(25, 26, 26);
+
+    --wui-color-accent-100: #3396ff;
+
+    --wui-accent-glass-090: rgba(51, 150, 255, 0.9);
+    --wui-accent-glass-080: rgba(51, 150, 255, 0.8);
+    --wui-accent-glass-020: rgba(51, 150, 255, 0.2);
+    --wui-accent-glass-015: rgba(51, 150, 255, 0.15);
+    --wui-accent-glass-010: rgba(51, 150, 255, 0.1);
+    --wui-accent-glass-005: rgba(51, 150, 255, 0.05);
+    --wui-accent-glass-002: rgba(51, 150, 255, 0.02);
+
+    --wui-gray-glass-001: rgba(255, 255, 255, 0.01);
+    --wui-gray-glass-002: rgba(255, 255, 255, 0.02);
+    --wui-gray-glass-005: rgba(255, 255, 255, 0.05);
+    --wui-gray-glass-010: rgba(255, 255, 255, 0.1);
+    --wui-gray-glass-015: rgba(255, 255, 255, 0.15);
+    --wui-gray-glass-020: rgba(255, 255, 255, 0.2);
+    --wui-gray-glass-025: rgba(255, 255, 255, 0.25);
+    --wui-gray-glass-030: rgba(255, 255, 255, 0.3);
+    --wui-gray-glass-060: rgba(255, 255, 255, 0.6);
+    --wui-gray-glass-080: rgba(255, 255, 255, 0.8);
+
+
+    --wui-border-radius-5xs: 4px;
+    --wui-border-radius-4xs: 6px;
+    --wui-border-radius-3xs: 8px;
+    --wui-border-radius-xxs: 12px;
+    --wui-border-radius-xs: 16px;
+    --wui-border-radius-s: 20px;
+    --wui-border-radius-m: 28px;
+    --wui-border-radius-l: 36px;
+    --wui-border-radius-3xl: 80px;
+    --wui-border-radius-full: 1000px;
+
+    --wui-font-size-micro: 10px;
+    --wui-font-size-tiny: 12px;
+    --wui-font-size-small: 14px;
+    --wui-font-size-paragraph: 16px;
+    --wui-font-size-large: 20px;
+    --wui-font-size-medium-title: 24px;
+    --wui-font-size-2xl: 40px;
+
+    --wui-letter-spacing-micro: -0.2px;
+    --wui-letter-spacing-tiny: -0.48px;
+    --wui-letter-spacing-small: -0.56px;
+    --wui-letter-spacing-paragraph: -0.64px;
+    --wui-letter-spacing-large: -0.8px;
+    --wui-letter-spacing-medium-title: -0.96px;
+    --wui-letter-spacing-2xl: -1.6px;
+}
+
+.text-micro {
+    font-size: var(--wui-font-size-micro);
+    letter-spacing: var(--wui-letter-spacing-micro);
+}
+
+.text-tiny {
+    font-size: var(--wui-font-size-tiny);
+    letter-spacing: var(--wui-letter-spacing-tiny);
+}
+
+.text-small {
+    font-size: var(--wui-font-size-small);
+    letter-spacing: var(--wui-letter-spacing-small);
+}
+
+.text-paragraph {
+    font-size: var(--wui-font-size-paragraph);
+    letter-spacing: var(--wui-letter-spacing-paragraph);
+}
+
+.text-large {
+    font-size: var(--wui-font-size-large);
+    letter-spacing: var(--wui-letter-spacing-large);
+}
+
+.text-medium-title {
+    font-size: var(--wui-font-size-medium-title);
+    letter-spacing: var(--wui-letter-spacing-medium-title);
+}
+
+.text-2xl {
+    font-size: var(--wui-font-size-2xl);
+    letter-spacing: var(--wui-letter-spacing-2xl);
+}
+

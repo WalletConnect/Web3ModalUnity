@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="Modal.uss"/>
+    <WalletConnect.UI.ModalHeader/>
+    <ui:VisualElement name="modal__body"/>
+</ui:UXML>
