@@ -9,7 +9,6 @@ using Nethereum.Web3;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using WalletConnectUnity.Core;
 
 namespace WalletConnect.Web3Modal.Sample
 {
@@ -57,8 +56,9 @@ namespace WalletConnect.Web3Modal.Sample
                     _activeChainId.text = e.Chain.ChainId;
                 };
 
-                Web3Modal.AccountConnected += (_, e) =>
+                Web3Modal.AccountConnected += async (_, e) =>
                 {
+                    Debug.Log("DAPP account connected");
                     _connectButton.interactable = false;
                     _accountButton.interactable = true;
                     _signTypedDataButton.interactable = true;
@@ -68,13 +68,14 @@ namespace WalletConnect.Web3Modal.Sample
                     _reverseResoleEnsButton.interactable = true;
                     _disconnectButton.interactable = true;
 
-                    var account = e.GetAccount();
+                    var account = await e.GetAccount();
                     _activeAddress.text = account.Address;
                     _activeChainId.text = account.ChainId;
                 };
 
                 Web3Modal.AccountDisconnected += (_, _) =>
                 {
+                    Debug.Log("DAPP account disconnected");
                     _connectButton.interactable = true;
                     _accountButton.interactable = false;
                     _signTypedDataButton.interactable = false;
@@ -90,12 +91,17 @@ namespace WalletConnect.Web3Modal.Sample
 
                 Web3Modal.AccountChanged += (_, e) =>
                 {
-                    _activeAddress.text = e.Account.Address;
-                    _activeChainId.text = e.Account.ChainId;
+                    Debug.Log($"DAPP account changed: {e.Account.Address} {e.Account.ChainId}");
+                    var account = e.Account;
+                    _activeAddress.text = account.Address;
+                    _activeChainId.text = account.ChainId;
                 };
 
+                Debug.Log("DAPP try resume session");
                 _resumed = await Web3Modal.ConnectorController.TryResumeSessionAsync();
 
+                Debug.Log($"DAPP session resumed: {_resumed}");
+                
                 _networkButton.interactable = true;
                 _connectButton.interactable = !_resumed;
                 _accountButton.interactable = _resumed;
@@ -136,7 +142,7 @@ namespace WalletConnect.Web3Modal.Sample
             {
                 Notification.ShowMessage("Getting balance with WalletConnect Blockchain API...");
 
-                var account = Web3Modal.GetAccount();
+                var account = await Web3Modal.GetAccountAsync();
 
                 var balance = await Web3Modal.Web3.Eth.GetBalance.SendRequestAsync(account.Address);
 
@@ -152,10 +158,10 @@ namespace WalletConnect.Web3Modal.Sample
         public async void OnPersonalSignButton()
         {
             Debug.Log("[Web3Modal Sample] OnPersonalSignButton");
-
+            
             try
             {
-                var account = Web3Modal.GetAccount();
+                var account = await Web3Modal.GetAccountAsync();
 
                 const string message = "Hello WalletConnect!";
                 var encodedMessage = new HexUTF8String(message);
@@ -183,7 +189,7 @@ namespace WalletConnect.Web3Modal.Sample
             }
             catch (Exception e)
             {
-                Notification.ShowMessage($"{nameof(RpcResponseException)}:\n{e.Message}");
+                Notification.ShowMessage($"{e.GetType()}:\n{e.Message}");
                 Debug.LogException(e, this);
             }
         }
@@ -217,7 +223,7 @@ namespace WalletConnect.Web3Modal.Sample
 
             Notification.ShowMessage("Signing typed data...");
 
-            var account = Web3Modal.GetAccount();
+            var account = await Web3Modal.GetAccountAsync();
 
             var typedData = GetMailTypedDefinition();
             var mail = new Mail
@@ -273,7 +279,7 @@ namespace WalletConnect.Web3Modal.Sample
 
             Notification.ShowMessage("Reverse-resolving ENS with WalletConnect Blockchain API...");
 
-            var account = Web3Modal.GetAccount();
+            var account = await Web3Modal.GetAccountAsync();
 
             try
             {

@@ -309,7 +309,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Web3Modal
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5736833439907544757, guid: fc9e7b2d2aa114b7684aede0fa95d202, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

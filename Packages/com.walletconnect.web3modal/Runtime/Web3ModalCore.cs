@@ -25,7 +25,7 @@ namespace WalletConnect.Web3Modal
 
         protected override async Task InitializeAsyncCore()
         {
-            ModalController = Instance.GetComponentInChildren<ModalController>(true);
+            ModalController = CreateModalController();
             ConnectorController = new ConnectorController();
             ApiController = new ApiController();
             NotificationController = new NotificationController();
@@ -33,7 +33,7 @@ namespace WalletConnect.Web3Modal
 
             await Task.WhenAll(
                 ModalController.InitializeAsync(),
-                ConnectorController.InitializeAsync(Config.supportedChains),
+                ConnectorController.InitializeAsync(Config),
                 NetworkController.InitializeAsync(ConnectorController, Config.supportedChains)
             );
 
@@ -47,7 +47,7 @@ namespace WalletConnect.Web3Modal
         {
             if (viewType == ViewType.None)
             {
-                ModalController.Open(IsAccountConnected ? ViewType.Account : ViewType.Connect);
+                ModalController.OpenCore(IsAccountConnected ? ViewType.Account : ViewType.Connect);
             }
             else
             {
@@ -55,13 +55,13 @@ namespace WalletConnect.Web3Modal
                     // TODO: use custom exception type
                     throw new Exception("Trying to open Connect view when account is already connected.");
                 else
-                    ModalController.Open(viewType);
+                    ModalController.OpenCore(viewType);
             }
         }
 
         protected override void CloseModalCore()
         {
-            ModalController.Close();
+            ModalController.CloseCore();
         }
 
         protected override Task DisconnectAsyncCore()
@@ -69,17 +69,34 @@ namespace WalletConnect.Web3Modal
             return ConnectorController.DisconnectAsync();
         }
 
-        private static void AccountConnectedHandler(object sender, Connector.AccountConnectedEventArgs e)
+        protected virtual ModalController CreateModalController()
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return new WalletConnect.Web3Modal.WebGl.ModalControllerWebGl();
+#else
+            return new ModalControllerUtk();
+#endif
+        }
+
+        private static async void AccountConnectedHandler(object sender, Connector.AccountConnectedEventArgs e)
+        {
+            Debug.Log("AccountConnectedHandler");
             if (WalletUtils.TryGetLastViewedWallet(out var lastViewedWallet))
                 WalletUtils.SetRecentWallet(lastViewedWallet);
 
             CloseModal();
 
-            if (NetworkController.ActiveChain == default)
-                OpenModal(ViewType.NetworkSearch);
-            else
-                UpdateWeb3Instance(GetAccount().ChainId);
+            // TODO: 
+            // Debug.Log($"AccountConnectedHandler. ActiveChain: {NetworkController.ActiveChain}");
+            // if (NetworkController.ActiveChain == default)
+            // {
+            //     OpenModal(ViewType.NetworkSearch);
+            // }
+            // else
+            // {
+            //     var account = await GetAccountAsync();
+            //     UpdateWeb3Instance(account.ChainId);
+            // }
         }
 
         private static void AccountDisconnectedHandler(object sender, Connector.AccountDisconnectedEventArgs e)
@@ -89,7 +106,8 @@ namespace WalletConnect.Web3Modal
 
         private void ChainChangedHandler(object sender, NetworkController.ChainChangedEventArgs e)
         {
-            if (e.Chain != null) UpdateWeb3Instance(e.Chain.ChainId);
+            if (e.Chain != null)
+                UpdateWeb3Instance(e.Chain.ChainId);
         }
 
         private static void UpdateWeb3Instance(string chainId)

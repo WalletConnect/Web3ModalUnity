@@ -1,34 +1,87 @@
+using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
+using AOT;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace WalletConnect.Web3Modal.WebGl.Wagmi
 {
-    public class WagmiInterop : InteropService
+    public static class WagmiInterop
     {
         [DllImport("__Internal")]
-        private static extern void WagmiCall(int id, string methodName, string payload, ExternalMethodCallback callback);
+        private static extern void WagmiCall(int id, string methodName, string payload, InteropService.ExternalMethodCallback callback);
 
-        public WagmiInterop() : base(WagmiCall)
+        [DllImport("__Internal")]
+        private static extern void WagmiWatchAccount(Action<string> callback);
+        
+        [DllImport("__Internal")]
+        private static extern void WagmiWatchChainId(Action<int> callback);
+        public static event Action<GetAccountReturnType> WatchAccountTriggered;
+        public static event Action<int> WatchChainIdTriggered;
+
+        private static readonly InteropService InteropService = new(WagmiCall);
+        
+        private static bool _eventsInitialised;
+        
+        public static Task<TRes> InteropCallAsync<TReq, TRes>(string methodName, TReq requestParameter, CancellationToken cancellationToken = default)
         {
+            return InteropService.InteropCallAsync<TReq, TRes>(methodName, requestParameter, cancellationToken);
+        }
+        
+        // -- Events --------------------------------------------------
+
+        public static void InitializeEvents()
+        {
+            if(_eventsInitialised)
+                return;
+
+            WagmiWatchAccount(WatchAccountCallback);
+            WagmiWatchChainId(WatchChainIdCallback);
+            
+            _eventsInitialised = true;
+        }
+        
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        public static void WatchAccountCallback(string dataJson)
+        {
+            var data = JsonConvert.DeserializeObject<GetAccountReturnType>(dataJson);
+            WatchAccountTriggered?.Invoke(data);
+        }
+        
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        public static void WatchChainIdCallback(int chainId)
+        {
+            WatchChainIdTriggered?.Invoke(chainId);
         }
 
+        
         // -- Get Account ----------------------------------------------
-        public Task<GetAccountReturnType> GetAccountAsync()
+        public static Task<GetAccountReturnType> GetAccountAsync()
         {
             return InteropCallAsync<object, GetAccountReturnType>(WagmiMethods.GetAccount, null);
         }
 
+        
         // -- Get Chain ID ---------------------------------------------
-        public Task<int> GetChainIdAsync()
+        public static Task<int> GetChainIdAsync()
         {
             return InteropCallAsync<object, int>(WagmiMethods.GetChainId, null);
         }
-
+        
+        
+        // -- Disconnect -----------------------------------------------
+        
+        public static Task DisconnectAsync()
+        {
+            return InteropCallAsync<object, object>(WagmiMethods.Disconnect, null);
+        }
+        
 
         // -- Sign Message ---------------------------------------------
-        public Task<string> SignMessageAsync(string message)
+        public static Task<string> SignMessageAsync(string message)
         {
             var parameter = new SignMessageParameter
             {
@@ -38,7 +91,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
             return SignMessageAsync(parameter);
         }
 
-        public Task<string> SignMessageAsync(SignMessageParameter parameter)
+        public static Task<string> SignMessageAsync(SignMessageParameter parameter)
         {
             return InteropCallAsync<SignMessageParameter, string>(WagmiMethods.SignMessage, parameter);
         }
@@ -46,7 +99,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
 
         // -- Verify Message -------------------------------------------
 
-        public Task<bool> VerifyMessageAsync(string address, string message, string signature)
+        public static Task<bool> VerifyMessageAsync(string address, string message, string signature)
         {
             var parameter = new VerifyMessageParameters
             {
@@ -58,7 +111,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
             return VerifyMessageAsync(parameter);
         }
 
-        public Task<bool> VerifyMessageAsync(VerifyMessageParameters parameter)
+        public static Task<bool> VerifyMessageAsync(VerifyMessageParameters parameter)
         {
             return InteropCallAsync<VerifyMessageParameters, bool>(WagmiMethods.VerifyMessage, parameter);
         }
@@ -66,7 +119,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
 
         // -- Sign Typed Data ------------------------------------------
 
-        public Task<string> SignTypedDataAsync(string dataJson)
+        public static Task<string> SignTypedDataAsync(string dataJson)
         {
             return InteropCallAsync<string, string>(WagmiMethods.SignTypedData, dataJson);
         }
@@ -74,7 +127,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
 
         // -- Verify Typed Data ----------------------------------------
 
-        public Task<bool> VerifyTypedDataAsync(string dataJson, string address, string signature)
+        public static Task<bool> VerifyTypedDataAsync(string dataJson, string address, string signature)
         {
             var jObject = JObject.Parse(dataJson);
 
@@ -89,7 +142,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
 
         // -- Switch Chain ---------------------------------------------
 
-        public Task SwitchChainAsync(int chainId, AddEthereumChainParameter addEthereumChainParameter = null)
+        public static Task SwitchChainAsync(int chainId, AddEthereumChainParameter addEthereumChainParameter = null)
         {
             var switchChainParameter = new SwitchChainParameter
             {
@@ -100,14 +153,15 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
             return SwitchChainAsync(switchChainParameter);
         }
 
-        public Task SwitchChainAsync(SwitchChainParameter parameter)
+        public static Task SwitchChainAsync(SwitchChainParameter parameter)
         {
             return InteropCallAsync<SwitchChainParameter, string>(WagmiMethods.SwitchChain, parameter);
         }
 
+        
         // -- Read Contract -------------------------------------------
 
-        public Task<string> ReadContractAsync(string contractAddress, string contractAbi, string method, string[] arguments = null)
+        public static Task<string> ReadContractAsync(string contractAddress, string contractAbi, string method, string[] arguments = null)
         {
             var parameter = new ReadContractParameter
             {
@@ -120,7 +174,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
             return ReadContractAsync(parameter);
         }
 
-        public Task<string> ReadContractAsync(ReadContractParameter parameter)
+        public static Task<string> ReadContractAsync(ReadContractParameter parameter)
         {
             return InteropCallAsync<ReadContractParameter, string>(WagmiMethods.ReadContract, parameter);
         }
@@ -128,7 +182,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
 
         // -- Send Transaction ----------------------------------------
 
-        public Task<string> SendTransactionAsync(string to, string value = "0", string data = null, string gas = null, string gasPrice = null)
+        public static Task<string> SendTransactionAsync(string to, string value = "0", string data = null, string gas = null, string gasPrice = null)
         {
             var parameter = new SendTransactionParameter
             {
@@ -142,7 +196,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
             return SendTransactionAsync(parameter);
         }
 
-        public Task<string> SendTransactionAsync(SendTransactionParameter parameter)
+        public static Task<string> SendTransactionAsync(SendTransactionParameter parameter)
         {
             return InteropCallAsync<SendTransactionParameter, string>(WagmiMethods.SendTransaction, parameter);
         }

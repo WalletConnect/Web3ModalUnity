@@ -29,6 +29,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
     public class GetAccountReturnType
     {
         public string address;
+        public string[] addresses;
         public string chainId;
         public bool isConnecting;
         public bool isReconnecting;

@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Nethereum.JsonRpc.Client;
 using Nethereum.Web3;
 using UnityEngine;
 using UnityEngine.Scripting;
@@ -77,7 +76,7 @@ namespace WalletConnect.Web3Modal
                 throw new Exception("Already initialized"); // TODO: use custom ex type
 
             UnityWebRequestExtensions.sdkType = "w3m";
-            UnityWebRequestExtensions.sdkVersion = "unity-w3m-v0.1.0"; // TODO: update this from CI
+            UnityWebRequestExtensions.sdkVersion = "unity-w3m-v0.2.0"; // TODO: update this from CI
 
             Config = config ?? throw new ArgumentNullException(nameof(config));
 
@@ -106,9 +105,9 @@ namespace WalletConnect.Web3Modal
             Instance.CloseModalCore();
         }
 
-        public static Account GetAccount()
+        public static Task<Account> GetAccountAsync()
         {
-            return ConnectorController.GetAccount();
+            return ConnectorController.GetAccountAsync();
         }
 
         public static Task DisconnectAsync()

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
 using WalletConnectUnity.Core;
 
 namespace WalletConnect.Web3Modal
@@ -28,12 +29,12 @@ namespace WalletConnect.Web3Modal
         {
         }
 
-        public async Task InitializeAsync(IEnumerable<Chain> supportedChains)
+        public async Task InitializeAsync(Web3ModalConfig config)
         {
             if (IsInitialized)
                 throw new Exception("Already initialized"); // TODO: use custom ex type
 
-            await InitializeAsyncCore(supportedChains);
+            await InitializeAsyncCore(config);
             IsInitialized = true;
         }
 
@@ -50,7 +51,7 @@ namespace WalletConnect.Web3Modal
             if (isResumed)
             {
                 IsAccountConnected = true;
-                OnAccountConnected(new AccountConnectedEventArgs(GetAccount, GetAccounts));
+                OnAccountConnected(new AccountConnectedEventArgs(GetAccountAsync, GetAccounts));
             }
 
             return isResumed;
@@ -58,10 +59,13 @@ namespace WalletConnect.Web3Modal
 
         public ConnectionProposal Connect()
         {
+            Debug.Log("Connector.Connect");
             if (!IsInitialized)
                 throw new Exception("Connector not initialized"); // TODO: use custom ex type
 
             var connection = ConnectCore();
+
+            Debug.Log("Got connection");
             connection.Connected += ConnectionConnectedHandler;
 
             _connectionProposals.Add(connection);
@@ -85,15 +89,15 @@ namespace WalletConnect.Web3Modal
             await ChangeActiveChainAsyncCore(chain);
         }
 
-        public Account GetAccount()
+        public Task<Account> GetAccountAsync()
         {
             if (!IsAccountConnected)
                 throw new Exception("No account connected"); // TODO: use custom ex type
 
-            return GetAccountCore();
+            return GetAccountAsyncCore();
         }
 
-        public Account[] GetAccounts()
+        public Task<Account[]> GetAccounts()
         {
             if (!IsAccountConnected)
                 throw new Exception("No account connected"); // TODO: use custom ex type
@@ -103,11 +107,13 @@ namespace WalletConnect.Web3Modal
 
         protected virtual void ConnectionConnectedHandler(ConnectionProposal connectionProposal)
         {
+            Debug.Log("Connector. ConnectionConnectedHandler");
             foreach (var c in _connectionProposals)
                 c.Dispose();
 
             _connectionProposals.Clear();
-            OnAccountConnected(new AccountConnectedEventArgs(GetAccount, GetAccounts));
+            Debug.Log("Connector calls OnAccountConnected");
+            OnAccountConnected(new AccountConnectedEventArgs(GetAccountAsync, GetAccounts));
         }
 
         protected virtual void OnAccountConnected(AccountConnectedEventArgs e)
@@ -130,9 +136,9 @@ namespace WalletConnect.Web3Modal
             ChainChanged?.Invoke(this, e);
         }
 
-        protected abstract ConnectionProposal ConnectCore();
+        protected abstract Task InitializeAsyncCore( Web3ModalConfig config);
 
-        protected abstract Task InitializeAsyncCore(IEnumerable<Chain> supportedChains);
+        protected abstract ConnectionProposal ConnectCore();
 
         protected abstract Task<bool> TryResumeSessionAsyncCore();
 
@@ -140,16 +146,16 @@ namespace WalletConnect.Web3Modal
 
         protected abstract Task ChangeActiveChainAsyncCore(Chain chain);
 
-        protected abstract Account GetAccountCore();
+        protected abstract Task<Account> GetAccountAsyncCore();
 
-        protected abstract Account[] GetAccountsCore();
+        protected abstract Task<Account[]> GetAccountsCore();
 
         public class AccountConnectedEventArgs : EventArgs
         {
-            public Func<Account> GetAccount { get; }
-            public Func<Account[]> GetAccounts { get; }
+            public Func<Task<Account>> GetAccount { get; }
+            public Func<Task<Account[]>> GetAccounts { get; }
 
-            public AccountConnectedEventArgs(Func<Account> getAccount, Func<Account[]> getAccounts)
+            public AccountConnectedEventArgs(Func<Task<Account>> getAccount, Func<Task<Account[]>> getAccounts)
             {
                 GetAccount = getAccount;
                 GetAccounts = getAccounts;
@@ -185,6 +191,7 @@ namespace WalletConnect.Web3Modal
     public enum ConnectorType
     {
         None,
-        WalletConnect
+        WalletConnect,
+        WebGl
     }
 }

@@ -86,6 +86,13 @@ namespace WalletConnect.Web3Modal.WebGl
                     return;
                 }
             }
+            
+            if (responseData == null)
+            {
+                pendingCall.TaskCompletionSource.SetResult(null);
+                PendingInteropCalls.Remove(id);
+                return;
+            }
 
             object res = null;
             if (pendingCall.ResType == typeof(string))

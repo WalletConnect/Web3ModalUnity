@@ -94,7 +94,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5548460347198765618}
   - component: {fileID: 3737159026218804949}
-  - component: {fileID: 5736833439907544757}
   m_Layer: 0
   m_Name: Modal
   m_TagString: Untagged
@@ -133,19 +132,6 @@ MonoBehaviour:
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 320d7a8e8a0f4883b0cd6759a8328cd1, type: 3}
   m_SortingOrder: 100
---- !u!114 &5736833439907544757
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5904779526130413779}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03fcc67b7a5c45d4a2029b01d4331b82, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <UIDocument>k__BackingField: {fileID: 3737159026218804949}
 --- !u!1 &6019781919744940759
 GameObject:
   m_ObjectHideFlags: 0

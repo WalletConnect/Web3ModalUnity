@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,7 +26,7 @@ namespace WalletConnect.Web3Modal
 
             this.routerController.ViewChanged += ViewChangedHandler;
             Web3Modal.NotificationController.Notification += NotificationHandler;
-            Web3Modal.ModalController.Closed += ModalClosedHandler;
+            Web3Modal.ModalController.OpenStateChanged += ModalOpenStateChangedHandler;
 
             title = new Label();
             title.AddToClassList("text-paragraph");
@@ -57,6 +56,14 @@ namespace WalletConnect.Web3Modal
                 Resources.Load<VectorImage>("WalletConnect/Web3Modal/Icons/icon_bold_xmark"),
                 Web3Modal.CloseModal
             ));
+        }
+
+        private void ModalOpenStateChangedHandler(object _, ModalOpenStateChangedEventArgs e)
+        {
+            if (!e.IsOpen)
+            {
+                modalHeader.leftSlot.style.visibility = Visibility.Hidden;
+            }
         }
 
         private void NotificationHandler(object sender, NotificationEventArgs notification)
@@ -114,11 +121,6 @@ namespace WalletConnect.Web3Modal
                 modalHeader.style.borderBottomWidth = args.newPresenter.HeaderBorder
                     ? 1
                     : 0;
-        }
-
-        private void ModalClosedHandler(object _, EventArgs e)
-        {
-            modalHeader.leftSlot.style.visibility = Visibility.Hidden;
         }
     }
 }

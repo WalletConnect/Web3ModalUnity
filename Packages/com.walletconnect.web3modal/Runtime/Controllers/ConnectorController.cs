@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -40,10 +39,23 @@ namespace WalletConnect.Web3Modal
 
         private Connector _activeConnector;
 
-        protected override async Task InitializeAsyncCore(IEnumerable<Chain> supportedChains)
+        protected override async Task InitializeAsyncCore(Web3ModalConfig config)
         {
-            DappSupportedChains = supportedChains;
+            DappSupportedChains = config.supportedChains;
+            
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // --- WebGl Connector
+            var webGlConnector = new WebGlConnector();
+            webGlConnector.AccountConnected += (_, e) => ConnectorAccountConnected(webGlConnector, e);
+            webGlConnector.AccountDisconnected += ConnectorAccountDisconnectedHandler;
+            webGlConnector.AccountChanged += AccountChangedHandler;
+            webGlConnector.ChainChanged += ChainChangedHandler;
 
+            _connectors.Add(ConnectorType.WebGl, webGlConnector);
+            
+            // Only one connector is supported on WebGL
+            ActiveConnector = webGlConnector;
+#else
             // --- WalletConnect Connector
             var walletConnectConnector = new WalletConnectConnector();
             walletConnectConnector.AccountConnected += (_, e) => ConnectorAccountConnected(walletConnectConnector, e);
@@ -51,8 +63,9 @@ namespace WalletConnect.Web3Modal
             walletConnectConnector.AccountChanged += AccountChangedHandler;
             walletConnectConnector.ChainChanged += ChainChangedHandler;
             _connectors.Add(ConnectorType.WalletConnect, walletConnectConnector);
+#endif
 
-            await Task.WhenAll(_connectors.Values.Select(c => c.InitializeAsync(supportedChains)));
+            await Task.WhenAll(_connectors.Values.Select(c => c.InitializeAsync(config)));
         }
 
         protected override async Task<bool> TryResumeSessionAsyncCore()
@@ -62,7 +75,7 @@ namespace WalletConnect.Web3Modal
 
             if (!TryGetLastConnector(out var connectorType))
                 return false;
-
+            
             var connector = _connectors[connectorType];
             var sessionResumed = await connector.TryResumeSessionAsync();
 
@@ -92,12 +105,12 @@ namespace WalletConnect.Web3Modal
             return ActiveConnector.ChangeActiveChainAsync(chain);
         }
 
-        protected override Account GetAccountCore()
+        protected override Task<Account> GetAccountAsyncCore()
         {
-            return ActiveConnector.GetAccount();
+            return ActiveConnector.GetAccountAsync();
         }
 
-        protected override Account[] GetAccountsCore()
+        protected override Task<Account[]> GetAccountsCore()
         {
             return ActiveConnector.GetAccounts();
         }
