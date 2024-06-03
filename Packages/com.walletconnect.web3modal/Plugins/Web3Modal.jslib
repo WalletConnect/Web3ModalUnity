@@ -74,53 +74,6 @@ mergeInto(LibraryManager.library, {
         const enableOnramp = parameters.enableOnramp;
         
         console.log("Parameters", parameters);
-
-        const addCanvasActiveStyles = () => {
-            const styleElement = document.createElement('style');
-            styleElement.id = 'canvas-active-styles';
-            styleElement.innerHTML = `
-                .canvas-active {
-                    position: fixed !important;
-                    top: 0 !important;
-                    right: 0 !important;
-                    bottom: 0 !important;
-                    left: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
-                }
-            `;
-            document.head.appendChild(styleElement);
-        };
-
-        const removeCanvasActiveStyles = () => {
-            const styleElement = document.getElementById('canvas-active-styles');
-            if (styleElement) {
-                document.head.removeChild(styleElement);
-            }
-        };
-
-        const html = document.querySelector('html');
-        html?.addEventListener('fullscreenchange', () => {
-            const canvas = document.querySelector('canvas');
-            console.log('fullscreenchange', canvas)
-            if (document.fullscreenElement) {
-                console.log('fullscreenchange true')
-                if (!canvas?.classList.contains('canvas-active')) {
-                    console.log('fullscreenchange true add canvas-active')
-
-                    addCanvasActiveStyles();
-                    canvas?.classList.add('canvas-active');
-                }
-            } else {
-                console.log('fullscreenchange false')
-                if (canvas?.classList.contains('canvas-active')) {
-                    console.log('fullscreenchange false remove canvas-active')
-                    
-                    canvas?.classList.remove('canvas-active');
-                    removeCanvasActiveStyles();
-                }
-            }
-        });
         
         // Load the scripts and initialize the configuration
         import("https://cdn.jsdelivr.net/npm/cdn-wagmi@3.0.0/dist/cdn-wagmi.js").then(CDNW3M => {
@@ -151,20 +104,67 @@ mergeInto(LibraryManager.library, {
             const modal = createWeb3Modal({
                 wagmiConfig: config,
                 projectId,
-                enableAnalytics: false, // Optional - defaults to your Cloud configuration
-                enableOnramp: enableOnramp // Optional - false as default
+                enableOnramp: enableOnramp
             });
             
-            modal.subscribeEvents(event => console.log("New Event!", event));
-
-            console.log("Web3Modal modal created", modal);
-
             // Store the configuration and modal globally
             _web3ModalConfig = {
                 config: config,
                 modal: modal,
                 wagmiCore: WagmiCore
             };
+
+            
+            // Insert the container into the DOM at the canvas's original position
+            const canvas = document.getElementsByTagName('canvas')[0];
+            const container = document.createElement('div');
+            container.id = 'canvas-container';
+            canvas.parentNode.insertBefore(container, canvas);
+            container.appendChild(canvas);
+
+            // Add styles to enable fullscreen compatibility
+            const addCanvasActiveStyles = () => {
+                const styleElement = document.createElement('style');
+                styleElement.id = 'canvas-active-styles';
+                styleElement.innerHTML = `
+                .canvas-active {
+                    position: fixed !important;
+                    top: 0 !important;
+                    right: 0 !important;
+                    bottom: 0 !important;
+                    left: 0 !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                }
+            `;
+                document.head.appendChild(styleElement);
+
+                const web3modal = document.createElement('w3m-modal');
+                container.appendChild(web3modal);
+            };
+
+            const removeCanvasActiveStyles = () => {
+                const styleElement = document.getElementById('canvas-active-styles');
+                if (styleElement) {
+                    document.head.removeChild(styleElement);
+                }
+            };
+
+            // Handle fullscreen changes
+            container?.addEventListener('fullscreenchange', () => {
+                const canvas = document.querySelector('canvas');
+                if (document.fullscreenElement) {
+                    if (!canvas?.classList.contains('canvas-active')) {
+                        addCanvasActiveStyles();
+                        canvas?.classList.add('canvas-active');
+                    }
+                } else {
+                    if (canvas?.classList.contains('canvas-active')) {
+                        canvas?.classList.remove('canvas-active');
+                        removeCanvasActiveStyles();
+                    }
+                }
+            });
 
             {{{makeDynCall('v', 'callbackPtr')}}}();
         });
