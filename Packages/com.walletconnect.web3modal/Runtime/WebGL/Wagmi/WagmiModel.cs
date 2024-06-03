@@ -83,6 +83,16 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
         public string functionName;
         public string[] args;
     }
+    
+    [Serializable]
+    public class WriteContractParameter
+    {
+        public AbiItem[] abi;
+        public string address;
+        public string functionName;
+        public string[] args;
+        public string value;
+    }
 
     [Serializable]
     public struct AbiItem

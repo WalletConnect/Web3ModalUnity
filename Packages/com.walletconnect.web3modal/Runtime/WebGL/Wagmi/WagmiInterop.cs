@@ -178,6 +178,28 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
         {
             return InteropCallAsync<ReadContractParameter, string>(WagmiMethods.ReadContract, parameter);
         }
+        
+        
+        // -- Write Contract ------------------------------------------
+        
+        public static Task<string> WriteContractAsync(string contractAddress, string contractAbi, string method, string[] arguments = null, string value = "0")
+        {
+            var parameter = new WriteContractParameter
+            {
+                address = contractAddress,
+                abi = JsonConvert.DeserializeObject<AbiItem[]>(contractAbi),
+                functionName = method,
+                args = arguments,
+                value = value,
+            };
+
+            return WriteContractAsync(parameter);
+        }
+        
+        public static Task<string> WriteContractAsync(WriteContractParameter parameter)
+        {
+            return InteropCallAsync<WriteContractParameter, string>(WagmiMethods.WriteContract, parameter);
+        }
 
 
         // -- Send Transaction ----------------------------------------
