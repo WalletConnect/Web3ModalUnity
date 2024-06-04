@@ -88,7 +88,10 @@ mergeInto(LibraryManager.library, {
 
             const config = createConfig({
                 chains: chainsMap,
-                transport: http,
+                transports: chains.reduce((acc, chainName) => {
+                    acc[Chains[chainName].id] = http();
+                    return acc;
+                }, {}),
                 connectors: [
                     walletConnect({ projectId, metadata, showQrModal: false }),
                     injected({ shimDisconnect: true }),
