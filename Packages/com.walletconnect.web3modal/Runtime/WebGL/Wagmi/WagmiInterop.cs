@@ -11,14 +11,21 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
 {
     public static class WagmiInterop
     {
+#if UNITY_WEBGL 
         [DllImport("__Internal")]
+#endif
         private static extern void WagmiCall(int id, string methodName, string payload, InteropService.ExternalMethodCallback callback);
 
+#if UNITY_WEBGL 
         [DllImport("__Internal")]
+#endif
         private static extern void WagmiWatchAccount(Action<string> callback);
         
+#if UNITY_WEBGL 
         [DllImport("__Internal")]
+#endif
         private static extern void WagmiWatchChainId(Action<int> callback);
+        
         public static event Action<GetAccountReturnType> WatchAccountTriggered;
         public static event Action<int> WatchChainIdTriggered;
 

@@ -20,7 +20,9 @@ namespace WalletConnect.Web3Modal.WebGl
 
         private void StateChangedHandler(ModalState modalState)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             WebGLInput.captureAllKeyboardInput = !modalState.open;
+#endif
             OnOpenStateChanged(new ModalOpenStateChangedEventArgs(modalState.open));
         }
 

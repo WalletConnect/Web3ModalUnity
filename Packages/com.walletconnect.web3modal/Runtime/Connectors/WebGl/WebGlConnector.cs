@@ -14,7 +14,10 @@ namespace WalletConnect.Web3Modal
 {
     public class WebGlConnector : Connector
     {
+
+#if UNITY_WEBGL
         [DllImport("__Internal")]
+#endif
         private static extern void Initialize(string parameters, Action callback);
 
         private static TaskCompletionSource<bool> _initializationTaskCompletionSource;

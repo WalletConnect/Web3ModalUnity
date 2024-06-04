@@ -10,10 +10,14 @@ namespace WalletConnect.Web3Modal.WebGl.Modal
 {
     public static class ModalInterop
     {
-        [DllImport("__Internal")]
+        #if UNITY_WEBGL 
+[DllImport("__Internal")]
+#endif
         private static extern void ModalCall(int id, string methodName, string payload, InteropService.ExternalMethodCallback callback);
 
-        [DllImport("__Internal")]
+        #if UNITY_WEBGL 
+[DllImport("__Internal")]
+#endif
         private static extern void ModalSubscribeState(Action<string> callback);
         
         public static event Action<ModalState> StateChanged;
