@@ -134,15 +134,15 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
 
         // -- Verify Typed Data ----------------------------------------
 
-        public static Task<bool> VerifyTypedDataAsync(string dataJson, string address, string signature)
+        public static Task<bool> VerifyTypedDataAsync(string address, string dataJson, string signature)
         {
             var jObject = JObject.Parse(dataJson);
-
+            
             jObject[nameof(address)] = JToken.FromObject(address);
             jObject[nameof(signature)] = JToken.FromObject(signature);
 
             var parameter = jObject.ToString(Formatting.None);
-
+            
             return InteropCallAsync<string, bool>(WagmiMethods.VerifyTypedData, parameter);
         }
 
@@ -168,7 +168,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
         
         // -- Read Contract -------------------------------------------
 
-        public static Task<string> ReadContractAsync(string contractAddress, string contractAbi, string method, string[] arguments = null)
+        public static Task<TReturn> ReadContractAsync<TReturn>(string contractAddress, string contractAbi, string method, object[] arguments = null)
         {
             var parameter = new ReadContractParameter
             {
@@ -178,12 +178,12 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
                 args = arguments
             };
 
-            return ReadContractAsync(parameter);
+            return ReadContractAsync<TReturn>(parameter);
         }
 
-        public static Task<string> ReadContractAsync(ReadContractParameter parameter)
+        public static Task<TReturn> ReadContractAsync<TReturn>(ReadContractParameter parameter)
         {
-            return InteropCallAsync<ReadContractParameter, string>(WagmiMethods.ReadContract, parameter);
+            return InteropCallAsync<ReadContractParameter, TReturn>(WagmiMethods.ReadContract, parameter);
         }
         
         

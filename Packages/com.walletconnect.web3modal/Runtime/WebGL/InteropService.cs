@@ -119,6 +119,10 @@ namespace WalletConnect.Web3Modal.WebGl
             {
                 res = charResult;
             }
+            else if (pendingCall.ResType == typeof(BigInteger) && BigInteger.TryParse(responseData, out var bigIntResult))
+            {
+                res = bigIntResult;
+            }
             else if (pendingCall.ResType != typeof(void))
             {
                 try
