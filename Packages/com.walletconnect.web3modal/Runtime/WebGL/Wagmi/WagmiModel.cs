@@ -1,8 +1,21 @@
 using System;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace WalletConnect.Web3Modal.WebGl.Wagmi
 {
+    [SerializeField]
+    public class GetBalanceParameter
+    {
+        public string address;
+    }
+    
+    [SerializeField]
+    public class GetBalanceReturnType
+    {
+        public string value;
+    }
+    
     [Serializable]
     public class SignMessageParameter
     {
@@ -90,8 +103,9 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
         public AbiItem[] abi;
         public string address;
         public string functionName;
-        public string[] args;
+        public object[] args;
         public string value;
+        public string gas;
     }
 
     [Serializable]

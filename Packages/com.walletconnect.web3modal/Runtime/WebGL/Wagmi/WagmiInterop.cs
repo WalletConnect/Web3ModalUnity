@@ -9,21 +9,16 @@ using UnityEngine;
 
 namespace WalletConnect.Web3Modal.WebGl.Wagmi
 {
+#if UNITY_WEBGL 
     public static class WagmiInterop
     {
-#if UNITY_WEBGL 
         [DllImport("__Internal")]
-#endif
         private static extern void WagmiCall(int id, string methodName, string payload, InteropService.ExternalMethodCallback callback);
 
-#if UNITY_WEBGL 
         [DllImport("__Internal")]
-#endif
         private static extern void WagmiWatchAccount(Action<string> callback);
         
-#if UNITY_WEBGL 
         [DllImport("__Internal")]
-#endif
         private static extern void WagmiWatchChainId(Action<int> callback);
         
         public static event Action<GetAccountReturnType> WatchAccountTriggered;
@@ -69,6 +64,19 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
         public static Task<GetAccountReturnType> GetAccountAsync()
         {
             return InteropCallAsync<object, GetAccountReturnType>(WagmiMethods.GetAccount, null);
+        }
+        
+        
+        // -- Get Balance ----------------------------------------------
+        
+        public static Task<GetBalanceReturnType> GetBalanceAsync(string address)
+        {
+            var parameter = new GetBalanceParameter
+            {
+                address = address,
+            };
+            
+            return InteropCallAsync<GetBalanceParameter, GetBalanceReturnType>(WagmiMethods.GetBalance, parameter);
         }
 
         
@@ -189,7 +197,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
         
         // -- Write Contract ------------------------------------------
         
-        public static Task<string> WriteContractAsync(string contractAddress, string contractAbi, string method, string[] arguments = null, string value = "0")
+        public static Task<string> WriteContractAsync(string contractAddress, string contractAbi, string method, string value = null, string gas = null, params object[] arguments)
         {
             var parameter = new WriteContractParameter
             {
@@ -198,6 +206,7 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
                 functionName = method,
                 args = arguments,
                 value = value,
+                gas = gas
             };
 
             return WriteContractAsync(parameter);
@@ -230,4 +239,5 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
             return InteropCallAsync<SendTransactionParameter, string>(WagmiMethods.SendTransaction, parameter);
         }
     }
+#endif
 }

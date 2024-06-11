@@ -3,6 +3,7 @@ using WalletConnect.Web3Modal.WebGl.Wagmi;
 
 namespace WalletConnect.Web3Modal
 {
+#if UNITY_WEBGL
     public class WebGlConnectionProposal : ConnectionProposal
     {
         private bool _disposed;
@@ -32,4 +33,5 @@ namespace WalletConnect.Web3Modal
             }
         }
     }
+#endif
 }

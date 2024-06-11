@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Nethereum.Web3;
 using UnityEngine;
 using WalletConnectUnity.Core;
 using WalletConnectUnity.Core.Utils;
@@ -30,17 +29,23 @@ namespace WalletConnect.Web3Modal
             ApiController = new ApiController();
             NotificationController = new NotificationController();
             NetworkController = new NetworkControllerCore();
+            
+#if UNITY_WEBGL && !UNITY_EDITOR
+            Evm = new WagmiEvmService();
+#else
+            Evm = new NethereumEvmService();
+#endif
 
             await Task.WhenAll(
-                ModalController.InitializeAsync(),
                 ConnectorController.InitializeAsync(Config),
+                ModalController.InitializeAsync(),
                 NetworkController.InitializeAsync(ConnectorController, Config.supportedChains)
             );
 
+            await Evm.InitializeAsync();
+
             ConnectorController.AccountConnected += AccountConnectedHandler;
             ConnectorController.AccountDisconnected += AccountDisconnectedHandler;
-
-            NetworkController.ChainChanged += ChainChangedHandler;
         }
 
         protected override void OpenModalCore(ViewType viewType = ViewType.None)
@@ -80,50 +85,15 @@ namespace WalletConnect.Web3Modal
 
         private static async void AccountConnectedHandler(object sender, Connector.AccountConnectedEventArgs e)
         {
-            Debug.Log("AccountConnectedHandler");
             if (WalletUtils.TryGetLastViewedWallet(out var lastViewedWallet))
                 WalletUtils.SetRecentWallet(lastViewedWallet);
 
             CloseModal();
-
-            // TODO: 
-            // Debug.Log($"AccountConnectedHandler. ActiveChain: {NetworkController.ActiveChain}");
-            // if (NetworkController.ActiveChain == default)
-            // {
-            //     OpenModal(ViewType.NetworkSearch);
-            // }
-            // else
-            // {
-            //     var account = await GetAccountAsync();
-            //     UpdateWeb3Instance(account.ChainId);
-            // }
         }
 
         private static void AccountDisconnectedHandler(object sender, Connector.AccountDisconnectedEventArgs e)
         {
             CloseModal();
-        }
-
-        private void ChainChangedHandler(object sender, NetworkController.ChainChangedEventArgs e)
-        {
-            if (e.Chain != null)
-                UpdateWeb3Instance(e.Chain.ChainId);
-        }
-
-        private static void UpdateWeb3Instance(string chainId)
-        {
-            Web3 = new Web3(CreateRpcUrl(chainId))
-            {
-                Client =
-                {
-                    OverridingRequestInterceptor = Interceptor
-                }
-            };
-        }
-
-        private static string CreateRpcUrl(string chainId)
-        {
-            return $"https://rpc.walletconnect.com/v1?chainId={chainId}&projectId={ProjectConfiguration.Load().Id}";
         }
     }
 }

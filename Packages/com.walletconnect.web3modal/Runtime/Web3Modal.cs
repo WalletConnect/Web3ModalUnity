@@ -11,18 +11,14 @@ namespace WalletConnect.Web3Modal
     public abstract class Web3Modal : MonoBehaviour
     {
         public static Web3Modal Instance { get; protected set; }
-        public static IWeb3 Web3 { get; protected set; }
-
-        public static WalletConnectUnityInterceptor Interceptor
-        {
-            get => new(WalletConnectConnector.WalletConnectInstance);
-        }
 
         public static ModalController ModalController { get; protected set; }
         public static ConnectorController ConnectorController { get; protected set; }
         public static ApiController ApiController { get; protected set; }
         public static NotificationController NotificationController { get; protected set; }
         public static NetworkController NetworkController { get; protected set; }
+        
+        public static EvmService Evm { get; protected set; }
 
         public static Web3ModalConfig Config { get; private set; }
         public static bool IsInitialized { get; private set; }

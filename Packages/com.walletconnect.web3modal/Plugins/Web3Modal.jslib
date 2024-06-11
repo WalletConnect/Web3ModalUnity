@@ -22,7 +22,6 @@ mergeInto(LibraryManager.library, {
     
     $ExecuteCall__deps: ['$SerializeJson'],
     $ExecuteCall: async function (callFn, id, methodNameStrPtr, parameterStrPtr, callbackPtr) {
-        console.log("Executing call");
         if (!_web3ModalConfig) {
             console.error("Web3Modal is not initialized. Call Initialize first.");
             return;
@@ -35,8 +34,6 @@ mergeInto(LibraryManager.library, {
         let parameterObj = parameterStr === "" ? undefined : JSON.parse(parameterStr);
 
         try {
-            console.log(`Calling method`, methodName, parameterObj);
-
             // Call the method using the provided function
             let result = await callFn(_web3ModalConfig, methodName, parameterObj);
             
@@ -44,9 +41,7 @@ mergeInto(LibraryManager.library, {
                 {{{makeDynCall('viii', 'callbackPtr')}}} (id, undefined, undefined);
                 return;
             }
-
-            // Convert the result to JSON
-            let cache = [];
+            
             let resultJson = SerializeJson(result);
 
             // Call the callback with the result
@@ -54,7 +49,7 @@ mergeInto(LibraryManager.library, {
             {{{makeDynCall('viii', 'callbackPtr')}}} (id, resultStrPtr, undefined);
             _free(resultStrPtr);
         } catch (error) {
-            console.log("Error!", error);
+            console.error("[Web3Modal] Error executing call", error);
             let errorJson = JSON.stringify(error, ['name', 'message']);
             let errorStrPtr = stringToNewUTF8(errorJson);
             {{{makeDynCall('viii', 'callbackPtr')}}} (id, undefined, errorStrPtr);
@@ -73,16 +68,12 @@ mergeInto(LibraryManager.library, {
         
         const enableOnramp = parameters.enableOnramp;
         
-        console.log("Parameters", parameters);
-        
         // Load the scripts and initialize the configuration
-        import("https://cdn.jsdelivr.net/npm/cdn-wagmi@3.0.0/dist/cdn-wagmi.js").then(CDNW3M => {
+        import("https://cdn.jsdelivr.net/npm/@web3modal/cdn@4.2.4-cn-webgl.2/dist/wagmi.js").then(CDNW3M => {
             const { WagmiCore, Chains, Web3modal, Connectors } = CDNW3M;
             const { createWeb3Modal } = Web3modal;
             const { coinbaseWallet, walletConnect, injected } = Connectors;
             const { createConfig, http, reconnect } = WagmiCore;
-
-            console.log("Web3Modal loaded from CDN");
             
             const chainsMap = chains.map(chainName => Chains[chainName]);
 
@@ -107,7 +98,8 @@ mergeInto(LibraryManager.library, {
             const modal = createWeb3Modal({
                 wagmiConfig: config,
                 projectId,
-                enableOnramp: enableOnramp
+                enableOnramp: enableOnramp,
+                disableAppend: true
             });
             
             // Store the configuration and modal globally
@@ -125,6 +117,10 @@ mergeInto(LibraryManager.library, {
             canvas.parentNode.insertBefore(container, canvas);
             container.appendChild(canvas);
 
+            const web3modal = document.createElement('w3m-modal')
+            container.appendChild(web3modal)
+
+
             // Add styles to enable fullscreen compatibility
             const addCanvasActiveStyles = () => {
                 const styleElement = document.createElement('style');
@@ -141,9 +137,6 @@ mergeInto(LibraryManager.library, {
                 }
             `;
                 document.head.appendChild(styleElement);
-
-                const web3modal = document.createElement('w3m-modal');
-                container.appendChild(web3modal);
             };
 
             const removeCanvasActiveStyles = () => {
@@ -176,7 +169,6 @@ mergeInto(LibraryManager.library, {
     ModalCall__deps: ['$ExecuteCall'],
     ModalCall: async function (id, methodNameStrPtr, parameterStrPtr, callbackPtr) {
         const callFn = async (web3modalConfig, methodName, parameterObj) => {
-            console.log("ModalCall", methodName, parameterObj, web3modalConfig);
             return await web3modalConfig.modal[methodName](parameterObj);
         };
         await ExecuteCall(callFn, id, methodNameStrPtr, parameterStrPtr, callbackPtr);

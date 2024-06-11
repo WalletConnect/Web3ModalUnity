@@ -1464,7 +1464,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ENS
+  m_text: Read Contract
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3392,7 +3392,7 @@ GameObject:
   - component: {fileID: 1970017054}
   - component: {fileID: 1970017053}
   m_Layer: 5
-  m_Name: ENS Button
+  m_Name: Contract Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3464,7 +3464,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2078684096}
         m_TargetAssemblyTypeName: WalletConnect.Web3Modal.Sample.Dapp, Assembly-CSharp
-        m_MethodName: OnReverseResolveEns
+        m_MethodName: OnReadContractClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3818,7 +3818,7 @@ MonoBehaviour:
   _transactionButton: {fileID: 1851314021}
   _personalSignButton: {fileID: 620936163}
   _getBalanceButton: {fileID: 2093556038}
-  _reverseResoleEnsButton: {fileID: 1970017053}
+  _readContractButton: {fileID: 1970017053}
   _disconnectButton: {fileID: 2140689287}
 --- !u!4 &2078684097
 Transform:

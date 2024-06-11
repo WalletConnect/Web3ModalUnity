@@ -12,12 +12,11 @@ using WalletConnectUnity.Core;
 
 namespace WalletConnect.Web3Modal
 {
+#if UNITY_WEBGL
     public class WebGlConnector : Connector
     {
 
-#if UNITY_WEBGL
         [DllImport("__Internal")]
-#endif
         private static extern void Initialize(string parameters, Action callback);
 
         private static TaskCompletionSource<bool> _initializationTaskCompletionSource;
@@ -48,9 +47,7 @@ namespace WalletConnect.Web3Modal
             };
             
             var parametersJson = JsonConvert.SerializeObject(parameters);
-
-            Debug.Log($"Parameters json:\n: {parametersJson}");
-
+            
 #pragma warning disable S2696
             _initializationTaskCompletionSource = new TaskCompletionSource<bool>();
 #pragma warning restore S2696
@@ -68,43 +65,36 @@ namespace WalletConnect.Web3Modal
 
         protected override ConnectionProposal ConnectCore()
         {
-            Debug.Log($"Webgl connector returns connection proposal");
             return new WebGlConnectionProposal(this);
         }
 
         protected override async Task<bool> TryResumeSessionAsyncCore()
         {
-            Debug.Log("TryResumeSessionAsyncCore");
             
             var getAccountResult = await WagmiInterop.GetAccountAsync();
 
             if (getAccountResult.isConnected)
             {
-                Debug.Log("TryResumeSessionAsyncCore. Already connected.");
                 return true;
             }
 
             if (getAccountResult.isConnecting)
             {
-                Debug.Log($"TryResumeSessionAsyncCore Connecting");
                 var tcs = new TaskCompletionSource<bool>();
                 
                 WagmiInterop.WatchAccountTriggered += WagmiInteropOnWatchAccountTriggered;
                 
                 void WagmiInteropOnWatchAccountTriggered(GetAccountReturnType arg)
                 {
-                    Debug.Log($"TryResumeSessionAsyncCore Connecting handler got status: {arg.status}");
                     if (arg.isConnecting)
                         return;
 
-                    Debug.Log("TryResumeSessionAsyncCore Connecting handler got isConnected!");
                     tcs.SetResult(arg.isConnected);
 
                     WagmiInterop.WatchAccountTriggered -= WagmiInteropOnWatchAccountTriggered;
                 }
                 var result = await tcs.Task;
 
-                Debug.Log($"TryResumeSessionAsyncCore tcs resolved to {result}");
                 return result;
             }
             else
@@ -140,8 +130,6 @@ namespace WalletConnect.Web3Modal
         
         private void WatchAccountTriggeredHandler(GetAccountReturnType arg)
         {
-            Debug.Log($"WatchAccountTriggeredHandler. Last status: {_lastAccountStatus}. New status: {arg.status}");
-
             var previousLastAccountStatus = _lastAccountStatus;
             _lastAccountStatus = arg.status;
             
@@ -156,7 +144,6 @@ namespace WalletConnect.Web3Modal
             else if (_lastAccountStatus == "disconnected" && previousLastAccountStatus != "disconnected")
             {
                 IsAccountConnected = false;
-                Debug.Log("WebGL connector OnAccountDisconnected");
                 OnAccountDisconnected(AccountDisconnectedEventArgs.Empty);
             }
             else
@@ -192,4 +179,5 @@ namespace WalletConnect.Web3Modal
         public bool enableEmail;
         public bool enableOnramp;
     }
+#endif
 }
