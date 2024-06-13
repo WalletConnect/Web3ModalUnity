@@ -1,11 +1,12 @@
 {
   "name": "com.walletconnect.web3modal",
-  "version": "0.1.1",
+  "version": "0.3.0",
   "displayName": "Web3Modal",
   "unity": "2022.3",
   "author": "WalletConnect",
   "keywords": [
     "wallet",
+    "appkit",
     "nethereum",
     "web3modal",
     "walletconnect",
@@ -13,9 +14,9 @@
     "walletconnectunity"
   ],
   "dependencies": {
-    "com.walletconnect.core": "3.1.6",
-    "com.walletconnect.ui": "1.1.6",
-    "com.walletconnect.nethereum": "1.0.0",
+    "com.walletconnect.core": "3.1.7",
+    "com.walletconnect.ui": "1.1.7",
+    "com.walletconnect.nethereum": "1.0.1",
     "com.nethereum.unity": "4.19.1",
     "com.unity.vectorgraphics": "2.0.0-preview.24"
   }

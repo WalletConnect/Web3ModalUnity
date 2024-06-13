@@ -72,7 +72,7 @@ namespace WalletConnect.Web3Modal
                 throw new Exception("Already initialized"); // TODO: use custom ex type
 
             UnityWebRequestExtensions.sdkType = "w3m";
-            UnityWebRequestExtensions.sdkVersion = "unity-w3m-v0.2.0"; // TODO: update this from CI
+            UnityWebRequestExtensions.sdkVersion = "unity-w3m-v0.3.0"; // TODO: update this from CI
 
             Config = config ?? throw new ArgumentNullException(nameof(config));
 

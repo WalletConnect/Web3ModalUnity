@@ -289,16 +289,6 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.unity.visualscripting": {
-      "version": "1.9.1",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.ugui": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.walletconnect.core": {
       "version": "3.1.7",
       "depth": 0,
@@ -334,15 +324,15 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.walletconnect.core": "3.1.6",
-        "com.walletconnect.ui": "1.1.6",
-        "com.walletconnect.nethereum": "1.0.0",
+        "com.walletconnect.core": "3.1.7",
+        "com.walletconnect.ui": "1.1.7",
+        "com.walletconnect.nethereum": "1.0.1",
         "com.nethereum.unity": "4.19.1",
         "com.unity.vectorgraphics": "2.0.0-preview.24"
       }
     },
     "io.sentry.unity": {
-      "version": "2.0.4",
+      "version": "2.0.7",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
