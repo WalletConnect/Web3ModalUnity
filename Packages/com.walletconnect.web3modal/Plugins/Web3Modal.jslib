@@ -69,7 +69,7 @@ mergeInto(LibraryManager.library, {
         const enableOnramp = parameters.enableOnramp;
         
         // Load the scripts and initialize the configuration
-        import("https://cdn.jsdelivr.net/npm/@web3modal/cdn@4.2.4-cn-webgl.2/dist/wagmi.js").then(CDNW3M => {
+        import("https://cdn.jsdelivr.net/npm/@web3modal/cdn@5.0.1/dist/wagmi.js").then(CDNW3M => {
             const { WagmiCore, Chains, Web3modal, Connectors } = CDNW3M;
             const { createWeb3Modal } = Web3modal;
             const { coinbaseWallet, walletConnect, injected } = Connectors;
@@ -94,12 +94,12 @@ mergeInto(LibraryManager.library, {
             });
             
             reconnect(config);
-
+            
             const modal = createWeb3Modal({
                 wagmiConfig: config,
                 projectId,
                 enableOnramp: enableOnramp,
-                disableAppend: true
+                disableAppend: true,
             });
             
             // Store the configuration and modal globally

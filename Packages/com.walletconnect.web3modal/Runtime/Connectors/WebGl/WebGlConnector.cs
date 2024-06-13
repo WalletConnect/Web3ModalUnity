@@ -42,8 +42,7 @@ namespace WalletConnect.Web3Modal
                 projectId = walletConnectConfig.Id,
                 metadata = walletConnectConfig.Metadata,
                 chains = viemChainNames,
-                enableEmail = true, // TODO: make configurable
-                enableOnramp = true // TODO: make configurable
+                enableOnramp = web3ModalConfig.enableOnramp,
             };
             
             var parametersJson = JsonConvert.SerializeObject(parameters);
@@ -70,7 +69,6 @@ namespace WalletConnect.Web3Modal
 
         protected override async Task<bool> TryResumeSessionAsyncCore()
         {
-            
             var getAccountResult = await WagmiInterop.GetAccountAsync();
 
             if (getAccountResult.isConnected)
@@ -176,7 +174,6 @@ namespace WalletConnect.Web3Modal
         public Metadata metadata;
         public string[] chains;
         
-        public bool enableEmail;
         public bool enableOnramp;
     }
 #endif
