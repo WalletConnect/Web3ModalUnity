@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Nethereum.JsonRpc.Client;
 using Nethereum.Web3;
 using UnityEngine;
 using UnityEngine.Scripting;
@@ -12,18 +11,14 @@ namespace WalletConnect.Web3Modal
     public abstract class Web3Modal : MonoBehaviour
     {
         public static Web3Modal Instance { get; protected set; }
-        public static IWeb3 Web3 { get; protected set; }
-
-        public static WalletConnectUnityInterceptor Interceptor
-        {
-            get => new(WalletConnectConnector.WalletConnectInstance);
-        }
 
         public static ModalController ModalController { get; protected set; }
         public static ConnectorController ConnectorController { get; protected set; }
         public static ApiController ApiController { get; protected set; }
         public static NotificationController NotificationController { get; protected set; }
         public static NetworkController NetworkController { get; protected set; }
+        
+        public static EvmService Evm { get; protected set; }
 
         public static Web3ModalConfig Config { get; private set; }
         public static bool IsInitialized { get; private set; }
@@ -77,7 +72,7 @@ namespace WalletConnect.Web3Modal
                 throw new Exception("Already initialized"); // TODO: use custom ex type
 
             UnityWebRequestExtensions.sdkType = "w3m";
-            UnityWebRequestExtensions.sdkVersion = "unity-w3m-v0.1.0"; // TODO: update this from CI
+            UnityWebRequestExtensions.sdkVersion = "unity-w3m-v0.3.0"; // TODO: update this from CI
 
             Config = config ?? throw new ArgumentNullException(nameof(config));
 
@@ -106,9 +101,9 @@ namespace WalletConnect.Web3Modal
             Instance.CloseModalCore();
         }
 
-        public static Account GetAccount()
+        public static Task<Account> GetAccountAsync()
         {
-            return ConnectorController.GetAccount();
+            return ConnectorController.GetAccountAsync();
         }
 
         public static Task DisconnectAsync()

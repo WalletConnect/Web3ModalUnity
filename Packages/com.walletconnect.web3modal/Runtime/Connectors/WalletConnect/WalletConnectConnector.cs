@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using UnityEngine;
 using WalletConnectSharp.Sign.Models;
 using WalletConnectSharp.Sign.Models.Engine;
 using WalletConnectUnity.Core;
@@ -25,9 +26,9 @@ namespace WalletConnect.Web3Modal
             Type = ConnectorType.WalletConnect;
         }
 
-        protected override async Task InitializeAsyncCore(IEnumerable<Chain> supportedChains)
+        protected override async Task InitializeAsyncCore(Web3ModalConfig config)
         {
-            DappSupportedChains = supportedChains;
+            DappSupportedChains = config.supportedChains;
 
             await WalletConnectInstance.InitializeAsync();
 
@@ -42,13 +43,14 @@ namespace WalletConnect.Web3Modal
             if (string.IsNullOrWhiteSpace(e.Topic))
                 return;
 
-            OnAccountChanged(new AccountChangedEventArgs(GetAccount()));
+            var currentAccount = GetCurrentAccount();
+            OnAccountChanged(new AccountChangedEventArgs(currentAccount));
         }
 
         private void ActiveChainIdChangedHandler(object sender, string chainId)
         {
             OnChainChanged(new ChainChangedEventArgs(chainId));
-            OnAccountChanged(new AccountChangedEventArgs(GetAccount()));
+            OnAccountChanged(new AccountChangedEventArgs(GetCurrentAccount()));
         }
 
         private void SessionConnectedHandler(object sender, SessionStruct e)
@@ -141,20 +143,25 @@ namespace WalletConnect.Web3Modal
             }
         }
 
-        protected override Account GetAccountCore()
+        protected override Task<Account> GetAccountAsyncCore()
+        {
+            return Task.FromResult(GetCurrentAccount());
+        }
+
+        protected override Task<Account[]> GetAccountsCore()
+        {
+            var ciapAddresses = WalletConnectInstance.SignClient.AddressProvider.AllAddresses();
+            return Task.FromResult(ciapAddresses.Select(ciapAddress => new Account(ciapAddress.Address, ciapAddress.ChainId)).ToArray());
+        }
+        
+        private Account GetCurrentAccount()
         {
             var ciapAddress = WalletConnectInstance.SignClient.AddressProvider.CurrentAddress();
             return new Account(ciapAddress.Address, ciapAddress.ChainId);
         }
 
-        protected override Account[] GetAccountsCore()
-        {
-            var ciapAddresses = WalletConnectInstance.SignClient.AddressProvider.AllAddresses();
-            return ciapAddresses.Select(ciapAddress => new Account(ciapAddress.Address, ciapAddress.ChainId)).ToArray();
-        }
-
         private static bool ActiveSessionSupportsMethod(string method)
-        {
+        { 
             var @namespace = WalletConnectInstance.SignClient.AddressProvider.DefaultNamespace;
             var activeSession = WalletConnectInstance.ActiveSession;
             return activeSession.Namespaces[@namespace].Methods.Contains(method);

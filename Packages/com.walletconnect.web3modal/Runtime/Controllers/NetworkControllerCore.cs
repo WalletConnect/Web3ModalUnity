@@ -38,11 +38,12 @@ namespace WalletConnect.Web3Modal
 
         protected override async void ConnectorAccountConnectedHandlerCore(object sender, Connector.AccountConnectedEventArgs e)
         {
-            var accounts = e.GetAccounts();
+            var accounts = await e.GetAccounts();
 
             if (ActiveChain == null)
             {
-                var defaultAccount = e.GetAccount();
+                var defaultAccount = await e.GetAccount();
+                
                 if (Chains.TryGetValue(defaultAccount.ChainId, out var defaultAccountChain))
                 {
                     ActiveChain = defaultAccountChain;
@@ -65,7 +66,7 @@ namespace WalletConnect.Web3Modal
             }
             else
             {
-                var defaultAccount = e.GetAccount();
+                var defaultAccount = await e.GetAccount();
                 if (defaultAccount.ChainId == ActiveChain.ChainId)
                     return;
 

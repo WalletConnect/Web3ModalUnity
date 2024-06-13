@@ -1,30 +1,31 @@
 {
-  "name": "WalletConnect.Web3Modal",
-  "rootNamespace": "WalletConnect.Web3Modal",
-  "references": [
-    "GUID:4a34382dd43244a8f8e5cd6843ccb943",
-    "GUID:0eca607d5f96419d94637beb34938b5a",
-    "GUID:68550284b645f4b9894995579f34290a",
-    "GUID:4613bbec41bc0436cb367bae3bff0744",
-    "GUID:40f1155a011cb4befa51bbc14fded9b0"
-  ],
-  "includePlatforms": [
-    "Android",
-    "Editor",
-    "iOS",
-    "LinuxStandalone64",
-    "macOSStandalone",
-    "tvOS",
-    "WSA",
-    "WindowsStandalone32",
-    "WindowsStandalone64"
-  ],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "WalletConnect.Web3Modal",
+    "rootNamespace": "WalletConnect.Web3Modal",
+    "references": [
+        "GUID:4a34382dd43244a8f8e5cd6843ccb943",
+        "GUID:0eca607d5f96419d94637beb34938b5a",
+        "GUID:68550284b645f4b9894995579f34290a",
+        "GUID:4613bbec41bc0436cb367bae3bff0744",
+        "GUID:40f1155a011cb4befa51bbc14fded9b0"
+    ],
+    "includePlatforms": [
+        "Android",
+        "Editor",
+        "iOS",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "tvOS",
+        "WSA",
+        "WebGL",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

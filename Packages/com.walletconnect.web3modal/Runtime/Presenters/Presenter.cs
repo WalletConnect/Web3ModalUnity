@@ -76,16 +76,4 @@ namespace WalletConnect.Web3Modal
         {
         }
     }
-
-    public enum ViewType
-    {
-        None,
-        Connect,
-        QrCode,
-        Wallet,
-        WalletSearch,
-        Account,
-        NetworkSearch,
-        NetworkLoading
-    }
 }

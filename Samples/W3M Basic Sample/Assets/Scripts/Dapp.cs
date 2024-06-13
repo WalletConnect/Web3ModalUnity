@@ -2,14 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Nethereum.ABI.EIP712;
-using Nethereum.Hex.HexTypes;
 using Nethereum.JsonRpc.Client;
-using Nethereum.Signer.EIP712;
 using Nethereum.Web3;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using WalletConnectUnity.Core;
 
 namespace WalletConnect.Web3Modal.Sample
 {
@@ -28,7 +25,7 @@ namespace WalletConnect.Web3Modal.Sample
         [SerializeField] private Button _transactionButton;
         [SerializeField] private Button _personalSignButton;
         [SerializeField] private Button _getBalanceButton;
-        [SerializeField] private Button _reverseResoleEnsButton;
+        [SerializeField] private Button _readContractButton;
         [SerializeField] private Button _disconnectButton;
 
         private void Awake()
@@ -57,7 +54,7 @@ namespace WalletConnect.Web3Modal.Sample
                     _activeChainId.text = e.Chain.ChainId;
                 };
 
-                Web3Modal.AccountConnected += (_, e) =>
+                Web3Modal.AccountConnected += async (_, e) =>
                 {
                     _connectButton.interactable = false;
                     _accountButton.interactable = true;
@@ -65,10 +62,10 @@ namespace WalletConnect.Web3Modal.Sample
                     _transactionButton.interactable = true;
                     _personalSignButton.interactable = true;
                     _getBalanceButton.interactable = true;
-                    _reverseResoleEnsButton.interactable = true;
+                    _readContractButton.interactable = true;
                     _disconnectButton.interactable = true;
 
-                    var account = e.GetAccount();
+                    var account = await e.GetAccount();
                     _activeAddress.text = account.Address;
                     _activeChainId.text = account.ChainId;
                 };
@@ -81,7 +78,7 @@ namespace WalletConnect.Web3Modal.Sample
                     _transactionButton.interactable = false;
                     _personalSignButton.interactable = false;
                     _getBalanceButton.interactable = false;
-                    _reverseResoleEnsButton.interactable = false;
+                    _readContractButton.interactable = false;
                     _disconnectButton.interactable = false;
 
                     _activeAddress.text = string.Empty;
@@ -90,12 +87,13 @@ namespace WalletConnect.Web3Modal.Sample
 
                 Web3Modal.AccountChanged += (_, e) =>
                 {
-                    _activeAddress.text = e.Account.Address;
-                    _activeChainId.text = e.Account.ChainId;
+                    var account = e.Account;
+                    _activeAddress.text = account.Address;
+                    _activeChainId.text = account.ChainId;
                 };
 
                 _resumed = await Web3Modal.ConnectorController.TryResumeSessionAsync();
-
+                
                 _networkButton.interactable = true;
                 _connectButton.interactable = !_resumed;
                 _accountButton.interactable = _resumed;
@@ -103,7 +101,7 @@ namespace WalletConnect.Web3Modal.Sample
                 _transactionButton.interactable = _resumed;
                 _personalSignButton.interactable = _resumed;
                 _getBalanceButton.interactable = _resumed;
-                _reverseResoleEnsButton.interactable = _resumed;
+                _readContractButton.interactable = _resumed;
                 _disconnectButton.interactable = _resumed;
             }
             catch (Exception e)
@@ -136,11 +134,11 @@ namespace WalletConnect.Web3Modal.Sample
             {
                 Notification.ShowMessage("Getting balance with WalletConnect Blockchain API...");
 
-                var account = Web3Modal.GetAccount();
+                var account = await Web3Modal.GetAccountAsync();
 
-                var balance = await Web3Modal.Web3.Eth.GetBalance.SendRequestAsync(account.Address);
+                var balance = await Web3Modal.Evm.GetBalanceAsync(account.Address);
 
-                Notification.ShowMessage($"Balance: {Web3.Convert.FromWei(balance.Value)} ETH");
+                Notification.ShowMessage($"Balance: {Web3.Convert.FromWei(balance)} ETH");
             }
             catch (Exception e)
             {
@@ -152,17 +150,16 @@ namespace WalletConnect.Web3Modal.Sample
         public async void OnPersonalSignButton()
         {
             Debug.Log("[Web3Modal Sample] OnPersonalSignButton");
-
+            
             try
             {
-                var account = Web3Modal.GetAccount();
+                var account = await Web3Modal.GetAccountAsync();
 
-                const string message = "Hello WalletConnect!";
-                var encodedMessage = new HexUTF8String(message);
-
-                var response = await Web3Modal.Web3.Eth.AccountSigning.PersonalSign.SendRequestAsync(encodedMessage, account.Address);
-
-                Notification.ShowMessage($"Response: {response}");
+                const string message = "Hello from the service!";
+                var signature = await Web3Modal.Evm.SignMessageAsync(message);
+                var isValid = await Web3Modal.Evm.VerifyMessageSignatureAsync(account.Address, message, signature);
+                
+                Notification.ShowMessage($"Signature valid: {isValid}");
             }
             catch (RpcResponseException e)
             {
@@ -183,7 +180,7 @@ namespace WalletConnect.Web3Modal.Sample
             }
             catch (Exception e)
             {
-                Notification.ShowMessage($"{nameof(RpcResponseException)}:\n{e.Message}");
+                Notification.ShowMessage($"{e.GetType()}:\n{e.Message}");
                 Debug.LogException(e, this);
             }
         }
@@ -191,16 +188,16 @@ namespace WalletConnect.Web3Modal.Sample
         public async void OnSendTransactionButton()
         {
             Debug.Log("[Web3Modal Sample] OnSendTransactionButton");
-
-            Notification.ShowMessage("Sending transaction...");
-
+            
             const string toAddress = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
 
             try
             {
-                await Web3Modal.Web3.Eth
-                    .GetEtherTransferService()
-                    .TransferEtherAndWaitForReceiptAsync(toAddress, 0.00001m);
+                Notification.ShowMessage("Sending transaction...");
+                
+                var value = Web3.Convert.ToWei(0.001);
+                var result = await Web3Modal.Evm.SendTransactionAsync(toAddress, value);
+                Debug.Log("Transaction hash: " + result);
 
                 Notification.ShowMessage("Transaction sent");
             }
@@ -217,8 +214,9 @@ namespace WalletConnect.Web3Modal.Sample
 
             Notification.ShowMessage("Signing typed data...");
 
-            var account = Web3Modal.GetAccount();
+            var account = await Web3Modal.GetAccountAsync();
 
+            Debug.Log("Get mail typed definition");
             var typedData = GetMailTypedDefinition();
             var mail = new Mail
             {
@@ -251,14 +249,14 @@ namespace WalletConnect.Web3Modal.Sample
             typedData.SetMessage(mail);
 
             var jsonMessage = typedData.ToJson();
-
+            
             try
-            {
-                var response = await Web3Modal.Web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(jsonMessage);
-                var recoveredAccount = new Eip712TypedDataSigner().RecoverFromSignatureV4(typedData, response);
-
-                var signatureValid = string.Equals(account.Address, recoveredAccount, StringComparison.CurrentCultureIgnoreCase);
-                Notification.ShowMessage($"Signature valid: {signatureValid}\nRecovered Account: {recoveredAccount}");
+            { 
+                var signature = await Web3Modal.Evm.SignTypedDataAsync(jsonMessage);
+                
+                var isValid = await Web3Modal.Evm.VerifyTypedDataSignatureAsync(account.Address, jsonMessage, signature);
+                
+                Notification.ShowMessage($"Signature valid: {isValid}");
             }
             catch (Exception e)
             {
@@ -266,27 +264,32 @@ namespace WalletConnect.Web3Modal.Sample
                 Debug.LogException(e, this);
             }
         }
-
-        public async void OnReverseResolveEns()
+        
+        public async void OnReadContractClicked()
         {
-            Debug.Log("[Web3Modal Sample] OnReverseResolveEns");
-
-            Notification.ShowMessage("Reverse-resolving ENS with WalletConnect Blockchain API...");
-
-            var account = Web3Modal.GetAccount();
-
+            const string contractAddress = "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"; // on Ethereum mainnet
+            const string yugaLabsAddress = "0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1";
+            const string abi = CryptoPunksAbi;
+            
+            Notification.ShowMessage("Reading smart contract state...");
+            
             try
             {
-                var addr = await Web3Modal.Web3.Eth.GetEnsService().ReverseResolveAsync(account.Address);
-                var result = string.IsNullOrWhiteSpace(addr)
-                    ? "No ENS name found"
-                    : $"ENS name: {addr}";
+                var tokenName = await Web3Modal.Evm.ReadContractAsync<string>(contractAddress, abi, "name");
+                Debug.Log($"Token name: {tokenName}");
 
+                var balance = await Web3Modal.Evm.ReadContractAsync<BigInteger>(contractAddress, abi, "balanceOf", new object[]
+                {
+                    yugaLabsAddress
+                });
+                var result = $"Yuga Labs owns: {balance} {tokenName} tokens active chain.";
+                
                 Notification.ShowMessage(result);
             }
             catch (Exception e)
             {
-                Notification.ShowMessage("No ENS name found");
+                Notification.ShowMessage($"Contract reading error.\n{e.Message}");
+                Debug.LogException(e, this);
             }
         }
 
@@ -305,5 +308,43 @@ namespace WalletConnect.Web3Modal.Sample
                 PrimaryType = nameof(Mail)
             };
         }
+        
+        
+        public const string CryptoPunksAbi = @"[{""constant"":true,""inputs"":[],""name"":""name"",""outputs"":[{""name"":"""",""type"":""string""}],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[{""name"":"""",""type"":""uint256""}],""name"":""punksOfferedForSale"",""outputs"":[{""name"":""isForSale"",""type"":""bool""},{""name"":""punkIndex"",""type"":""uint256""},{""name"":""seller"",""type"":""address""},{""name"":""minValue"",""type"":""uint256""},{""name"":""onlySellTo"",""type"":""address""}],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""punkIndex"",""type"":""uint256""}],""name"":""enterBidForPunk"",""outputs"":[],""payable"":true,""type"":""function""},
+        {""constant"":true,""inputs"":[],""name"":""totalSupply"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""punkIndex"",""type"":""uint256""},{""name"":""minPrice"",""type"":""uint256""}],""name"":""acceptBidForPunk"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[],""name"":""decimals"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""addresses"",""type"":""address[]""},{""name"":""indices"",""type"":""uint256[]""}],""name"":""setInitialOwners"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[],""name"":""withdraw"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[],""name"":""imageHash"",""outputs"":[{""name"":"""",""type"":""string""}],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[],""name"":""nextPunkIndexToAssign"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[{""name"":"""",""type"":""uint256""}],""name"":""punkIndexToAddress"",""outputs"":[{""name"":"""",""type"":""address""}],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[],""name"":""standard"",""outputs"":[{""name"":"""",""type"":""string""}],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[{""name"":"""",""type"":""uint256""}],""name"":""punkBids"",""outputs"":[{""name"":""hasBid"",""type"":""bool""},{""name"":""punkIndex"",""type"":""uint256""},{""name"":""bidder"",""type"":""address""},{""name"":""value"",""type"":""uint256""}],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[{""name"":"""",""type"":""address""}],""name"":""balanceOf"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[],""name"":""allInitialOwnersAssigned"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[],""name"":""allPunksAssigned"",""outputs"":[{""name"":"""",""type"":""bool""}],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""punkIndex"",""type"":""uint256""}],""name"":""buyPunk"",""outputs"":[],""payable"":true,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""to"",""type"":""address""},{""name"":""punkIndex"",""type"":""uint256""}],""name"":""transferPunk"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[],""name"":""symbol"",""outputs"":[{""name"":"""",""type"":""string""}],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""punkIndex"",""type"":""uint256""}],""name"":""withdrawBidForPunk"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""to"",""type"":""address""},{""name"":""punkIndex"",""type"":""uint256""}],""name"":""setInitialOwner"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""punkIndex"",""type"":""uint256""},{""name"":""minSalePriceInWei"",""type"":""uint256""},{""name"":""toAddress"",""type"":""address""}],""name"":""offerPunkForSaleToAddress"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[],""name"":""punksRemainingToAssign"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""punkIndex"",""type"":""uint256""},{""name"":""minSalePriceInWei"",""type"":""uint256""}],""name"":""offerPunkForSale"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""punkIndex"",""type"":""uint256""}],""name"":""getPunk"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""constant"":true,""inputs"":[{""name"":"""",""type"":""address""}],""name"":""pendingWithdrawals"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},
+        {""constant"":false,""inputs"":[{""name"":""punkIndex"",""type"":""uint256""}],""name"":""punkNoLongerForSale"",""outputs"":[],""payable"":false,""type"":""function""},
+        {""inputs"":[],""payable"":true,""type"":""constructor""},
+        {""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""to"",""type"":""address""},{""indexed"":false,""name"":""punkIndex"",""type"":""uint256""}],""name"":""Assign"",""type"":""event""},
+        {""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""from"",""type"":""address""},{""indexed"":true,""name"":""to"",""type"":""address""},{""indexed"":false,""name"":""value"",""type"":""uint256""}],""name"":""Transfer"",""type"":""event""},
+        {""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""from"",""type"":""address""},{""indexed"":true,""name"":""to"",""type"":""address""},{""indexed"":false,""name"":""punkIndex"",""type"":""uint256""}],""name"":""PunkTransfer"",""type"":""event""},
+        {""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""punkIndex"",""type"":""uint256""},{""indexed"":false,""name"":""minValue"",""type"":""uint256""},{""indexed"":true,""name"":""toAddress"",""type"":""address""}],""name"":""PunkOffered"",""type"":""event""},
+        {""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""punkIndex"",""type"":""uint256""},{""indexed"":false,""name"":""value"",""type"":""uint256""},{""indexed"":true,""name"":""fromAddress"",""type"":""address""}],""name"":""PunkBidEntered"",""type"":""event""},
+        {""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""punkIndex"",""type"":""uint256""},{""indexed"":false,""name"":""value"",""type"":""uint256""},{""indexed"":true,""name"":""fromAddress"",""type"":""address""}],""name"":""PunkBidWithdrawn"",""type"":""event""},
+        {""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""punkIndex"",""type"":""uint256""},{""indexed"":false,""name"":""value"",""type"":""uint256""},{""indexed"":true,""name"":""fromAddress"",""type"":""address""},{""indexed"":true,""name"":""toAddress"",""type"":""address""}],""name"":""PunkBought"",""type"":""event""},
+        {""anonymous"":false,""inputs"":[{""indexed"":true,""name"":""punkIndex"",""type"":""uint256""}],""name"":""PunkNoLongerForSale"",""type"":""event""}]";
     }
 }
