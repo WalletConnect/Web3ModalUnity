@@ -99,7 +99,7 @@ namespace WalletConnect.Web3Modal
         
         public Task<string> SendTransactionAsync(string addressTo, BigInteger value, string data = null)
         {
-            if (string.IsNullOrWhiteSpace(data))
+            if (string.IsNullOrWhiteSpace(addressTo))
                 throw new ArgumentNullException(nameof(addressTo));
             
             return SendTransactionAsyncCore(addressTo, value, data);
