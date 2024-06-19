@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Nethereum.Web3;
 using UnityEngine;
 using UnityEngine.Scripting;
+using WalletConnectUnity.Core;
 using WalletConnectUnity.Core.Networking;
 using WalletConnectUnity.Nethereum;
 
@@ -71,8 +72,8 @@ namespace WalletConnect.Web3Modal
             if (IsInitialized)
                 throw new Exception("Already initialized"); // TODO: use custom ex type
 
-            UnityWebRequestExtensions.sdkType = "w3m";
-            UnityWebRequestExtensions.sdkVersion = "unity-w3m-v0.3.1"; // TODO: update this from CI
+            SdkMetadata.Type = "w3m";
+            SdkMetadata.Version = "unity-w3m-v0.3.1"; // TODO: update this from CI
 
             Config = config ?? throw new ArgumentNullException(nameof(config));
 

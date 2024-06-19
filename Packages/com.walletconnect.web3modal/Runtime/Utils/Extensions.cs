@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -27,6 +29,25 @@ namespace WalletConnect.Web3Modal.Utils
         public static string FontWeight700(this string value)
         {
             return $"<font-weight=\"700\">{value}</font-weight>";
+        }
+        
+        public static string AppendQueryString(this string path, IDictionary<string, string> queryParameters)
+        {
+            if (queryParameters == null || queryParameters.Count == 0)
+            {
+                return path;
+            }
+
+            var queryString = new StringBuilder();
+            foreach (var param in queryParameters)
+            {
+                if (queryString.Length > 0)
+                    queryString.Append("&");
+
+                queryString.Append($"{param.Key}={param.Value}");
+            }
+
+            return $"{path}?{queryString}";
         }
     }
 
