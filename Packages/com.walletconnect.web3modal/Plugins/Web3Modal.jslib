@@ -70,10 +70,18 @@ mergeInto(LibraryManager.library, {
         
         // Load the scripts and initialize the configuration
         import("https://cdn.jsdelivr.net/npm/@web3modal/cdn@5.0.1/dist/wagmi.js").then(CDNW3M => {
-            const { WagmiCore, Chains, Web3modal, Connectors } = CDNW3M;
-            const { createWeb3Modal } = Web3modal;
-            const { coinbaseWallet, walletConnect, injected } = Connectors;
-            const { createConfig, http, reconnect } = WagmiCore;
+            const WagmiCore = CDNW3M['WagmiCore'];
+            const Chains = CDNW3M['Chains'];
+            const Web3modal = CDNW3M['Web3modal'];
+            const Connectors = CDNW3M['Connectors'];
+
+            const createWeb3Modal = Web3modal['createWeb3Modal'];
+            const coinbaseWallet = Connectors['coinbaseWallet'];
+            const walletConnect = Connectors['walletConnect'];
+            const injected = Connectors['injected'];
+            const createConfig = WagmiCore['createConfig'];
+            const http = WagmiCore['http'];
+            const reconnect = WagmiCore['reconnect'];
             
             const chainsMap = chains.map(chainName => Chains[chainName]);
 
@@ -147,16 +155,16 @@ mergeInto(LibraryManager.library, {
             };
 
             // Handle fullscreen changes
-            container?.addEventListener('fullscreenchange', () => {
+            container.addEventListener('fullscreenchange', () => {
                 const canvas = document.querySelector('canvas');
                 if (document.fullscreenElement) {
-                    if (!canvas?.classList.contains('canvas-active')) {
+                    if (!canvas.classList.contains('canvas-active')) {
                         addCanvasActiveStyles();
-                        canvas?.classList.add('canvas-active');
+                        canvas.classList.add('canvas-active');
                     }
                 } else {
-                    if (canvas?.classList.contains('canvas-active')) {
-                        canvas?.classList.remove('canvas-active');
+                    if (canvas.classList.contains('canvas-active')) {
+                        canvas.classList.remove('canvas-active');
                         removeCanvasActiveStyles();
                     }
                 }
