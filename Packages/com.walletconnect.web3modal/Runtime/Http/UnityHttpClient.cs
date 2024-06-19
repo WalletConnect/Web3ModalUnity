@@ -173,10 +173,12 @@ namespace WalletConnect.Web3Modal.Http
                 if (uwr.result != UnityWebRequest.Result.Success)
                 {
                     tcs.SetException(new Exception($"Failed to send web request: {uwr.error}")); // TODO: use custom ex type
+                    uwr.Dispose();
                     return;
                 }
 
                 tcs.SetResult(new HttpResponseContext(uwr.downloadHandler.data, uwr.responseCode, uwr.GetResponseHeaders()));
+                uwr.Dispose();
             };
 
             return tcs.Task;

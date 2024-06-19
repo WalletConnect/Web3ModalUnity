@@ -41,6 +41,9 @@ namespace WalletConnect.Web3Modal.Utils
             var queryString = new StringBuilder();
             foreach (var param in queryParameters)
             {
+                if (param.Value == default)
+                    continue;
+                
                 if (queryString.Length > 0)
                     queryString.Append("&");
 

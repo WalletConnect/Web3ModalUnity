@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -21,7 +22,6 @@ namespace WalletConnect.Web3Modal
         }
 
         private bool _isPageLoading;
-        private bool __reachedMaxWalletsCount;
 
         private int _maxWalletsCount = -1;
         private int _nextPageToLoad = 1;
@@ -29,7 +29,8 @@ namespace WalletConnect.Web3Modal
         private int _countPerPageRealtime = 0;
         private int _walletsShown = 0;
         private string _searchQuery = null;
-        private Coroutine _loadNextPageCoroutine;
+
+        private Task _loadNextPageTask;
 
         private const int WalletsPerPage = 32;
 
@@ -57,7 +58,6 @@ namespace WalletConnect.Web3Modal
             _reachedMaxWalletsCount = false;
             _countPerPageRealtime = WalletsPerPage;
             _isPageLoading = false;
-            __reachedMaxWalletsCount = false;
 
             foreach (var item in _items)
                 item.RemoveFromHierarchy();
@@ -86,7 +86,7 @@ namespace WalletConnect.Web3Modal
 
         private void OnScrollValueChanged(float value)
         {
-            if (_isPageLoading || __reachedMaxWalletsCount)
+            if (_isPageLoading || _reachedMaxWalletsCount)
                 return;
 
             if (value >= (View.scroller.highValue - View.scroller.lowValue) * 0.7f)
@@ -116,17 +116,18 @@ namespace WalletConnect.Web3Modal
             return item;
         }
 
-        private void LoadNextPage()
+        private async void LoadNextPage()
         {
             if (_isPageLoading || _reachedMaxWalletsCount)
                 return;
-
-            if (_loadNextPageCoroutine != null) UnityEventsDispatcher.Instance.StopCoroutine(_loadNextPageCoroutine);
-
-            _loadNextPageCoroutine = UnityEventsDispatcher.Instance.StartCoroutine(LoadNextPageCoroutine());
+            
+            if (_loadNextPageTask != null && !_loadNextPageTask.IsCompleted)
+                return;
+            
+            _loadNextPageTask = LoadNextPageCoroutine();
         }
 
-        private IEnumerator LoadNextPageCoroutine()
+        private async Task LoadNextPageCoroutine()
         {
             _isPageLoading = true;
 
@@ -139,27 +140,16 @@ namespace WalletConnect.Web3Modal
             if (_countPerPageRealtime == 0)
             {
                 _isPageLoading = false;
-                yield break;
+                return;
             }
 
-
-            // TODO: the request should be happening in the api controller
-            using var uwr =
-                Web3Modal.ApiController.walletsRequestsFactory.GetWallets(
-                    _nextPageToLoad,
-                    _countPerPageRealtime, _searchQuery);
-
-            yield return uwr.SendWebRequest();
-
-            if (uwr.result != UnityWebRequest.Result.Success) yield break;
-
-            var response = JsonConvert.DeserializeObject<GetWalletsResponse>(uwr.downloadHandler.text);
+            var getWalletsResponse = await Web3Modal.ApiController.GetWallets(_nextPageToLoad, _countPerPageRealtime, _searchQuery);
 
             // _noWalletFound.SetActive(response.Count == 0);
 
             if (_maxWalletsCount == -1)
             {
-                _maxWalletsCount = response.Count;
+                _maxWalletsCount = getWalletsResponse.Count;
 
                 if (_nextPageToLoad * _countPerPageRealtime > _maxWalletsCount)
                 {
@@ -168,12 +158,12 @@ namespace WalletConnect.Web3Modal
                 }
             }
 
-            var walletsCount = response.Data.Length;
+            var walletsCount = getWalletsResponse.Data.Length;
 
             var items = new List<VisualElement>(walletsCount);
             for (var i = 0; i < walletsCount; i++)
             {
-                var wallet = response.Data[i];
+                var wallet = getWalletsResponse.Data[i];
                 var item = MakeItem(wallet);
                 items.Add(item);
                 View.scrollView.Add(item);
