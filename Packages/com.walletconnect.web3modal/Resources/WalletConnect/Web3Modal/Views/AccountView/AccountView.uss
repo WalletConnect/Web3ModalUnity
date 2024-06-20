@@ -1,0 +1,28 @@
+#account-view__profile{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding-top: 40px;
+}
+
+#account-view__profile-address {
+    margin-top: 20px;
+    padding: 0;
+    -unity-text-align: middle-center;
+    color: var(--wui-color-fg-100);
+    font-size: var(--wui-font-size-medium-title);
+}
+
+#account-view__profile-balance-container {
+    flex-direction: row;
+}
+
+#account-view__profile-balance-container > Label {
+    margin-top: 2px;
+    padding: 0;
+    -unity-text-align: middle-center;
+    color: var(--wui-color-fg-200);
+    font-size: var(--wui-font-size-paragraph);
+}

@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using UnityEngine;
 using UnityEngine.Networking;
 using WalletConnect.Web3Modal.Utils;
 
@@ -28,7 +30,7 @@ namespace WalletConnect.Web3Modal.Http
     {
         private int _decoratorIndex;
 
-        public IDictionary<string, string> RequestHeaders { get; } = new Dictionary<string, string>();
+        public IDictionary<string, string> RequestHeaders { get; }
 
         public string Path { get; }
         public string Method { get; }
@@ -37,13 +39,14 @@ namespace WalletConnect.Web3Modal.Http
         public DateTimeOffset Timestamp { get; private set; }
         private HttpClientDecorator[] Decorators { get; }
 
-        public HttpRequestContext(string path, string method, string body, string contentType = null, HttpClientDecorator[] decorators = null)
+        public HttpRequestContext(string path, string method, string body, string contentType = null, IDictionary<string, string> requestHeaders = null, HttpClientDecorator[] decorators = null)
         {
             Path = path;
             Method = method;
             Body = body;
             ContentType = contentType;
             Decorators = decorators;
+            RequestHeaders = requestHeaders ?? new Dictionary<string, string>();
             Timestamp = DateTimeOffset.UtcNow;
         }
 
@@ -110,20 +113,20 @@ namespace WalletConnect.Web3Modal.Http
                 .SendAsync(context, cancellationToken, _next);
         }
 
-        public async Task<T> PostAsync<T>(string path, string value, IDictionary<string, string> parameters = null)
+        public async Task<T> PostAsync<T>(string path, string value, IDictionary<string, string> parameters = null, IDictionary<string, string> headers = null)
         {
             path = path.AppendQueryString(parameters);
 
-            var request = new HttpRequestContext(path, "POST", value, "application/json", _decorators);
+            var request = new HttpRequestContext(path, "POST", value, "application/json", headers, _decorators);
             var response = await InvokeRecursive(request, CancellationToken.None);
             return response.GetResponseAs<T>();
         }
 
-        public async Task<T> GetAsync<T>(string path, IDictionary<string, string> parameters = null)
+        public async Task<T> GetAsync<T>(string path, IDictionary<string, string> parameters = null, IDictionary<string, string> headers = null)
         {
             path = path.AppendQueryString(parameters);
 
-            var request = new HttpRequestContext(path, "GET", null, null, _decorators);
+            var request = new HttpRequestContext(path, "GET", null, null, headers, _decorators);
             var response = await InvokeRecursive(request, CancellationToken.None);
             return response.GetResponseAs<T>();
         }

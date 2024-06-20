@@ -1,15 +1,16 @@
-using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using WalletConnect.UI;
+using WalletConnect.Web3Modal.Utils;
 using WalletConnectUnity.Core;
 using WalletConnectUnity.UI;
 
 namespace WalletConnect.Web3Modal
 {
-    public class AccountPresenter : Presenter<VisualElement>
+    public class AccountPresenter : Presenter<AccountView>
     {
         public override bool HeaderBorder
         {
@@ -23,19 +24,24 @@ namespace WalletConnect.Web3Modal
 
         public AccountPresenter(RouterController router, VisualElement parent) : base(router)
         {
-            View = CreateVisualElement(parent);
-            View.style.display = DisplayStyle.None;
+            View = new AccountView
+            {
+                style =
+                {
+                    display = DisplayStyle.None
+                }
+            };
+            parent.Add(View);
 
-            Web3Modal.NetworkController.ChainChanged += ChainChangedHandler;
+            CreateButtons(View.Buttons);
+
+            Web3Modal.AccountController.PropertyChanged += AccountPropertyChangedHandler;
+            // Web3Modal.NetworkController.ChainChanged += ChainChangedHandler;
+            // Web3Modal.AccountChanged += AccountChangedHandler;
         }
 
-        private VisualElement CreateVisualElement(VisualElement parent)
+        private void CreateButtons(VisualElement view)
         {
-            var view = new VisualElement
-            {
-                name = "account-view"
-            };
-
             // --- Network Button
             _networkButton = new ListItem("Network", OnNetwork, null, ListItem.IconType.Circle)
             {
@@ -52,15 +58,44 @@ namespace WalletConnect.Web3Modal
             var disconnectButton = new ListItem("Disconnect", OnDisconnect, disconnectIcon, ListItem.IconType.Circle, ListItem.IconStyle.Accent);
             _items.Add(disconnectButton);
             view.Add(disconnectButton);
-
-            parent.Add(view);
-            return view;
         }
-
-        private void ChainChangedHandler(object sender, NetworkController.ChainChangedEventArgs e)
+        
+        private void AccountPropertyChangedHandler(object sender, PropertyChangedEventArgs e)
         {
-            UpdateNetworkButton(e.Chain);
+            Debug.Log($"AccountPropertyChangedHandler: {e.PropertyName}");
+            switch (e.PropertyName)
+            {
+                case nameof(AccountController.ProfileName):
+                    UpdateProfileName();
+                    break;
+                case nameof(AccountController.Balance):
+                    View.SetBalance(TrimToThreeDecimalPlaces(Web3Modal.AccountController.Balance));
+                    break;
+                case nameof(AccountController.BalanceSymbol):
+                    View.SetBalanceSymbol(Web3Modal.AccountController.BalanceSymbol);
+                    break;
+            }
         }
+
+        private void UpdateProfileName()
+        {
+            var profileName = Web3Modal.AccountController.ProfileName;
+            profileName = profileName.Length > 15 
+                ? profileName.Truncate(6) 
+                : profileName;
+            
+            View.SetProfileName(profileName);
+        }
+
+        // private void ChainChangedHandler(object sender, NetworkController.ChainChangedEventArgs e)
+        // {
+        //     UpdateNetworkButton(e.Chain);
+        // }
+        
+        // private async void AccountChangedHandler(object sender, Connector.AccountChangedEventArgs e)
+        // {
+        //     await UpdateIdentity(e.Account.Address);
+        // }
 
         protected override void OnVisibleCore()
         {
@@ -68,6 +103,12 @@ namespace WalletConnect.Web3Modal
             UpdateNetworkButton(Web3Modal.NetworkController.ActiveChain);
         }
 
+        private void UpdateNetworkButton(string chainId)
+        {
+            var chain = Web3Modal.NetworkController.Chains[chainId];
+            UpdateNetworkButton(chain);
+        }
+        
         private void UpdateNetworkButton(Chain chain)
         {
             if (chain == null)
@@ -91,6 +132,12 @@ namespace WalletConnect.Web3Modal
             _networkButton.ApplyIconStyle(ListItem.IconStyle.Default);
         }
 
+        private async Task UpdateIdentity(string address)
+        {
+            var identity = await Web3Modal.BlockchainApiController.GetIdentityAsync(address);
+            
+        }
+
         private async void OnDisconnect()
         {
             try
@@ -109,11 +156,21 @@ namespace WalletConnect.Web3Modal
             Router.OpenView(ViewType.NetworkSearch);
         }
 
-
         private void ItemsSetEnabled(bool value)
         {
             foreach (var item in _items)
                 item.SetEnabled(value);
+        }
+        
+        public static string TrimToThreeDecimalPlaces(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
+            
+            var dotIndex = input.IndexOf('.');
+            if (dotIndex == -1 || input.Length <= dotIndex + 4)
+                return input;
+            return input[..(dotIndex + 4)];
         }
     }
 }

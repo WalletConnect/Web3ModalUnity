@@ -52,6 +52,17 @@ namespace WalletConnect.Web3Modal.Utils
 
             return $"{path}?{queryString}";
         }
+
+        public static string Truncate(this string str, int positions = 4)
+        {
+            if (string.IsNullOrWhiteSpace(str) || str.Length <= positions * 2)
+                return str;
+
+            var start = str[..positions];
+            var end = str.Substring(str.Length - positions, positions);
+
+            return $"{start}...{end}";
+        }
     }
 
     public static class ScrollViewExtensions

@@ -10,6 +10,9 @@ namespace WalletConnect.Web3Modal
 {
     public class ApiController
     {
+        private const string BasePath = "https://api.web3modal.com/";
+        private const int TimoutSeconds = 5;
+        
         private readonly string _includedWalletIdsString = Web3Modal.Config.includedWalletIds is { Length: > 0 }
             ? string.Join(",", Web3Modal.Config.includedWalletIds)
             : null;
@@ -20,9 +23,6 @@ namespace WalletConnect.Web3Modal
         private readonly UnityHttpClient _httpClient = new(new Uri(BasePath), TimeSpan.FromSeconds(TimoutSeconds),
             new Web3ModalApiHeaderDecorator()
         );
-
-        private const string BasePath = "https://api.web3modal.com/";
-        private const int TimoutSeconds = 5;
         
         private const string Platform =
 #if UNITY_ANDROID

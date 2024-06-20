@@ -140,6 +140,7 @@ namespace WalletConnect.Web3Modal
 
                 await WalletConnectInstance.SignClient.AddressProvider.SetDefaultChainIdAsync(chain.ChainId);
                 OnChainChanged(new ChainChangedEventArgs(chain.ChainId));
+                OnAccountChanged(new AccountChangedEventArgs(GetCurrentAccount()));
             }
         }
 

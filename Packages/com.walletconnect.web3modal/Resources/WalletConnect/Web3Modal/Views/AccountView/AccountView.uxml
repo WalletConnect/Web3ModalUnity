@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="AccountView.uss"/>
+    <ui:VisualElement name="account-view__profile">
+        <ui:Label name="account-view__profile-address"/>
+        <ui:VisualElement name="account-view__profile-balance-container">
+            <ui:Label name="account-view__profile-balance-value"/>
+            <ui:Label name="account-view__profile-balance-symbol"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="account-view__buttons"/>
+</ui:UXML>

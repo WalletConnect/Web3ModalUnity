@@ -14,8 +14,10 @@ namespace WalletConnect.Web3Modal
         public static Web3Modal Instance { get; protected set; }
 
         public static ModalController ModalController { get; protected set; }
+        public static AccountController AccountController { get; protected set; }
         public static ConnectorController ConnectorController { get; protected set; }
         public static ApiController ApiController { get; protected set; }
+        public static BlockchainApiController BlockchainApiController { get; protected set; }
         public static NotificationController NotificationController { get; protected set; }
         public static NetworkController NetworkController { get; protected set; }
         
