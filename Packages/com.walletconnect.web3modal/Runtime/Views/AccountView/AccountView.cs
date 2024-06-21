@@ -9,12 +9,14 @@ namespace WalletConnect.UI
         public const string Name = "account-view";
         public static readonly string NameProfile = $"{Name}__profile";
         public static readonly string NameProfileAddress = $"{Name}__profile-address";
+        public static readonly string NameProfileAvatarImage = $"{Name}__profile-avatar-image";
         public static readonly string NameProfileBalanceValue = $"{Name}__profile-balance-value";
         public static readonly string NameProfileBalanceSymbol = $"{Name}__profile-balance-symbol";
         public static readonly string NameButtons = $"{Name}__buttons";
         
         public VisualElement Profile { get; }
         public Label ProfileAddress { get; }
+        public Image ProfileAvatarImage { get; }
         public Label ProfileBalanceValue { get; }
         public Label ProfileBalanceSymbol { get; }
         public VisualElement Buttons { get; }
@@ -33,6 +35,7 @@ namespace WalletConnect.UI
             
             Profile = this.Q<VisualElement>(NameProfile);
             ProfileAddress = Profile.Q<Label>(NameProfileAddress);
+            ProfileAvatarImage = Profile.Q<Image>(NameProfileAvatarImage);
             ProfileBalanceValue = Profile.Q<Label>(NameProfileBalanceValue);
             ProfileBalanceSymbol = Profile.Q<Label>(NameProfileBalanceSymbol);
             Buttons = this.Q<VisualElement>(NameButtons);

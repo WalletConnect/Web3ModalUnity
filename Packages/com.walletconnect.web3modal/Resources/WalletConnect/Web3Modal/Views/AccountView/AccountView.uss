@@ -4,11 +4,26 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
-    padding-top: 40px;
+    margin-top: -20px;
+}
+
+#account-view__profile-avatar {
+    width: 75px;
+    height: 75px;
+    border-radius: 100%;
+    border-width: 8px;
+    border-color: var(--wui-gray-glass-005);
+    overflow: hidden;
+    align-items: center;
+}
+
+#account-view__profile-avatar-image {
+    width: 110%;
+    height: 110%;
 }
 
 #account-view__profile-address {
-    margin-top: 20px;
+    margin-top: 10px;
     padding: 0;
     -unity-text-align: middle-center;
     color: var(--wui-color-fg-100);

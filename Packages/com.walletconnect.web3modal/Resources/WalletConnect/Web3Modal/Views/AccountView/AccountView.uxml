@@ -1,6 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="AccountView.uss"/>
     <ui:VisualElement name="account-view__profile">
+        <ui:VisualElement name="account-view__profile-avatar">
+            <ui:Image name="account-view__profile-avatar-image"/>
+        </ui:VisualElement>
         <ui:Label name="account-view__profile-address"/>
         <ui:VisualElement name="account-view__profile-balance-container">
             <ui:Label name="account-view__profile-balance-value"/>

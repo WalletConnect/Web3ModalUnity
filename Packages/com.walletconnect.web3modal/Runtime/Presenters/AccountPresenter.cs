@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Unity.VectorGraphics;
 using UnityEngine;
 using UnityEngine.UIElements;
 using WalletConnect.UI;
@@ -21,6 +22,7 @@ namespace WalletConnect.Web3Modal
 
         private ListItem _networkButton;
         private RemoteSprite<Image> _networkIcon;
+        private RemoteSprite<Image> _avatar;
 
         public AccountPresenter(RouterController router, VisualElement parent) : base(router)
         {
@@ -68,6 +70,9 @@ namespace WalletConnect.Web3Modal
                 case nameof(AccountController.ProfileName):
                     UpdateProfileName();
                     break;
+                case nameof(AccountController.ProfileAvatar):
+                    UpdateProfileAvatar();
+                    break;
                 case nameof(AccountController.Balance):
                     View.SetBalance(TrimToThreeDecimalPlaces(Web3Modal.AccountController.Balance));
                     break;
@@ -87,15 +92,24 @@ namespace WalletConnect.Web3Modal
             View.SetProfileName(profileName);
         }
 
-        // private void ChainChangedHandler(object sender, NetworkController.ChainChangedEventArgs e)
-        // {
-        //     UpdateNetworkButton(e.Chain);
-        // }
-        
-        // private async void AccountChangedHandler(object sender, Connector.AccountChangedEventArgs e)
-        // {
-        //     await UpdateIdentity(e.Account.Address);
-        // }
+        private void UpdateProfileAvatar()
+        {
+            var avatarUrl = Web3Modal.AccountController.ProfileAvatar;
+
+            if (string.IsNullOrEmpty(avatarUrl))
+            {
+                var address = Web3Modal.AccountController.Address;
+                var texture = UiUtils.GenerateAvatarTexture(address);
+                View.ProfileAvatarImage.image = texture;
+            }
+            else
+            {
+                var remoteSprite = RemoteSpriteFactory.GetRemoteSprite<Image>(avatarUrl);
+                _avatar?.UnsubscribeImage(View.ProfileAvatarImage);
+                _avatar = remoteSprite;
+                _avatar.SubscribeImage(View.ProfileAvatarImage);
+            }
+        }
 
         protected override void OnVisibleCore()
         {
@@ -130,12 +144,6 @@ namespace WalletConnect.Web3Modal
             _networkButton.IconImageElement.style.display = DisplayStyle.Flex;
             _networkButton.IconFallbackElement.style.display = DisplayStyle.None;
             _networkButton.ApplyIconStyle(ListItem.IconStyle.Default);
-        }
-
-        private async Task UpdateIdentity(string address)
-        {
-            var identity = await Web3Modal.BlockchainApiController.GetIdentityAsync(address);
-            
         }
 
         private async void OnDisconnect()

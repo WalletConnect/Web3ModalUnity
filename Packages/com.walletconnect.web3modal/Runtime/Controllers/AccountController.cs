@@ -92,7 +92,6 @@ namespace WalletConnect.Web3Modal
         private async void ConnectorAccountConnectedHandler(object sender, Connector.AccountConnectedEventArgs e)
         {
             var account = await e.GetAccount();
-
             if (account.AccountId == AccountId)
                 return;
             
@@ -108,7 +107,6 @@ namespace WalletConnect.Web3Modal
 
         private async void ConnectorAccountChangedHandler(object sender, Connector.AccountChangedEventArgs e)
         {
-            Debug.Log("ConnectorAccountChangedHandler");
             if (e.Account.Address != Address)
             {
                 Address = e.Account.Address;
@@ -127,7 +125,8 @@ namespace WalletConnect.Web3Modal
             ProfileName = string.IsNullOrWhiteSpace(identity.Name)
                 ? Address.Truncate()
                 : identity.Name;
-            ProfileAvatar = identity.Avatar;
+
+            ProfileAvatar = identity.Avatar ?? string.Empty;
         }
 
         public async Task UpdateBalance()

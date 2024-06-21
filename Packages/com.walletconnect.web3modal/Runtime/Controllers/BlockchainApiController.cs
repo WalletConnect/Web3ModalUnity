@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
 using WalletConnect.Web3Modal.Http;
 using WalletConnect.Web3Modal.Model.BlockchainApi;
 using WalletConnectUnity.Core;
@@ -22,14 +21,12 @@ namespace WalletConnect.Web3Modal
 
         public async Task<GetIdentityResponse> GetIdentityAsync(string address)
         {
-            Debug.Log("GetIdentityAsync");
             var projectId = ProjectConfiguration.Load().Id;
             return await _httpClient.GetAsync<GetIdentityResponse>($"identity/{address}?projectId={projectId}");
         }
 
         public async Task<GetBalanceResponse> GetBalanceAsync(string address)
         {
-            Debug.Log("GetBalanceAsync");
             var projectId = ProjectConfiguration.Load().Id;
             return await _httpClient.GetAsync<GetBalanceResponse>($"account/{address}/balance?projectId={projectId}&currency=usd", headers: _getBalanceHeaders);
         }
