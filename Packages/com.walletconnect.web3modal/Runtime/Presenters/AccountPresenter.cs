@@ -96,18 +96,19 @@ namespace WalletConnect.Web3Modal
         {
             var avatarUrl = Web3Modal.AccountController.ProfileAvatar;
 
-            if (string.IsNullOrEmpty(avatarUrl))
-            {
-                var address = Web3Modal.AccountController.Address;
-                var texture = UiUtils.GenerateAvatarTexture(address);
-                View.ProfileAvatarImage.image = texture;
-            }
-            else
+            if (!string.IsNullOrEmpty(avatarUrl) && (avatarUrl.EndsWith(".jpg") || avatarUrl.EndsWith(".png") || avatarUrl.EndsWith(".jpeg")))
             {
                 var remoteSprite = RemoteSpriteFactory.GetRemoteSprite<Image>(avatarUrl);
                 _avatar?.UnsubscribeImage(View.ProfileAvatarImage);
                 _avatar = remoteSprite;
                 _avatar.SubscribeImage(View.ProfileAvatarImage);
+            }
+            else
+            {
+                
+                var address = Web3Modal.AccountController.Address;
+                var texture = UiUtils.GenerateAvatarTexture(address);
+                View.ProfileAvatarImage.image = texture;
             }
         }
 
