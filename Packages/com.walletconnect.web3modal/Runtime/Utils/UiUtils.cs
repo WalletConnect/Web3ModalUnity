@@ -62,7 +62,7 @@ namespace WalletConnect.Web3Modal.Utils
             var geoms = VectorUtils.TessellateScene(scene, tessOptions);
             var sprite = VectorUtils.BuildSprite(geoms, 10.0f, VectorUtils.Alignment.Center, Vector2.zero, 16, true);
 
-            var mat = new Material(Shader.Find("Unlit/VectorGradient"));
+            var mat = Resources.Load<Material>("Fonts & Materials/AvatarGradientMaterial");
             var texture = VectorUtils.RenderSpriteToTexture2D(sprite, 128, 128, mat);
 
             return texture;
