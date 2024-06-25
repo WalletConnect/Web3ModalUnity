@@ -48,6 +48,14 @@
     --unity-image-tint-color: var(--wui-color-fg-200);
 }
 
+.link--variant-icon > #link__icon {
+    margin-right: 0;
+}
+
+.link--variant-icon > #link__text {
+    display: none;
+}
+
 Label {
     padding: 0;
 }

@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 12px;
-    margin-top: -20px;
+    margin-top: -12px;
 }
 
 #account-view__profile-avatar {
@@ -46,8 +46,13 @@
     margin-top: 12px;
 }
 
+#account-view__profile-address-container {
+    display: flex;
+    flex-direction: row;
+}
+
 #account-view__explorer-button-text {
-    margin: 0 6 0 6;
+    margin: 0 6 0 6px;
     padding: 0;
     -unity-text-align: middle-center;
 }
@@ -60,4 +65,8 @@
     width: 8px;
     height: 8px;
     --unity-image: resource('WalletConnect/Web3Modal/Icons/icon_bold_externallink');
+}
+
+#account-view__profile-address-copy-link-container {
+    justify-content: flex-end;
 }

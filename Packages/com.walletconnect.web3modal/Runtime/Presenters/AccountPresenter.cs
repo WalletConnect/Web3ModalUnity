@@ -35,6 +35,7 @@ namespace WalletConnect.Web3Modal
             parent.Add(View);
 
             View.ExplorerButton.Clicked += OnBlockExplorer;
+            View.CopyLink.Clicked += OnCopyAddress;
 
             CreateButtons(View.Buttons);
 
@@ -163,12 +164,19 @@ namespace WalletConnect.Web3Modal
             Router.OpenView(ViewType.NetworkSearch);
         }
 
-        private void OnBlockExplorer()
+        protected virtual void OnBlockExplorer()
         {
             var chain = Web3Modal.NetworkController.ActiveChain;
             var blockExplorerUrl = chain.BlockExplorer.url;
             var address = Web3Modal.AccountController.Address;
             Application.OpenURL($"{blockExplorerUrl}/address/{address}");
+        }
+
+        protected virtual void OnCopyAddress()
+        {
+            var address = Web3Modal.AccountController.Address;
+            GUIUtility.systemCopyBuffer = address;
+            Web3Modal.NotificationController.Notify(NotificationType.Success, "Address copied");
         }
 
         private void ItemsSetEnabled(bool value)

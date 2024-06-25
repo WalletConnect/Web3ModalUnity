@@ -13,6 +13,7 @@ namespace WalletConnect.UI
         public static readonly string ClassNameSizeMedium = $"{Name}--size-medium";
         public static readonly string ClassNameVariantMain = $"{Name}--variant-main";
         public static readonly string ClassNameVariantGray = $"{Name}--variant-gray";
+        public static readonly string ClassNameVariantIcon = $"{Name}--variant-icon";
 
         public string Text
         {
@@ -53,6 +54,9 @@ namespace WalletConnect.UI
                         break;
                     case LinkVariant.Gray:
                         AddToClassList(ClassNameVariantGray);
+                        break;
+                    case LinkVariant.Icon:
+                        AddToClassList(ClassNameVariantIcon);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -161,7 +165,8 @@ namespace WalletConnect.UI
     public enum LinkVariant
     {
         Main,
-        Gray
+        Gray,
+        Icon
     }
 
     public enum LinkSize

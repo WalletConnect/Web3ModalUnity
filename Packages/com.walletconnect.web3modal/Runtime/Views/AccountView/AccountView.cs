@@ -13,6 +13,7 @@ namespace WalletConnect.UI
         public static readonly string NameProfileBalanceValue = $"{Name}__profile-balance-value";
         public static readonly string NameProfileBalanceSymbol = $"{Name}__profile-balance-symbol";
         public static readonly string NameExplorerButton = $"{Name}__explorer-button";
+        public static readonly string NameCopyLink = $"{Name}__profile-address-copy-link";
         public static readonly string NameButtons = $"{Name}__buttons";
         
         public VisualElement Profile { get; }
@@ -21,6 +22,7 @@ namespace WalletConnect.UI
         public Label ProfileBalanceValue { get; }
         public Label ProfileBalanceSymbol { get; }
         public Button ExplorerButton { get; }
+        public IconLink CopyLink { get; }
         public VisualElement Buttons { get; }
         
         
@@ -40,7 +42,8 @@ namespace WalletConnect.UI
             ProfileAvatarImage = Profile.Q<Image>(NameProfileAvatarImage);
             ProfileBalanceValue = Profile.Q<Label>(NameProfileBalanceValue);
             ProfileBalanceSymbol = Profile.Q<Label>(NameProfileBalanceSymbol);
-            ExplorerButton = this.Q<Button>(NameExplorerButton);
+            ExplorerButton = Profile.Q<Button>(NameExplorerButton);
+            CopyLink = Profile.Q<IconLink>(NameCopyLink);
             Buttons = this.Q<VisualElement>(NameButtons);
         }
 
