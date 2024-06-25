@@ -64,12 +64,12 @@ namespace WalletConnect.Web3Modal
         
         private void AccountPropertyChangedHandler(object sender, PropertyChangedEventArgs e)
         {
-            Debug.Log($"AccountPropertyChangedHandler: {e.PropertyName}");
             switch (e.PropertyName)
             {
                 case nameof(AccountController.ProfileName):
                     UpdateProfileName();
                     break;
+                case nameof(AccountController.Address):
                 case nameof(AccountController.ProfileAvatar):
                     UpdateProfileAvatar();
                     break;
@@ -94,21 +94,20 @@ namespace WalletConnect.Web3Modal
 
         private void UpdateProfileAvatar()
         {
-            var avatarUrl = Web3Modal.AccountController.ProfileAvatar;
+            var avatar = Web3Modal.AccountController.ProfileAvatar;
 
-            if (!string.IsNullOrEmpty(avatarUrl) && (avatarUrl.EndsWith(".jpg") || avatarUrl.EndsWith(".png") || avatarUrl.EndsWith(".jpeg")))
+            if (avatar.IsEmpty || avatar.AvatarFormat != "png" && avatar.AvatarFormat != "jpg" && avatar.AvatarFormat != "jpeg")
             {
-                var remoteSprite = RemoteSpriteFactory.GetRemoteSprite<Image>(avatarUrl);
-                _avatar?.UnsubscribeImage(View.ProfileAvatarImage);
-                _avatar = remoteSprite;
-                _avatar.SubscribeImage(View.ProfileAvatarImage);
-            }
-            else
-            {
-                
                 var address = Web3Modal.AccountController.Address;
                 var texture = UiUtils.GenerateAvatarTexture(address);
                 View.ProfileAvatarImage.image = texture;
+            }
+            else
+            {
+                var remoteSprite = RemoteSpriteFactory.GetRemoteSprite<Image>(avatar.AvatarUrl);
+                _avatar?.UnsubscribeImage(View.ProfileAvatarImage);
+                _avatar = remoteSprite;
+                _avatar.SubscribeImage(View.ProfileAvatarImage);
             }
         }
 

@@ -92,6 +92,10 @@ namespace WalletConnect.Web3Modal.Http
         private readonly HttpClientDecorator[] _decorators;
         private readonly Func<HttpRequestContext, CancellationToken, Task<HttpResponseContext>> _next;
 
+        public UnityHttpClient(params HttpClientDecorator[] decorators) : this(null, TimeSpan.FromSeconds(5), decorators)
+        {
+        }
+        
         public UnityHttpClient(Uri basePath, TimeSpan timeout, params HttpClientDecorator[] decorators)
         {
             _basePath = basePath;
@@ -129,6 +133,15 @@ namespace WalletConnect.Web3Modal.Http
             var request = new HttpRequestContext(path, "GET", null, null, headers, _decorators);
             var response = await InvokeRecursive(request, CancellationToken.None);
             return response.GetResponseAs<T>();
+        }
+
+        public async Task<IDictionary<string, string>> HeadAsync(string path, IDictionary<string, string> parameters = null, IDictionary<string, string> headers = null)
+        {
+            path = path.AppendQueryString(parameters);
+
+            var request = new HttpRequestContext(path, "HEAD", null, null, headers, _decorators);
+            var response = await InvokeRecursive(request, CancellationToken.None);
+            return response.ResponseHeaders;
         }
 
         protected override Task<HttpResponseContext> SendAsyncCore(HttpRequestContext requestContext, CancellationToken cancellationToken, Func<HttpRequestContext, CancellationToken, Task<HttpResponseContext>> next)
@@ -175,7 +188,7 @@ namespace WalletConnect.Web3Modal.Http
             {
                 if (uwr.result != UnityWebRequest.Result.Success)
                 {
-                    tcs.SetException(new Exception($"Failed to send web request: {uwr.error}")); // TODO: use custom ex type
+                    tcs.SetException(new Exception($"Failed to send web request: {uwr.error}. Url: {url.ToString()}")); // TODO: use custom ex type
                     uwr.Dispose();
                     return;
                 }

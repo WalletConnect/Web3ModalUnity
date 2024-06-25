@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine;
+using WalletConnect.Web3Modal.Http;
 using WalletConnect.Web3Modal.Utils;
 
 namespace WalletConnect.Web3Modal
@@ -41,8 +42,8 @@ namespace WalletConnect.Web3Modal
             get => _profileName;
             set => SetField(ref _profileName, value);
         }
-        
-        public string ProfileAvatar
+
+        public AccountAvatar ProfileAvatar
         {
             get => _profileAvatar;
             set => SetField(ref _profileAvatar, value);
@@ -63,13 +64,15 @@ namespace WalletConnect.Web3Modal
         private ConnectorController _connectorController;
         private NetworkController _networkController;
         private BlockchainApiController _blockchainApiController;
+
+        private UnityHttpClient _httpClient = new();
         
         private string _address;
         private string _accountId;
         private string _chainId;
         
         private string _profileName;
-        private string _profileAvatar;
+        private AccountAvatar _profileAvatar;
         
         private string _balance;
         private string _balanceSymbol;
@@ -100,23 +103,23 @@ namespace WalletConnect.Web3Modal
             ChainId = account.ChainId;
             
             await Task.WhenAll(
-                UpdateProfile(),
-                UpdateBalance()
+                UpdateBalance(),
+                UpdateProfile()
             );
         }
 
         private async void ConnectorAccountChangedHandler(object sender, Connector.AccountChangedEventArgs e)
         {
-            if (e.Account.Address != Address)
-            {
-                Address = e.Account.Address;
-                await UpdateProfile();
-            }
-      
+            var oldAddress = Address;
+
+            Address = e.Account.Address;
             AccountId = e.Account.AccountId;
             ChainId = e.Account.ChainId;
-            
-            await UpdateBalance();
+
+            await Task.WhenAll(
+                UpdateBalance(),
+                e.Account.Address != oldAddress ? UpdateProfile() : Task.CompletedTask
+            );
         }
 
         public async Task UpdateProfile()
@@ -126,7 +129,24 @@ namespace WalletConnect.Web3Modal
                 ? Address.Truncate()
                 : identity.Name;
 
-            ProfileAvatar = identity.Avatar ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(identity.Avatar))
+            {
+                try
+                {
+                    var headers = await _httpClient.HeadAsync(identity.Avatar);
+                    var avatarFormat = headers["Content-Type"].Split('/').Last();
+                    ProfileAvatar = new AccountAvatar(identity.Avatar, avatarFormat);
+                }
+                catch (Exception e)
+                {
+                    ProfileAvatar = default;
+                }
+            }
+            else
+
+            {
+                ProfileAvatar = default;
+            }
         }
 
         public async Task UpdateBalance()
@@ -158,6 +178,24 @@ namespace WalletConnect.Web3Modal
             field = value;
             OnPropertyChanged(propertyName);
             return true;
+        }
+        
+    }
+
+    public readonly struct AccountAvatar
+    {
+        public readonly string AvatarUrl;
+        public readonly string AvatarFormat;
+
+        public AccountAvatar(string avatarUrl, string avatarFormat)
+        {
+            AvatarUrl = avatarUrl;
+            AvatarFormat = avatarFormat;
+        }
+
+        public bool IsEmpty
+        {
+            get => string.IsNullOrWhiteSpace(AvatarUrl);
         }
     }
 }
