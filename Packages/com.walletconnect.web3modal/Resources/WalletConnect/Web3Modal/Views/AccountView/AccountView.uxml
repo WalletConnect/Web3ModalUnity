@@ -9,6 +9,14 @@
             <ui:Label name="account-view__profile-balance-value"/>
             <ui:Label name="account-view__profile-balance-symbol"/>
         </ui:VisualElement>
+        <ui:VisualElement name="account-explorer-button-container">
+            <WalletConnect.UI.Button name="account-view__explorer-button" size="Small" variant="Shade">
+                <ui:Image name="account-view__explorer-button-icon-left"/>
+                <ui:Label name="account-view__explorer-button-text"
+                          text="&lt;font-weight=600&gt;Block Explorer&lt;/font-weight&gt;" class="text-small"/>
+                <ui:Image name="account-view__explorer-button-icon-right"/>
+            </WalletConnect.UI.Button>
+        </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="account-view__buttons"/>
 </ui:UXML>

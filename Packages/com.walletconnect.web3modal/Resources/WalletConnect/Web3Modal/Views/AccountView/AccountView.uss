@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     margin-top: -20px;
 }
 
@@ -40,4 +40,24 @@
     -unity-text-align: middle-center;
     color: var(--wui-color-fg-200);
     font-size: var(--wui-font-size-paragraph);
+}
+
+#account-explorer-button-container {
+    margin-top: 12px;
+}
+
+#account-view__explorer-button-text {
+    margin: 0 6 0 6;
+    padding: 0;
+    -unity-text-align: middle-center;
+}
+
+#account-view__explorer-button-icon-left {
+    --unity-image: resource('WalletConnect/Web3Modal/Icons/icon_medium_compass');
+}
+
+#account-view__explorer-button-icon-right {
+    width: 8px;
+    height: 8px;
+    --unity-image: resource('WalletConnect/Web3Modal/Icons/icon_bold_externallink');
 }

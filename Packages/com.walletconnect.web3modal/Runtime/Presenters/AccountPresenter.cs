@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
@@ -32,6 +33,8 @@ namespace WalletConnect.Web3Modal
                 }
             };
             parent.Add(View);
+
+            View.ExplorerButton.Clicked += OnBlockExplorer;
 
             CreateButtons(View.Buttons);
 
@@ -158,6 +161,14 @@ namespace WalletConnect.Web3Modal
         private void OnNetwork()
         {
             Router.OpenView(ViewType.NetworkSearch);
+        }
+
+        private void OnBlockExplorer()
+        {
+            var chain = Web3Modal.NetworkController.ActiveChain;
+            var blockExplorerUrl = chain.BlockExplorer.url;
+            var address = Web3Modal.AccountController.Address;
+            Application.OpenURL($"{blockExplorerUrl}/address/{address}");
         }
 
         private void ItemsSetEnabled(bool value)
