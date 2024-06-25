@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading.Tasks;
-using Unity.VectorGraphics;
 using UnityEngine;
 using UnityEngine.UIElements;
 using WalletConnect.UI;
@@ -38,8 +36,7 @@ namespace WalletConnect.Web3Modal
             CreateButtons(View.Buttons);
 
             Web3Modal.AccountController.PropertyChanged += AccountPropertyChangedHandler;
-            // Web3Modal.NetworkController.ChainChanged += ChainChangedHandler;
-            // Web3Modal.AccountChanged += AccountChangedHandler;
+            Web3Modal.NetworkController.ChainChanged += ChainChangedHandler;
         }
 
         private void CreateButtons(VisualElement view)
@@ -82,6 +79,11 @@ namespace WalletConnect.Web3Modal
             }
         }
 
+        private void ChainChangedHandler(object sender, NetworkController.ChainChangedEventArgs e)
+        {
+            UpdateNetworkButton(e.Chain);
+        }
+
         private void UpdateProfileName()
         {
             var profileName = Web3Modal.AccountController.ProfileName;
@@ -115,12 +117,6 @@ namespace WalletConnect.Web3Modal
         {
             base.OnVisibleCore();
             UpdateNetworkButton(Web3Modal.NetworkController.ActiveChain);
-        }
-
-        private void UpdateNetworkButton(string chainId)
-        {
-            var chain = Web3Modal.NetworkController.Chains[chainId];
-            UpdateNetworkButton(chain);
         }
         
         private void UpdateNetworkButton(Chain chain)
