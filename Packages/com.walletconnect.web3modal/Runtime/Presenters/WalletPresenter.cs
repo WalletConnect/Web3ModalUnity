@@ -13,9 +13,7 @@ namespace WalletConnect.Web3Modal
     public class WalletPresenter : Presenter<WalletView>
     {
         private Wallet _wallet;
-
-        private readonly WalletView _walletView;
-
+        
         private readonly Tabbed _tabbed;
         private readonly VisualElement _tabsContainer;
 
@@ -38,29 +36,28 @@ namespace WalletConnect.Web3Modal
         public WalletPresenter(RouterController router, VisualElement parent) : base(router)
         {
             // --- View
-            _walletView = new WalletView
+            View = new WalletView
             {
                 style =
                 {
                     display = DisplayStyle.None
                 }
-            };
-            View = _walletView;
+            };;
             parent.Add(View);
 
             // --- Tabbed View References
-            _tabbed = _walletView.Q<Tabbed>();
-            _tabsContainer = _walletView.Q<VisualElement>(className: Tabbed.ClassNameTabsContainer);
+            _tabbed = View.Q<Tabbed>();
+            _tabsContainer = View.Q<VisualElement>(className: Tabbed.ClassNameTabsContainer);
 
             // --- Tabs References
-            _qrCodeTab = _walletView.Q<Label>("QrCodeTab");
-            _deepLinkTab = _walletView.Q<Label>("DeepLinkTab");
-            _browserTab = _walletView.Q<Label>("WebAppTab");
+            _qrCodeTab = View.Q<Label>("QrCodeTab");
+            _deepLinkTab = View.Q<Label>("DeepLinkTab");
+            _browserTab = View.Q<Label>("WebAppTab");
 
             // --- Tabs Content References and Controllers           
-            _qrCodeContent = _walletView.Q<VisualElement>("QrCodeContent");
-            _deepLinkContent = _walletView.Q<VisualElement>("DeepLinkContent");
-            _webAppContent = _walletView.Q<VisualElement>("WebAppContent");
+            _qrCodeContent = View.Q<VisualElement>("QrCodeContent");
+            _deepLinkContent = View.Q<VisualElement>("DeepLinkContent");
+            _webAppContent = View.Q<VisualElement>("WebAppContent");
 
             _qrCodeView = _qrCodeContent.Q<QrCodeView>();
             _deepLinkView = _deepLinkContent.Q<DeepLinkView>();
@@ -77,7 +74,7 @@ namespace WalletConnect.Web3Modal
             // --- Events
             _tabbed.ContentShown += element => _tabContentToViewController[element].OnVisible();
             _tabbed.ContentHidden += element => _tabContentToViewController[element].OnDisable();
-            _walletView.GetWalletClicked += OnGetWalletClicked;
+            View.GetWalletClicked += OnGetWalletClicked;
 
             // --- Additional Setup
             HideAllTabs();
@@ -110,15 +107,15 @@ namespace WalletConnect.Web3Modal
         private void ConfigureGetWalletContainer(Wallet wallet)
         {
             var visible = !WalletUtils.IsWalletInstalled(wallet);
-            _walletView.GetWalletContainer.style.display = visible
+            View.GetWalletContainer.style.display = visible
                 ? DisplayStyle.Flex
                 : DisplayStyle.None;
 
             if (!visible)
                 return;
 
-            _walletView.GetWalletLabel.text = $"Don't have {wallet.Name}?".FontWeight500();
-            _walletView.LandscapeContinueInLabel.text = $"Continue in {wallet.Name}".FontWeight500();
+            View.GetWalletLabel.text = $"Don't have {wallet.Name}?".FontWeight500();
+            View.LandscapeContinueInLabel.text = $"Continue in {wallet.Name}".FontWeight500();
         }
 
         protected void OnGetWalletClicked()

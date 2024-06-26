@@ -79,6 +79,11 @@ namespace WalletConnect.UI
                 name = "variant"
             };
 
+            private UxmlStringAttributeDescription tIcon = new()
+            {
+                name = "icon"
+            };
+
             public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
             {
                 get { yield break; }
@@ -90,6 +95,10 @@ namespace WalletConnect.UI
 
                 var link = ve as IconLink;
                 link.Variant = tVariant.GetValueFromBag(bag, cc);
+
+                var iconUrl = tIcon.GetValueFromBag(bag, cc);
+                if (!string.IsNullOrEmpty(iconUrl))
+                    link.image.vectorImage = Resources.Load<VectorImage>(iconUrl);
             }
         }
 

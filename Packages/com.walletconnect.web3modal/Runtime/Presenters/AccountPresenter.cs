@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UIElements;
 using WalletConnect.UI;
+using WalletConnect.Web3Modal.Utils;
 using WalletConnectUnity.Core;
 using WalletConnectUnity.UI;
 
 namespace WalletConnect.Web3Modal
 {
-    public class AccountPresenter : Presenter<VisualElement>
+    public class AccountPresenter : Presenter<AccountView>
     {
         public override bool HeaderBorder
         {
@@ -20,22 +21,30 @@ namespace WalletConnect.Web3Modal
 
         private ListItem _networkButton;
         private RemoteSprite<Image> _networkIcon;
+        private RemoteSprite<Image> _avatar;
 
         public AccountPresenter(RouterController router, VisualElement parent) : base(router)
         {
-            View = CreateVisualElement(parent);
-            View.style.display = DisplayStyle.None;
+            View = new AccountView
+            {
+                style =
+                {
+                    display = DisplayStyle.None
+                }
+            };
+            parent.Add(View);
 
+            View.ExplorerButton.Clicked += OnBlockExplorer;
+            View.CopyLink.Clicked += OnCopyAddress;
+
+            CreateButtons(View.Buttons);
+
+            Web3Modal.AccountController.PropertyChanged += AccountPropertyChangedHandler;
             Web3Modal.NetworkController.ChainChanged += ChainChangedHandler;
         }
 
-        private VisualElement CreateVisualElement(VisualElement parent)
+        private void CreateButtons(VisualElement view)
         {
-            var view = new VisualElement
-            {
-                name = "account-view"
-            };
-
             // --- Network Button
             _networkButton = new ListItem("Network", OnNetwork, null, ListItem.IconType.Circle)
             {
@@ -52,9 +61,26 @@ namespace WalletConnect.Web3Modal
             var disconnectButton = new ListItem("Disconnect", OnDisconnect, disconnectIcon, ListItem.IconType.Circle, ListItem.IconStyle.Accent);
             _items.Add(disconnectButton);
             view.Add(disconnectButton);
-
-            parent.Add(view);
-            return view;
+        }
+        
+        private void AccountPropertyChangedHandler(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(AccountController.ProfileName):
+                    UpdateProfileName();
+                    break;
+                case nameof(AccountController.Address):
+                case nameof(AccountController.ProfileAvatar):
+                    UpdateProfileAvatar();
+                    break;
+                case nameof(AccountController.Balance):
+                    View.SetBalance(TrimToThreeDecimalPlaces(Web3Modal.AccountController.Balance));
+                    break;
+                case nameof(AccountController.BalanceSymbol):
+                    View.SetBalanceSymbol(Web3Modal.AccountController.BalanceSymbol);
+                    break;
+            }
         }
 
         private void ChainChangedHandler(object sender, NetworkController.ChainChangedEventArgs e)
@@ -62,12 +88,41 @@ namespace WalletConnect.Web3Modal
             UpdateNetworkButton(e.Chain);
         }
 
+        private void UpdateProfileName()
+        {
+            var profileName = Web3Modal.AccountController.ProfileName;
+            profileName = profileName.Length > 15 
+                ? profileName.Truncate(6) 
+                : profileName;
+            
+            View.SetProfileName(profileName);
+        }
+
+        private void UpdateProfileAvatar()
+        {
+            var avatar = Web3Modal.AccountController.ProfileAvatar;
+
+            if (avatar.IsEmpty || avatar.AvatarFormat != "png" && avatar.AvatarFormat != "jpg" && avatar.AvatarFormat != "jpeg")
+            {
+                var address = Web3Modal.AccountController.Address;
+                var texture = UiUtils.GenerateAvatarTexture(address);
+                View.ProfileAvatarImage.image = texture;
+            }
+            else
+            {
+                var remoteSprite = RemoteSpriteFactory.GetRemoteSprite<Image>(avatar.AvatarUrl);
+                _avatar?.UnsubscribeImage(View.ProfileAvatarImage);
+                _avatar = remoteSprite;
+                _avatar.SubscribeImage(View.ProfileAvatarImage);
+            }
+        }
+
         protected override void OnVisibleCore()
         {
             base.OnVisibleCore();
             UpdateNetworkButton(Web3Modal.NetworkController.ActiveChain);
         }
-
+        
         private void UpdateNetworkButton(Chain chain)
         {
             if (chain == null)
@@ -109,11 +164,36 @@ namespace WalletConnect.Web3Modal
             Router.OpenView(ViewType.NetworkSearch);
         }
 
+        protected virtual void OnBlockExplorer()
+        {
+            var chain = Web3Modal.NetworkController.ActiveChain;
+            var blockExplorerUrl = chain.BlockExplorer.url;
+            var address = Web3Modal.AccountController.Address;
+            Application.OpenURL($"{blockExplorerUrl}/address/{address}");
+        }
+
+        protected virtual void OnCopyAddress()
+        {
+            var address = Web3Modal.AccountController.Address;
+            GUIUtility.systemCopyBuffer = address;
+            Web3Modal.NotificationController.Notify(NotificationType.Success, "Address copied");
+        }
 
         private void ItemsSetEnabled(bool value)
         {
             foreach (var item in _items)
                 item.SetEnabled(value);
+        }
+        
+        public static string TrimToThreeDecimalPlaces(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
+            
+            var dotIndex = input.IndexOf('.');
+            if (dotIndex == -1 || input.Length <= dotIndex + 4)
+                return input;
+            return input[..(dotIndex + 4)];
         }
     }
 }

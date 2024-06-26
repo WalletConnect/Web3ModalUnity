@@ -1,59 +1,56 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
-using WalletConnectUnity.Core;
+using WalletConnect.Web3Modal.Http;
 using WalletConnectUnity.Core.Networking;
 
 namespace WalletConnect.Web3Modal
 {
     public class ApiController
     {
-        public readonly UnityWebRequestWalletsFactory walletsRequestsFactory;
+        private const string BasePath = "https://api.web3modal.com/";
+        private const int TimoutSeconds = 5;
+        
+        private readonly string _includedWalletIdsString = Web3Modal.Config.includedWalletIds is { Length: > 0 }
+            ? string.Join(",", Web3Modal.Config.includedWalletIds)
+            : null;
+        private readonly string _excludedWalletIdsString = Web3Modal.Config.excludedWalletIds is { Length: > 0 }
+            ? string.Join(",", Web3Modal.Config.excludedWalletIds)
+            : null;
 
-        public ApiController()
-        {
-            walletsRequestsFactory = new UnityWebRequestWalletsFactory(
-                includedWalletIds: Web3Modal.Config.includedWalletIds,
-                excludedWalletIds: Web3Modal.Config.excludedWalletIds
-            );
-        }
+        private readonly UnityHttpClient _httpClient = new(new Uri(BasePath), TimeSpan.FromSeconds(TimoutSeconds),
+            new Web3ModalApiHeaderDecorator()
+        );
+        
+        private const string Platform =
+#if UNITY_ANDROID
+            "android";
+#elif UNITY_IOS
+            "ios";
+#else
+            null;
+#endif
 
-        public async ValueTask<GetWalletsResponse> GetWallets(int page, int count, string search = null)
+        public async Task<GetWalletsResponse> GetWallets(int page, int count, string search = null)
         {
             if (page < 1)
-                throw new System.ArgumentOutOfRangeException(nameof(page), "Page must be greater than 0");
+                throw new ArgumentOutOfRangeException(nameof(page), "Page must be greater than 0");
 
             if (count < 1)
-                throw new System.ArgumentOutOfRangeException(nameof(count), "Count must be greater than 0");
+                throw new ArgumentOutOfRangeException(nameof(count), "Count must be greater than 0");
 
-            return await GetWalletsCore(page, count);
-        }
 
-        protected virtual async Task<GetWalletsResponse> GetWalletsCore(int page, int count, string search = null)
-        {
-            using var uwr = walletsRequestsFactory.GetWallets(page, count, search);
-
-            // TODO: use Awaitable in Unity 2023.1+
-            var tcs = new TaskCompletionSource<GetWalletsResponse>();
-            UnityEventsDispatcher.Instance.StartCoroutine(SendWebRequest(uwr, tcs));
-            return await tcs.Task;
-        }
-
-        protected static IEnumerator SendWebRequest<T>(
-            UnityWebRequest uwr,
-            TaskCompletionSource<T> tcs)
-        {
-            yield return uwr.SendWebRequest();
-
-            if (uwr.result != UnityWebRequest.Result.Success)
+            return await _httpClient.GetAsync<GetWalletsResponse>("getWallets", new Dictionary<string, string>()
             {
-                // TODO: use custom ex type
-                tcs.SetException(new System.Exception($"Failed to send web request: {uwr.error}"));
-                yield break;
-            }
-
-            var response = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(uwr.downloadHandler.text);
-            tcs.SetResult(response);
+                {"page", page.ToString()},
+                {"entries", count.ToString()},
+                {"search", search},
+                {"platform", Platform},
+                {"include", _includedWalletIdsString},
+                {"exclude", _excludedWalletIdsString}
+            });
         }
     }
 }

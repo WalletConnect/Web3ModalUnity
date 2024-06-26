@@ -25,8 +25,10 @@ namespace WalletConnect.Web3Modal
         protected override async Task InitializeAsyncCore()
         {
             ModalController = CreateModalController();
+            AccountController = new AccountController();
             ConnectorController = new ConnectorController();
             ApiController = new ApiController();
+            BlockchainApiController = new BlockchainApiController();
             NotificationController = new NotificationController();
             NetworkController = new NetworkControllerCore();
             
@@ -39,7 +41,8 @@ namespace WalletConnect.Web3Modal
             await Task.WhenAll(
                 ConnectorController.InitializeAsync(Config),
                 ModalController.InitializeAsync(),
-                NetworkController.InitializeAsync(ConnectorController, Config.supportedChains)
+                NetworkController.InitializeAsync(ConnectorController, Config.supportedChains),
+                AccountController.InitializeAsync(ConnectorController, NetworkController, BlockchainApiController)
             );
 
             await Evm.InitializeAsync();

@@ -41,7 +41,6 @@ namespace WalletConnect.Web3Modal
         
         private void ChainChangedHandler(object sender, NetworkController.ChainChangedEventArgs e)
         {
-            Debug.Log("Chain changed");
             if (e.Chain != null)
                 UpdateWeb3Instance(e.Chain.ChainId);
         }

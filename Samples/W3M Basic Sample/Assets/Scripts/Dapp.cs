@@ -14,7 +14,6 @@ namespace WalletConnect.Web3Modal.Sample
     {
         private bool _resumed;
 
-        [SerializeField] private TMP_Text _activeAddress;
         [SerializeField] private TMP_Text _activeChainId;
         [SerializeField] private TMP_Text _initializingLabel;
 
@@ -66,7 +65,6 @@ namespace WalletConnect.Web3Modal.Sample
                     _disconnectButton.interactable = true;
 
                     var account = await e.GetAccount();
-                    _activeAddress.text = account.Address;
                     _activeChainId.text = account.ChainId;
                 };
 
@@ -81,14 +79,12 @@ namespace WalletConnect.Web3Modal.Sample
                     _readContractButton.interactable = false;
                     _disconnectButton.interactable = false;
 
-                    _activeAddress.text = string.Empty;
                     _activeChainId.text = string.Empty;
                 };
 
                 Web3Modal.AccountChanged += (_, e) =>
                 {
                     var account = e.Account;
-                    _activeAddress.text = account.Address;
                     _activeChainId.text = account.ChainId;
                 };
 
