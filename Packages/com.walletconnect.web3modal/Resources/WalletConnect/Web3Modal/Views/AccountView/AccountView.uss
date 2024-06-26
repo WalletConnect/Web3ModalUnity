@@ -24,6 +24,7 @@
 
 #account-view__profile-address {
     margin-top: 10px;
+    margin-left: 22px;
     padding: 0;
     -unity-text-align: middle-center;
     color: var(--wui-color-fg-100);
