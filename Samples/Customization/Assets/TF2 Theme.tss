@@ -1,0 +1,41 @@
+@import url("/Packages/com.walletconnect.web3modal/UI Toolkit/WUI Base Theme.tss");
+
+* {
+    -unity-font-definition: resource("TF2 Font/TF2 Build SDF Regular");
+
+    --wui-color-accent-100: #bf5139;
+
+    --wui-accent-glass-090: rgba(156, 81, 65, 0.9);
+    --wui-accent-glass-080: rgba(156, 81, 65, 0.8);
+    --wui-accent-glass-020: rgba(156, 81, 65, 0.2);
+    --wui-accent-glass-015: rgba(156, 81, 65, 0.15);
+    --wui-accent-glass-010: rgba(156, 81, 65, 0.1);
+    --wui-accent-glass-005: rgba(156, 81, 65, 0.05);
+    --wui-accent-glass-002: rgba(156, 81, 65, 0.02);
+
+
+    --wui-border-radius-5xs: 0px;
+    --wui-border-radius-4xs: 0px;
+    --wui-border-radius-3xs: 0px;
+    --wui-border-radius-xxs: 2px;
+    --wui-border-radius-xs: 4px;
+    --wui-border-radius-s: 5px;
+    --wui-border-radius-m: 8px;
+    --wui-border-radius-l: 12px;
+    --wui-border-radius-3xl: 20px;
+    --wui-border-radius-full: 1000px;
+
+
+    --wui-font-size-micro: 10px;
+    --wui-font-size-tiny: 12px;
+    --wui-font-size-small: 14px;
+    --wui-font-size-paragraph: 16px;
+    --wui-font-size-large: 28px;
+    --wui-font-size-medium-title: 22px;
+    --wui-font-size-2xl: 38px;
+    
+
+    --wui-modal-bg-color: rgba(34, 29, 27, 0.7);
+    --wui-modal-border-color: #9a9085;
+    --wui-modal-border-width: 3px;
+}
