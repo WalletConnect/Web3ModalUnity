@@ -9,12 +9,12 @@
     padding: 8px 8px 10px;
     align-items: center;
     border-radius: var(--wui-border-radius-xs);
-    border-width: 1px;
-    border-color: rgba(0, 0, 0, 0);
+    border-width: var(--wui-card-select-border-width);
+    border-color: var(--wui-card-select-border-color);
     transition-property: background-color;
     transition-duration: 100ms;
 
-    background-color: var(--wui-gray-glass-002);
+    background-color: var(--wui-card-select-bg-color);
 }
 
 #card-select:active #card-select__container {
@@ -22,7 +22,7 @@
 }
 
 #card-select__container:hover {
-    background-color: var(--wui-gray-glass-005);
+    background-color: var(--wui-card-select-bg-color-hover);
 }
 
 #card-select__container:disabled {
@@ -82,9 +82,9 @@
 #card-select__icon-image-border {
     width: 55;
     height: 55;
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--wui-card-select-image-border-color);
     border-radius: var(--wui-border-radius-3xs);
-    border-width: 1px;
+    border-width: var(--wui-card-select-image-border-width);
 }
 
 #card-select__status-icon-container {
