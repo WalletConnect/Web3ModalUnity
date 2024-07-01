@@ -51,7 +51,8 @@ namespace WalletConnect.Web3Modal
 
         private void OnSearchInputValueChanged(string value)
         {
-            _searchQuery = value.Trim();
+            var searchQuery = value.Trim();
+            _searchQuery = string.IsNullOrWhiteSpace(searchQuery) ? null : value.Trim();
             _nextPageToLoad = 1;
             _walletsShown = 0;
             _maxWalletsCount = -1;
@@ -120,10 +121,10 @@ namespace WalletConnect.Web3Modal
         {
             if (_isPageLoading || _reachedMaxWalletsCount)
                 return;
-            
+
             if (_loadNextPageTask != null && !_loadNextPageTask.IsCompleted)
                 return;
-            
+
             _loadNextPageTask = LoadNextPageCoroutine();
         }
 

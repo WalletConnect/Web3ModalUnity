@@ -2,11 +2,12 @@
     width: 100%;
     height: 0;
     border-radius: var(--wui-border-radius-l);
-    border-color: var(--wui-gray-glass-005);
-    background-color: var(--wui-color-modal-bg);
+    border-color: var(--wui-modal-border-color);
+    border-width: var(--wui-modal-border-width);
+    background-color: var(--wui-modal-bg-color);
     overflow: hidden;
     transition-property: height;
-    transition-duration: 150ms;
+    transition-duration: 175ms;
 }
 
 .modal--type-mobile {

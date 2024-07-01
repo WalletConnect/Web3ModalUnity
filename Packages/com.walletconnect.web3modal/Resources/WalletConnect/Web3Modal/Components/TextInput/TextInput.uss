@@ -24,7 +24,7 @@ Image {
     padding-left: 12;
     padding-right: 12;
     align-items: center;
-    border-radius: 12;
+    border-radius: var(--wui-border-radius-xxs);
     border-width: 1;
     flex-shrink: 1;
     border-color: var(--wui-gray-glass-005);
