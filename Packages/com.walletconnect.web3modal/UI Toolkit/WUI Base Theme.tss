@@ -85,6 +85,7 @@
     --wui-modal-border-color: var(--wui-gray-glass-005);
     --wui-modal-border-width: 1px;
 
+    --wui-modal-header-border-color: var(--wui-gray-glass-005);
 
     --wui-card-select-bg-color: var(--wui-gray-glass-002);
     --wui-card-select-bg-color-hover: var(--wui-gray-glass-005);
@@ -92,6 +93,9 @@
     --wui-card-select-border-width: 1px;
     --wui-card-select-image-border-color: var(--wui-gray-glass-010);
     --wui-card-select-image-border-width: 1px;
+
+    --wui-qrcode-bg-color: white;
+    --wui-qrcode-fg-color: black;
 }
 
 .text-micro {

@@ -58,7 +58,7 @@ namespace WalletConnect.UI
             // --- ScrollView
             scrollView = this.Q<ScrollView>();
             scrollView.mode = ScrollViewMode.Vertical;
-            scrollView.mouseWheelScrollSize = 50;
+            scrollView.mouseWheelScrollSize = 60;
             scrollView.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             scrollView.verticalScrollerVisibility = ScrollerVisibility.Hidden;
 

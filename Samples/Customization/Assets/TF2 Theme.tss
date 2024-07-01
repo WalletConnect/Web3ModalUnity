@@ -38,4 +38,10 @@
     --wui-modal-bg-color: rgba(34, 29, 27, 0.7);
     --wui-modal-border-color: #9a9085;
     --wui-modal-border-width: 3px;
+
+    --wui-modal-header-border-color: #9a9085;
+    --wui-modal-header-border-bottom-width: 3px;
+    
+    --wui-qrcode-bg-color: #1f1e1f;
+    --wui-qrcode-fg-color: #f4edec;
 }
