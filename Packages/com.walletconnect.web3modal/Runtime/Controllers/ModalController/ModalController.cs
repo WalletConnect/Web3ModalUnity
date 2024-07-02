@@ -6,19 +6,19 @@ namespace WalletConnect.Web3Modal
     public abstract class ModalController
     {
         public bool IsOpen { get; private set; }
-        
+
         public event EventHandler<ModalOpenStateChangedEventArgs> OpenStateChanged;
-        
+
         private bool _isInitialized;
-        
+
         public async Task InitializeAsync()
         {
             if (_isInitialized)
                 throw new Exception("Already initialized"); // TODO: use custom ex type
-            
+
             OpenStateChanged += OpenStateChangedHandler;
             await InitializeAsyncCore();
-            
+
             _isInitialized = true;
         }
 
@@ -26,29 +26,29 @@ namespace WalletConnect.Web3Modal
         {
             OpenCore(view);
         }
-        
+
         public void Close()
         {
             CloseCore();
         }
-        
+
         protected virtual void OnOpenStateChanged(ModalOpenStateChangedEventArgs e)
         {
             OpenStateChanged?.Invoke(this, e);
         }
-        
+
         private void OpenStateChangedHandler(object sender, ModalOpenStateChangedEventArgs e)
         {
             IsOpen = e.IsOpen;
         }
-        
-        public abstract Task InitializeAsyncCore();
-        
-        public abstract void OpenCore(ViewType view);
 
-        public abstract void CloseCore();
+        protected abstract Task InitializeAsyncCore();
+
+        protected abstract void OpenCore(ViewType view);
+
+        protected abstract void CloseCore();
     }
-    
+
     public class ModalOpenStateChangedEventArgs : EventArgs
     {
         public bool IsOpen { get; }
@@ -58,7 +58,7 @@ namespace WalletConnect.Web3Modal
             IsOpen = isOpen;
         }
     }
-    
+
     public enum ViewType
     {
         None,

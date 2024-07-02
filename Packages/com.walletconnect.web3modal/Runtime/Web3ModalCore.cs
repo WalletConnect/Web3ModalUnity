@@ -31,7 +31,7 @@ namespace WalletConnect.Web3Modal
             BlockchainApiController = new BlockchainApiController();
             NotificationController = new NotificationController();
             NetworkController = new NetworkControllerCore();
-            
+
 #if UNITY_WEBGL && !UNITY_EDITOR
             Evm = new WagmiEvmService();
 #else
@@ -55,7 +55,7 @@ namespace WalletConnect.Web3Modal
         {
             if (viewType == ViewType.None)
             {
-                ModalController.OpenCore(IsAccountConnected ? ViewType.Account : ViewType.Connect);
+                ModalController.Open(IsAccountConnected ? ViewType.Account : ViewType.Connect);
             }
             else
             {
@@ -63,13 +63,13 @@ namespace WalletConnect.Web3Modal
                     // TODO: use custom exception type
                     throw new Exception("Trying to open Connect view when account is already connected.");
                 else
-                    ModalController.OpenCore(viewType);
+                    ModalController.Open(viewType);
             }
         }
 
         protected override void CloseModalCore()
         {
-            ModalController.CloseCore();
+            ModalController.Close();
         }
 
         protected override Task DisconnectAsyncCore()

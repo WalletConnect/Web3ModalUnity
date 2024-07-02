@@ -6,14 +6,14 @@ namespace WalletConnect.Web3Modal
 {
     public class RouterController
     {
-        private readonly Dictionary<ViewType, PresenterBase> _viewsControllers = new();
+        private readonly Dictionary<ViewType, PresenterBase> _modalViews = new();
         private readonly Stack<ViewType> _history = new();
 
         public event EventHandler<ViewChangedEventArgs> ViewChanged;
 
         public PresenterBase CurrentPresenter
         {
-            get => _viewsControllers[_history.Peek()];
+            get => _modalViews[_history.Peek()];
         }
 
         private readonly VisualElement _routerVisualElement;
@@ -27,7 +27,7 @@ namespace WalletConnect.Web3Modal
 
             parent.Add(_routerVisualElement);
 
-            BuildViewsDictionary();
+            RegisterDefaultModalViews();
         }
 
         public void OpenView(ViewType viewType)
@@ -41,9 +41,9 @@ namespace WalletConnect.Web3Modal
             }
 
             _history.Push(viewType);
-            _viewsControllers[viewType].OnVisible();
-            _viewsControllers[viewType].ShowViewVisualElement();
-            ViewChanged?.Invoke(this, new ViewChangedEventArgs(currentViewType, viewType, _viewsControllers[viewType]));
+            _modalViews[viewType].OnVisible();
+            _modalViews[viewType].ShowViewVisualElement();
+            ViewChanged?.Invoke(this, new ViewChangedEventArgs(currentViewType, viewType, _modalViews[viewType]));
         }
 
         public void GoBack()
@@ -52,13 +52,13 @@ namespace WalletConnect.Web3Modal
                 return;
 
             var oldViewType = _history.Pop();
-            _viewsControllers[oldViewType].OnDisable();
-            _viewsControllers[oldViewType].HideViewVisualElement();
+            _modalViews[oldViewType].OnDisable();
+            _modalViews[oldViewType].HideViewVisualElement();
 
             if (_history.Count > 0)
             {
                 var nextViewType = _history.Peek();
-                var nextView = _viewsControllers[nextViewType];
+                var nextView = _modalViews[nextViewType];
                 nextView.OnVisible();
                 nextView.ShowViewVisualElement();
                 ViewChanged?.Invoke(this, new ViewChangedEventArgs(oldViewType, nextViewType, nextView));
@@ -74,20 +74,28 @@ namespace WalletConnect.Web3Modal
             while (_history.Count > 0)
             {
                 var viewType = _history.Pop();
-                _viewsControllers[viewType].OnDisable();
-                _viewsControllers[viewType].HideViewVisualElement();
+                _modalViews[viewType].OnDisable();
+                _modalViews[viewType].HideViewVisualElement();
             }
         }
 
-        private void BuildViewsDictionary()
+        public void RegisterModalView(ViewType viewType, PresenterBase modalView)
         {
-            _viewsControllers.Add(ViewType.Connect, new ConnectPresenter(this, _routerVisualElement));
-            _viewsControllers.Add(ViewType.QrCode, new QrCodePresenter(this, _routerVisualElement));
-            _viewsControllers.Add(ViewType.Wallet, new WalletPresenter(this, _routerVisualElement));
-            _viewsControllers.Add(ViewType.WalletSearch, new WalletSearchPresenter(this, _routerVisualElement));
-            _viewsControllers.Add(ViewType.Account, new AccountPresenter(this, _routerVisualElement));
-            _viewsControllers.Add(ViewType.NetworkSearch, new NetworkSearchPresenter(this, _routerVisualElement));
-            _viewsControllers.Add(ViewType.NetworkLoading, new NetworkLoadingPresenter(this, _routerVisualElement));
+            if (_modalViews.TryGetValue(viewType, out var oldModalView))
+                oldModalView.Dispose();
+
+            _modalViews[viewType] = modalView;
+        }
+
+        private void RegisterDefaultModalViews()
+        {
+            RegisterModalView(ViewType.Connect, new ConnectPresenter(this, _routerVisualElement));
+            RegisterModalView(ViewType.QrCode, new QrCodePresenter(this, _routerVisualElement));
+            RegisterModalView(ViewType.Wallet, new WalletPresenter(this, _routerVisualElement));
+            RegisterModalView(ViewType.WalletSearch, new WalletSearchPresenter(this, _routerVisualElement));
+            RegisterModalView(ViewType.Account, new AccountPresenter(this, _routerVisualElement));
+            RegisterModalView(ViewType.NetworkSearch, new NetworkSearchPresenter(this, _routerVisualElement));
+            RegisterModalView(ViewType.NetworkLoading, new NetworkLoadingPresenter(this, _routerVisualElement));
         }
     }
 

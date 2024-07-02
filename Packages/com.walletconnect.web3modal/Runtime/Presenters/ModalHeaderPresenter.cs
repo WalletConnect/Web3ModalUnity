@@ -8,29 +8,29 @@ using WalletConnectUnity.Core;
 
 namespace WalletConnect.Web3Modal
 {
-    public class ModalHeaderPresenter
+    public class ModalHeaderPresenter : Presenter<ModalHeader>
     {
-        public readonly RouterController routerController;
-        public readonly ModalHeader modalHeader;
-
-        public readonly Label title;
-
+        private readonly RouterController _routerController;
+        private readonly ModalHeader _modalHeader;
+        private readonly Label _title;
         private readonly Dictionary<ViewType, VisualElement> _leftSlotItems = new();
 
         private Coroutine _snackbarCoroutine;
 
-        public ModalHeaderPresenter(RouterController routerController, ModalHeader modalHeader)
+        public ModalHeaderPresenter(RouterController routerController, ModalHeader modalHeader) : base(routerController)
         {
-            this.routerController = routerController;
-            this.modalHeader = modalHeader;
+            View = modalHeader;
 
-            this.routerController.ViewChanged += ViewChangedHandler;
+            _routerController = routerController;
+            _modalHeader = modalHeader;
+
+            _routerController.ViewChanged += ViewChangedHandler;
             Web3Modal.NotificationController.Notification += NotificationHandler;
             Web3Modal.ModalController.OpenStateChanged += ModalOpenStateChangedHandler;
 
-            title = new Label();
-            title.AddToClassList("text-paragraph");
-            this.modalHeader.body.Add(title);
+            _title = new Label();
+            _title.AddToClassList("text-paragraph");
+            _modalHeader.body.Add(_title);
 
             // Create Back button and add it to the left slot
             var goBackIconLink = new IconLink(
@@ -62,7 +62,7 @@ namespace WalletConnect.Web3Modal
         {
             if (!e.IsOpen)
             {
-                modalHeader.leftSlot.style.visibility = Visibility.Hidden;
+                _modalHeader.leftSlot.style.visibility = Visibility.Hidden;
             }
         }
 
@@ -90,17 +90,17 @@ namespace WalletConnect.Web3Modal
                 _ => Resources.Load<VectorImage>("WalletConnect/Web3Modal/Icons/icon_bold_warningcircle")
             };
 
-            modalHeader.ShowSnackbar(snackbarIconColor, icon, notification.message);
+            _modalHeader.ShowSnackbar(snackbarIconColor, icon, notification.message);
 
             yield return new WaitForSeconds(2);
-            modalHeader.HideSnackbar();
+            _modalHeader.HideSnackbar();
 
             _snackbarCoroutine = null;
         }
 
         private void ViewChangedHandler(object _, ViewChangedEventArgs args)
         {
-            title.text = args.newViewType == ViewType.None
+            _title.text = args.newViewType == ViewType.None
                 ? string.Empty
                 : args.newPresenter.Title.FontWeight600();
 
@@ -110,15 +110,15 @@ namespace WalletConnect.Web3Modal
             if (_leftSlotItems.TryGetValue(args.newViewType, out var newItem))
             {
                 newItem.style.display = DisplayStyle.Flex;
-                modalHeader.leftSlot.style.visibility = Visibility.Visible;
+                _modalHeader.leftSlot.style.visibility = Visibility.Visible;
             }
             else
             {
-                modalHeader.leftSlot.style.visibility = Visibility.Hidden;
+                _modalHeader.leftSlot.style.visibility = Visibility.Hidden;
             }
 
             if (args.newPresenter != null)
-                modalHeader.style.borderBottomWidth = args.newPresenter.HeaderBorder
+                _modalHeader.style.borderBottomWidth = args.newPresenter.HeaderBorder
                     ? 1
                     : 0;
         }

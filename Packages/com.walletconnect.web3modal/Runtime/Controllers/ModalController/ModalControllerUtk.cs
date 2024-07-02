@@ -13,25 +13,24 @@ namespace WalletConnect.Web3Modal
     /// </summary>
     public class ModalControllerUtk : ModalController
     {
-        protected UIDocument UIDocument { get; private set; }
+        public UIDocument UIDocument { get; private set; }
 
-        protected Modal Modal { get; private set; }
+        public Modal Modal { get; private set; }
 
-        protected VisualElement Web3Modal { get; private set; }
+        public VisualElement Web3Modal { get; private set; }
 
-        protected RouterController RouterController { get; private set; }
+        public RouterController RouterController { get; private set; }
 
         protected ModalHeaderPresenter ModalHeaderPresenter { get; private set; }
-        
+
         private readonly ModalOpenStateChangedEventArgs _openStateChangedEventArgsTrueOnOpen = new(true);
         private readonly ModalOpenStateChangedEventArgs _openStateChangedEventArgsTrueOnClose = new(false);
-        
-        public override Task InitializeAsyncCore()
+
+        protected override Task InitializeAsyncCore()
         {
-            Debug.Log("Initializing ModalControllerUtk...");
             var web3Modal = WalletConnect.Web3Modal.Web3Modal.Instance;
             UIDocument = web3Modal.GetComponentInChildren<UIDocument>(true);
-            
+
             Web3Modal = UIDocument.rootVisualElement.Children().First();
 
             Modal = Web3Modal.Q<Modal>();
@@ -42,10 +41,8 @@ namespace WalletConnect.Web3Modal
             ModalHeaderPresenter = new ModalHeaderPresenter(RouterController, Modal.header);
 
             WCLoadingAnimator.Instance.PauseAnimation();
-            
-            UnityEventsDispatcher.Instance.Tick += TickHandler;
 
-            Debug.Log("ModalControllerUtk initialized.");
+            UnityEventsDispatcher.Instance.Tick += TickHandler;
 
             return Task.CompletedTask;
         }
@@ -56,7 +53,7 @@ namespace WalletConnect.Web3Modal
                 CloseCore();
         }
 
-        public override void OpenCore(ViewType view)
+        protected override void OpenCore(ViewType view)
         {
             Web3Modal.visible = true;
             RouterController.OpenView(view);
@@ -64,7 +61,7 @@ namespace WalletConnect.Web3Modal
             OnOpenStateChanged(_openStateChangedEventArgsTrueOnOpen);
         }
 
-        public override void CloseCore()
+        protected override void CloseCore()
         {
             Web3Modal.visible = false;
             WCLoadingAnimator.Instance.PauseAnimation();
