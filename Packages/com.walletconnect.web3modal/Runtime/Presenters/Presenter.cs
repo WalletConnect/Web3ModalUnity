@@ -73,7 +73,7 @@ namespace WalletConnect.Web3Modal
         protected abstract void OnDisableCore();
     }
 
-    public abstract class Presenter<TView> : PresenterBase where TView : VisualElement, new()
+    public class Presenter<TView> : PresenterBase where TView : VisualElement, new()
     {
         protected TView View { get; set; }
 

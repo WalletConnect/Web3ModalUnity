@@ -39,7 +39,7 @@ namespace WalletConnect.Web3Modal
 
         private void InitializeButtons(VisualElement buttonsListView)
         {
-            BuildButtons(buttonsListView);
+            CreateButtons(buttonsListView);
         }
 
         private void AccountPropertyChangedHandler(object sender, PropertyChangedEventArgs e)
@@ -68,13 +68,13 @@ namespace WalletConnect.Web3Modal
         }
 
         // Creates the buttons at the bottom of the account view.
-        protected virtual void BuildButtons(VisualElement buttonsListView)
+        protected virtual void CreateButtons(VisualElement buttonsListView)
         {
-            BuildNetworkButton(buttonsListView);
-            BuildDisconnectButton(buttonsListView);
+            CreateNetworkButton(buttonsListView);
+            CreateDisconnectButton(buttonsListView);
         }
 
-        protected virtual void BuildNetworkButton(VisualElement buttonsListView)
+        protected virtual void CreateNetworkButton(VisualElement buttonsListView)
         {
             _networkButton = new ListItem("Network", OnNetworkButtonClick, null, ListItem.IconType.Circle)
             {
@@ -87,7 +87,7 @@ namespace WalletConnect.Web3Modal
             buttonsListView.Add(_networkButton);
         }
 
-        protected virtual void BuildDisconnectButton(VisualElement buttonsListView)
+        protected virtual void CreateDisconnectButton(VisualElement buttonsListView)
         {
             var disconnectIcon = Resources.Load<VectorImage>("WalletConnect/Web3Modal/Icons/icon_medium_disconnect");
             var disconnectButton = new ListItem("Disconnect", OnDisconnectButtonClick, disconnectIcon, ListItem.IconType.Circle, ListItem.IconStyle.Accent);

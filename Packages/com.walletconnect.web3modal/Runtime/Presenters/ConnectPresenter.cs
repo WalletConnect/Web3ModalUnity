@@ -13,6 +13,8 @@ namespace WalletConnect.Web3Modal
 {
     public class ConnectPresenter : Presenter<VisualElement>
     {
+        private bool _disposed;
+        
         public override string Title
         {
             get => "Connect wallet";
@@ -22,10 +24,17 @@ namespace WalletConnect.Web3Modal
         {
             Build();
 
-            // Rebuild UI after wallet disconnects
-            Web3Modal.Initialized += (_, _) =>
-                Web3Modal.AccountDisconnected += async (_, _) =>
-                    await RebuildAsync();
+            Web3Modal.Initialized += Web3ModalInitializedHandler;
+        }
+
+        private void Web3ModalInitializedHandler(object sender, EventArgs e)
+        {
+            Web3Modal.AccountDisconnected += AccountDisconnectedHandler;
+        }
+
+        private async void AccountDisconnectedHandler(object sender, EventArgs e)
+        {
+            await RebuildAsync();
         }
 
         private async void Build()
@@ -50,11 +59,11 @@ namespace WalletConnect.Web3Modal
 
         protected virtual async Task BuildAsync()
         {
-            ShowWalletConnectButton();
+            CreateWalletConnectButton();
 
             var recentWalletExists = WalletUtils.TryGetRecentWallet(out var recentWallet);
             if (recentWalletExists)
-                ShowRecentWalletButton(recentWallet);
+                CreateRecentWalletButton(recentWallet);
 
             int count = DeviceUtils.GetDeviceType() is DeviceType.Phone
                 ? Web3Modal.Config.connectViewWalletsCountMobile
@@ -71,41 +80,25 @@ namespace WalletConnect.Web3Modal
                 if (recentWalletExists && recentWallet.Id == wallet.Id)
                     continue;
 
-                var remoteSprite =
-                    RemoteSpriteFactory.GetRemoteSprite<Image>(
-                        $"https://api.web3modal.com/getWalletImage/{wallet.ImageId}");
-
-                var walletClosure = wallet;
-                var isWalletInstalled = WalletUtils.IsWalletInstalled(wallet);
-                var walletStatusIcon = isWalletInstalled ? StatusIconType.Success : StatusIconType.None;
-                View.Add(new ListItem(wallet.Name, remoteSprite, () => OnWalletListItemClick(walletClosure), statusIconType: walletStatusIcon));
+                var walletListItem = BuildWalletListItem(wallet);
+                View.Add(walletListItem);
             }
 
-            var allWalletsListItem = new ListItem("All wallets", (Sprite)null, () => Router.OpenView(ViewType.WalletSearch));
-            var roundedCount = MathF.Round((float)response.Count / 10) * 10;
-            allWalletsListItem.RightSlot.Add(new Tag($"{roundedCount}+", Tag.TagType.Info));
-            View.Add(allWalletsListItem);
+            var responseCount = response.Count;
+            CreateAllWalletsListItem(responseCount);
         }
 
-        protected virtual void ShowWalletConnectButton()
+        protected virtual void CreateWalletConnectButton()
         {
             var deviceType = DeviceUtils.GetDeviceType();
 
             if (deviceType is DeviceType.Phone)
                 return;
-            var wcLogo =
-                RemoteSpriteFactory.GetRemoteSprite<Image>(
-                    $"https://api.web3modal.com/public/getAssetImage/ef1a1fcf-7fe8-4d69-bd6d-fda1345b4400");
-            var listItem = new ListItem("WalletConnect", wcLogo, () =>
-            {
-                WalletUtils.RemoveLastViewedWallet();
-                Router.OpenView(ViewType.QrCode);
-            });
-            listItem.RightSlot.Add(new Tag("QR CODE", Tag.TagType.Accent));
+            var listItem = BuildWalletConnectListItem();
             View.Add(listItem);
         }
 
-        protected virtual void ShowRecentWalletButton(Wallet recentWallet)
+        protected virtual void CreateRecentWalletButton(Wallet recentWallet)
         {
             var remoteSprite =
                 RemoteSpriteFactory.GetRemoteSprite<Image>(
@@ -115,10 +108,66 @@ namespace WalletConnect.Web3Modal
             View.Add(listItem);
         }
 
+        protected virtual void CreateAllWalletsListItem(int responseCount)
+        {
+            var allWalletsListItem = BuildAllWalletsListItem(responseCount);
+            View.Add(allWalletsListItem);
+        }
+
+        protected virtual ListItem BuildWalletListItem(Wallet wallet)
+        {
+            var remoteSprite =
+                RemoteSpriteFactory.GetRemoteSprite<Image>(
+                    $"https://api.web3modal.com/getWalletImage/{wallet.ImageId}");
+
+            var walletClosure = wallet;
+            var isWalletInstalled = WalletUtils.IsWalletInstalled(wallet);
+            var walletStatusIcon = isWalletInstalled ? StatusIconType.Success : StatusIconType.None;
+            var walletListItem = new ListItem(wallet.Name, remoteSprite, () => OnWalletListItemClick(walletClosure), statusIconType: walletStatusIcon);
+            return walletListItem;
+        }
+
+        protected virtual ListItem BuildWalletConnectListItem()
+        {
+            var wcLogo =
+                RemoteSpriteFactory.GetRemoteSprite<Image>(
+                    $"https://api.web3modal.com/public/getAssetImage/ef1a1fcf-7fe8-4d69-bd6d-fda1345b4400");
+            var listItem = new ListItem("WalletConnect", wcLogo, () =>
+            {
+                WalletUtils.RemoveLastViewedWallet();
+                Router.OpenView(ViewType.QrCode);
+            });
+            listItem.RightSlot.Add(new Tag("QR CODE", Tag.TagType.Accent));
+            return listItem;
+        }
+
+        protected virtual ListItem BuildAllWalletsListItem(int responseCount)
+        {
+            var allWalletsListItem = new ListItem("All wallets", (Sprite)null, () => Router.OpenView(ViewType.WalletSearch));
+            var roundedCount = MathF.Round((float)responseCount / 10) * 10;
+            allWalletsListItem.RightSlot.Add(new Tag($"{roundedCount}+", Tag.TagType.Info));
+            return allWalletsListItem;
+        }
+
         protected virtual void OnWalletListItemClick(Wallet wallet)
         {
             WalletUtils.SetLastViewedWallet(wallet);
             Router.OpenView(ViewType.Wallet);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Web3Modal.Initialized -= Web3ModalInitializedHandler;
+                Web3Modal.AccountDisconnected -= AccountDisconnectedHandler;
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
         }
     }
 }
