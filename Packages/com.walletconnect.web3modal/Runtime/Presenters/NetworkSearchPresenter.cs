@@ -21,12 +21,8 @@ namespace WalletConnect.Web3Modal
         private readonly Dictionary<string, CardSelect> _netowrkItems = new();
         private string _highlightedChainId;
 
-        public NetworkSearchPresenter(RouterController router, VisualElement parent) : base(router)
+        public NetworkSearchPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
-            View = new NetworkSearchView();
-            parent.Add(View);
-
-            View.style.display = DisplayStyle.None;
             View.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
 
             Web3Modal.Initialized += (_, _) =>

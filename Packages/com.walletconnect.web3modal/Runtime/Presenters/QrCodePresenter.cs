@@ -15,27 +15,14 @@ namespace WalletConnect.Web3Modal
 
         private WalletConnectConnectionProposal _connectionProposal;
 
-        public QrCodePresenter(RouterController router, VisualElement parent, bool hide = true) : base(router)
+        public QrCodePresenter(RouterController router, VisualElement parent, bool hideView = true) : base(router, parent, hideView)
         {
-            View = CreateVisualElement(parent);
-            if (hide)
-                View.style.display = DisplayStyle.None;
+            View.copyLink.Clicked += OnCopyLinkClicked;
         }
 
-        public QrCodePresenter(RouterController router, QrCodeView qrCodeView) : base(router)
+        protected override QrCodeView CreateViewInstance()
         {
-            View = qrCodeView;
-
-            qrCodeView.copyLink.Clicked += OnCopyLinkClicked;
-        }
-
-        private QrCodeView CreateVisualElement(VisualElement parent)
-        {
-            var view = new QrCodeView();
-
-            view.copyLink.Clicked += OnCopyLinkClicked;
-
-            parent.Add(view);
+            var view = Parent.Q<QrCodeView>() ?? new QrCodeView();
             return view;
         }
 

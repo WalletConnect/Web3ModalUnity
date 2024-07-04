@@ -22,9 +22,8 @@ namespace WalletConnect.Web3Modal
 
         private const string ContinueInTextTemplate = "Continue in {0}";
 
-        public DeepLinkPresenter(RouterController router, DeepLinkView deepLinkView) : base(router)
+        public DeepLinkPresenter(RouterController router, VisualElement parent, bool hideView = true) : base(router, parent, hideView)
         {
-            View = deepLinkView;
             View.CopyLinkClicked += OnCopyLinkClicked;
             View.TryAgainLinkClicked += OnTryAgainLinkClicked;
 
@@ -34,6 +33,11 @@ namespace WalletConnect.Web3Modal
 #if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
             UnityEventsDispatcher.Instance.ApplicationFocus += OnApplicationHandler;
 #endif
+        }
+
+        protected override DeepLinkView CreateViewInstance()
+        {
+            return Parent.Q<DeepLinkView>();
         }
 
         protected override void OnVisibleCore()

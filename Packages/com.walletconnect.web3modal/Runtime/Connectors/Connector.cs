@@ -59,13 +59,11 @@ namespace WalletConnect.Web3Modal
 
         public ConnectionProposal Connect()
         {
-            Debug.Log("Connector.Connect");
             if (!IsInitialized)
                 throw new Exception("Connector not initialized"); // TODO: use custom ex type
 
             var connection = ConnectCore();
 
-            Debug.Log("Got connection");
             connection.Connected += ConnectionConnectedHandler;
 
             _connectionProposals.Add(connection);
@@ -136,7 +134,7 @@ namespace WalletConnect.Web3Modal
             ChainChanged?.Invoke(this, e);
         }
 
-        protected abstract Task InitializeAsyncCore( Web3ModalConfig config);
+        protected abstract Task InitializeAsyncCore(Web3ModalConfig config);
 
         protected abstract ConnectionProposal ConnectCore();
 

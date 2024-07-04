@@ -38,7 +38,7 @@ namespace WalletConnect.Web3Modal
             RouterController = new RouterController(Modal.body);
             RouterController.ViewChanged += ViewChangedHandler;
 
-            ModalHeaderPresenter = new ModalHeaderPresenter(RouterController, Modal.header);
+            ModalHeaderPresenter = new ModalHeaderPresenter(RouterController, Modal);
 
             WCLoadingAnimator.Instance.PauseAnimation();
 

@@ -10,27 +10,23 @@ namespace WalletConnect.Web3Modal
 {
     public class ModalHeaderPresenter : Presenter<ModalHeader>
     {
-        private readonly RouterController _routerController;
-        private readonly ModalHeader _modalHeader;
         private readonly Label _title;
         private readonly Dictionary<ViewType, VisualElement> _leftSlotItems = new();
 
         private Coroutine _snackbarCoroutine;
 
-        public ModalHeaderPresenter(RouterController routerController, ModalHeader modalHeader) : base(routerController)
+        public ModalHeaderPresenter(RouterController routerController, Modal parent) : base(routerController, parent)
         {
-            View = modalHeader;
+            View.style.display = DisplayStyle.Flex;
 
-            _routerController = routerController;
-            _modalHeader = modalHeader;
-
-            _routerController.ViewChanged += ViewChangedHandler;
+            Router.ViewChanged += ViewChangedHandler;
             Web3Modal.NotificationController.Notification += NotificationHandler;
             Web3Modal.ModalController.OpenStateChanged += ModalOpenStateChangedHandler;
 
+            // Create title label
             _title = new Label();
             _title.AddToClassList("text-paragraph");
-            _modalHeader.body.Add(_title);
+            View.body.Add(_title);
 
             // Create Back button and add it to the left slot
             var goBackIconLink = new IconLink(
@@ -42,7 +38,7 @@ namespace WalletConnect.Web3Modal
                     display = DisplayStyle.None
                 }
             };
-            modalHeader.leftSlot.Add(goBackIconLink);
+            View.leftSlot.Add(goBackIconLink);
 
             // Assign buttons to the corresponding view types
             _leftSlotItems.Add(ViewType.QrCode, goBackIconLink);
@@ -52,17 +48,22 @@ namespace WalletConnect.Web3Modal
             _leftSlotItems.Add(ViewType.NetworkLoading, goBackIconLink);
 
             // Close button
-            modalHeader.rightSlot.Add(new IconLink(
+            View.rightSlot.Add(new IconLink(
                 Resources.Load<VectorImage>("WalletConnect/Web3Modal/Icons/icon_bold_xmark"),
                 Web3Modal.CloseModal
             ));
+        }
+
+        protected override ModalHeader CreateViewInstance()
+        {
+            return (Parent as Modal)?.header ?? Parent.Q<ModalHeader>();
         }
 
         private void ModalOpenStateChangedHandler(object _, ModalOpenStateChangedEventArgs e)
         {
             if (!e.IsOpen)
             {
-                _modalHeader.leftSlot.style.visibility = Visibility.Hidden;
+                View.leftSlot.style.visibility = Visibility.Hidden;
             }
         }
 
@@ -90,10 +91,10 @@ namespace WalletConnect.Web3Modal
                 _ => Resources.Load<VectorImage>("WalletConnect/Web3Modal/Icons/icon_bold_warningcircle")
             };
 
-            _modalHeader.ShowSnackbar(snackbarIconColor, icon, notification.message);
+            View.ShowSnackbar(snackbarIconColor, icon, notification.message);
 
             yield return new WaitForSeconds(2);
-            _modalHeader.HideSnackbar();
+            View.HideSnackbar();
 
             _snackbarCoroutine = null;
         }
@@ -110,15 +111,15 @@ namespace WalletConnect.Web3Modal
             if (_leftSlotItems.TryGetValue(args.newViewType, out var newItem))
             {
                 newItem.style.display = DisplayStyle.Flex;
-                _modalHeader.leftSlot.style.visibility = Visibility.Visible;
+                View.leftSlot.style.visibility = Visibility.Visible;
             }
             else
             {
-                _modalHeader.leftSlot.style.visibility = Visibility.Hidden;
+                View.leftSlot.style.visibility = Visibility.Hidden;
             }
 
             if (args.newPresenter != null)
-                _modalHeader.style.borderBottomWidth = args.newPresenter.HeaderBorder
+                View.style.borderBottomWidth = args.newPresenter.HeaderBorder
                     ? 1
                     : 0;
         }

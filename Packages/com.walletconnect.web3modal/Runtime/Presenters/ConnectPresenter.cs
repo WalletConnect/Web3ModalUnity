@@ -18,28 +18,14 @@ namespace WalletConnect.Web3Modal
             get => "Connect wallet";
         }
 
-        public ConnectPresenter(RouterController router, VisualElement parent) : base(router)
+        public ConnectPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
-            View = CreateVisualElement(parent);
-            View.style.display = DisplayStyle.None;
-
             Build();
 
             // Rebuild UI after wallet disconnects
             Web3Modal.Initialized += (_, _) =>
                 Web3Modal.AccountDisconnected += async (_, _) =>
                     await RebuildAsync();
-        }
-
-        private static VisualElement CreateVisualElement(VisualElement parent)
-        {
-            var view = new VisualElement
-            {
-                name = "connect-view"
-            };
-
-            parent.Add(view);
-            return view;
         }
 
         private async void Build()

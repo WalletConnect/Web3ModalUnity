@@ -7,13 +7,8 @@ namespace WalletConnect.Web3Modal
 {
     public class NetworkLoadingPresenter : Presenter<NetworkLoadingView>
     {
-        public NetworkLoadingPresenter(RouterController router, VisualElement parent) : base(router)
+        public NetworkLoadingPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
-            View = new NetworkLoadingView();
-            parent.Add(View);
-
-            View.style.display = DisplayStyle.None;
-
             Web3Modal.NetworkController.ChainChanged += ChainChangedHandler;
         }
 

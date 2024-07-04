@@ -42,12 +42,11 @@ namespace WalletConnect.UI
                 {
                     var newHeight = Mathf.RoundToInt(evt.newRect.height + header.resolvedStyle.height
 #if UNITY_ANDROID || UNITY_IOS
-                                                                        // Bottom safe area
-                                                                        + RuntimePanelUtils.ScreenToPanel(panel,
-                                                                            new Vector2(Screen.width - Screen.safeArea.xMax, Screen.safeArea.yMin)
-                                                                        ).y
+                        // Bottom safe area
+                        + RuntimePanelUtils.ScreenToPanel(panel,
+                            new Vector2(Screen.width - Screen.safeArea.xMax, Screen.safeArea.yMin)
+                        ).y
 #endif
-
                     );
 
                     if (modal.style.height == newHeight)

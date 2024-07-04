@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace WalletConnect.Web3Modal
@@ -72,18 +73,34 @@ namespace WalletConnect.Web3Modal
         protected abstract void OnDisableCore();
     }
 
-    public class Presenter<TView> : PresenterBase where TView : VisualElement
+    public abstract class Presenter<TView> : PresenterBase where TView : VisualElement, new()
     {
         protected TView View { get; set; }
+
+        protected VisualElement Parent { get; }
 
         public override VisualElement ViewVisualElement
         {
             get => View;
         }
 
-        public Presenter(RouterController router)
+        public Presenter(RouterController router, VisualElement parent, bool hideView = true)
         {
             Router = router;
+            Parent = parent;
+            BuildView(hideView);
+        }
+
+        protected void BuildView(bool hideView)
+        {
+            View = CreateViewInstance();
+            View.style.display = hideView ? DisplayStyle.None : DisplayStyle.Flex;
+            Parent.Add(View);
+        }
+
+        protected virtual TView CreateViewInstance()
+        {
+            return new TView();
         }
 
         protected override void OnVisibleCore()

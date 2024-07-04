@@ -36,16 +36,10 @@ namespace WalletConnect.Web3Modal
 
         private readonly List<VisualElement> _items = new();
 
-        public WalletSearchPresenter(RouterController router, VisualElement parent) : base(router)
+        public WalletSearchPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
-            View = new WalletSearchView();
-            parent.Add(View);
-
-            View.style.display = DisplayStyle.None;
             View.ScrollValueChanged += OnScrollValueChanged;
-
             View.SearchInputValueChanged += OnSearchInputValueChanged;
-
             View.QrCodeLinkClicked += () => Router.OpenView(ViewType.QrCode);
         }
 
