@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
@@ -16,8 +17,9 @@ namespace WalletConnect.Web3Modal
             get => false;
         }
 
-        // List of buttons at the bottom of the account view
-        private readonly HashSet<ListItem> _buttons = new();
+        // List of buttons at the bottom of the account view.
+        // This list is used to enable/disable all buttons at once when needed.
+        protected readonly HashSet<ListItem> Buttons = new();
 
         private bool _disposed;
         private ListItem _networkButton;
@@ -46,8 +48,6 @@ namespace WalletConnect.Web3Modal
 
         private void InitializeButtons(VisualElement buttonsListView)
         {
-            // This method is non-virtual and is called from the constructor
-            // It calls the virtual method which can be overridden by derived classes
             CreateButtons(buttonsListView);
         }
 
@@ -76,6 +76,7 @@ namespace WalletConnect.Web3Modal
             UpdateNetworkButton(e.Chain);
         }
 
+        // Creates the buttons at the bottom of the account view.
         protected virtual void CreateButtons(VisualElement buttonsListView)
         {
             CreateNetworkButton(buttonsListView);
@@ -91,7 +92,7 @@ namespace WalletConnect.Web3Modal
                     vectorImage = Resources.Load<VectorImage>("WalletConnect/Web3Modal/Icons/icon_medium_info")
                 }
             };
-            _buttons.Add(_networkButton);
+            Buttons.Add(_networkButton);
             buttonsListView.Add(_networkButton);
         }
 
@@ -99,16 +100,15 @@ namespace WalletConnect.Web3Modal
         {
             var disconnectIcon = Resources.Load<VectorImage>("WalletConnect/Web3Modal/Icons/icon_medium_disconnect");
             var disconnectButton = new ListItem("Disconnect", OnDisconnectButtonClick, disconnectIcon, ListItem.IconType.Circle, ListItem.IconStyle.Accent);
-            _buttons.Add(disconnectButton);
+            Buttons.Add(disconnectButton);
             buttonsListView.Add(disconnectButton);
         }
 
         protected virtual void UpdateProfileName()
         {
             var profileName = Web3Modal.AccountController.ProfileName;
-            profileName = profileName.Length > 15
-                ? profileName.Truncate(6)
-                : profileName;
+            if (profileName.Length > 15)
+                profileName = profileName.Truncate(6);
 
             View.SetProfileName(profileName);
         }
@@ -168,6 +168,10 @@ namespace WalletConnect.Web3Modal
                 ButtonsSetEnabled(false);
                 await Web3Modal.DisconnectAsync();
             }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
             finally
             {
                 ButtonsSetEnabled(true);
@@ -196,7 +200,7 @@ namespace WalletConnect.Web3Modal
 
         private void ButtonsSetEnabled(bool value)
         {
-            foreach (var button in _buttons)
+            foreach (var button in Buttons)
                 button.SetEnabled(value);
         }
 

@@ -16,16 +16,16 @@ namespace WalletConnect.Web3Modal
             get => _modalViews[_history.Peek()];
         }
 
-        private readonly VisualElement _routerVisualElement;
+        public VisualElement RootVisualElement { get; }
 
         public RouterController(VisualElement parent)
         {
-            _routerVisualElement = new VisualElement
+            RootVisualElement = new VisualElement
             {
                 name = "router"
             };
 
-            parent.Add(_routerVisualElement);
+            parent.Add(RootVisualElement);
 
             RegisterDefaultModalViews();
         }
@@ -89,13 +89,13 @@ namespace WalletConnect.Web3Modal
 
         private void RegisterDefaultModalViews()
         {
-            RegisterModalView(ViewType.Connect, new ConnectPresenter(this, _routerVisualElement));
-            RegisterModalView(ViewType.QrCode, new QrCodePresenter(this, _routerVisualElement));
-            RegisterModalView(ViewType.Wallet, new WalletPresenter(this, _routerVisualElement));
-            RegisterModalView(ViewType.WalletSearch, new WalletSearchPresenter(this, _routerVisualElement));
-            RegisterModalView(ViewType.Account, new AccountPresenter(this, _routerVisualElement));
-            RegisterModalView(ViewType.NetworkSearch, new NetworkSearchPresenter(this, _routerVisualElement));
-            RegisterModalView(ViewType.NetworkLoading, new NetworkLoadingPresenter(this, _routerVisualElement));
+            RegisterModalView(ViewType.Connect, new ConnectPresenter(this, RootVisualElement));
+            RegisterModalView(ViewType.QrCode, new QrCodePresenter(this, RootVisualElement));
+            RegisterModalView(ViewType.Wallet, new WalletPresenter(this, RootVisualElement));
+            RegisterModalView(ViewType.WalletSearch, new WalletSearchPresenter(this, RootVisualElement));
+            RegisterModalView(ViewType.Account, new AccountPresenter(this, RootVisualElement));
+            RegisterModalView(ViewType.NetworkSearch, new NetworkSearchPresenter(this, RootVisualElement));
+            RegisterModalView(ViewType.NetworkLoading, new NetworkLoadingPresenter(this, RootVisualElement));
         }
     }
 
