@@ -79,21 +79,30 @@
     --wui-letter-spacing-large: -0.8px;
     --wui-letter-spacing-medium-title: -0.96px;
     --wui-letter-spacing-2xl: -1.6px;
+}
 
-
+Modal {
     --wui-modal-bg-color: rgb(25, 26, 26);
     --wui-modal-border-color: var(--wui-gray-glass-005);
     --wui-modal-border-width: 1px;
+    --wui-modal-width-desktop: 360px;
+    --wui-modal-max-height-mobile: 90%;
+}
 
+ModalHeader {
     --wui-modal-header-border-color: var(--wui-gray-glass-005);
+}
 
+CardSelect {
     --wui-card-select-bg-color: var(--wui-gray-glass-002);
     --wui-card-select-bg-color-hover: var(--wui-gray-glass-005);
     --wui-card-select-border-color: rgba(0, 0, 0, 0);
     --wui-card-select-border-width: 1px;
     --wui-card-select-image-border-color: var(--wui-gray-glass-010);
     --wui-card-select-image-border-width: 1px;
+}
 
+QrCode {
     --wui-qrcode-bg-color: white;
     --wui-qrcode-fg-color: black;
 }

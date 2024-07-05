@@ -12,7 +12,7 @@
 
 .modal--type-mobile {
     position: absolute;
-    max-height: 90%;
+    max-height: var(--wui-modal-max-height-mobile);
     bottom: 0;
     left: 0;
     right: 0;
@@ -22,7 +22,7 @@
 
 .modal--type-desktop {
     align-self: center;
-    width: 360px;
+    width: var(--wui-modal-width-desktop);
 }
 
 #modal__body {

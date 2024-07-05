@@ -79,6 +79,8 @@ namespace WalletConnect.Web3Modal
 
         protected VisualElement Parent { get; }
 
+        private bool _disposed;
+
         public override VisualElement ViewVisualElement
         {
             get => View;
@@ -113,6 +115,21 @@ namespace WalletConnect.Web3Modal
 
         protected override void OnDisableCore()
         {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                if (View != null)
+                    Parent.Remove(View);
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
         }
     }
 }

@@ -20,6 +20,7 @@ namespace WalletConnect.Web3Modal
 
         private readonly Dictionary<string, CardSelect> _netowrkItems = new();
         private string _highlightedChainId;
+        private bool _disposed;
 
         public NetworkSearchPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
@@ -139,6 +140,20 @@ namespace WalletConnect.Web3Modal
                 item.style.paddingLeft = padding;
                 item.style.paddingRight = padding;
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Web3Modal.NetworkController.ChainChanged += ChainChangedHandler;
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
         }
     }
 }

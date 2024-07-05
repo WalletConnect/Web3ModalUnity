@@ -25,12 +25,16 @@ namespace WalletConnect.Web3Modal.CustomizationSample
             {
                 await Web3Modal.InitializeAsync();
 
-                var modalController = (ModalControllerUtk)Web3Modal.ModalController;
-                if (modalController != null)
+                // Use custom AccountView on desktop
+                if (!Application.isMobilePlatform)
                 {
-                    var routerController = modalController.RouterController;
-                    var customAccountPresenter = new CustomAccountPresenter(routerController, routerController.RootVisualElement);
-                    routerController.RegisterModalView(ViewType.Account, customAccountPresenter);
+                    var modalController = (ModalControllerUtk)Web3Modal.ModalController;
+                    if (modalController != null)
+                    {
+                        var routerController = modalController.RouterController;
+                        var customAccountPresenter = new CustomAccountPresenter(routerController, routerController.RootVisualElement);
+                        routerController.RegisterModalView(ViewType.Account, customAccountPresenter);
+                    }
                 }
 
                 Web3Modal.AccountConnected += async (_, e) =>

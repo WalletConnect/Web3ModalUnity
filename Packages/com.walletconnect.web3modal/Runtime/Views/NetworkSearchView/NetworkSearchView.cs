@@ -16,10 +16,14 @@ namespace WalletConnect.UI
         public new class UxmlFactory : UxmlFactory<NetworkSearchView>
         {
         }
-
-        public NetworkSearchView()
+        
+        public NetworkSearchView() : this(null)
         {
-            var asset = Resources.Load<VisualTreeAsset>("WalletConnect/Web3Modal/Views/NetworkSearchView/NetworkSearchView");
+        }
+
+        public NetworkSearchView(string visualTreePath)
+        {
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "WalletConnect/Web3Modal/Views/NetworkSearchView/NetworkSearchView");
             asset.CloneTree(this);
 
             name = Name;

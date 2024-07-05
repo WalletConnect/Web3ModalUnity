@@ -10,11 +10,16 @@ namespace WalletConnect.Web3Modal.CustomizationSample
         {
         }
 
-        protected override void BuildButtons(VisualElement buttonsListView)
+        protected override AccountView CreateViewInstance()
+        {
+            return new AccountView("UI/CustomAccountView");
+        }
+
+        protected override void CreateButtons(VisualElement buttonsListView)
         {
             CreateOpenSeaButton(buttonsListView);
 
-            base.BuildButtons(buttonsListView);
+            base.CreateButtons(buttonsListView);
         }
 
         private void CreateOpenSeaButton(VisualElement buttonsListView)

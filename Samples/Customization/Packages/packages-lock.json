@@ -75,7 +75,7 @@
     },
     "com.unity.nuget.newtonsoft-json": {
       "version": "3.2.1",
-      "depth": 2,
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -175,13 +175,12 @@
       "url": "https://packages.unity.com"
     },
     "com.walletconnect.core": {
-      "version": "3.1.8",
-      "depth": 1,
-      "source": "registry",
+      "version": "file:/Users/gleb/git/WalletConnectUnity/Packages/com.walletconnect.core",
+      "depth": 0,
+      "source": "local",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.2.1"
-      },
-      "url": "https://package.openupm.com"
+      }
     },
     "com.walletconnect.nethereum": {
       "version": "1.0.1",

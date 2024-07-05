@@ -43,9 +43,13 @@ namespace WalletConnect.UI
         {
         }
 
-        public DeepLinkView()
+        public DeepLinkView() : this(null)
         {
-            var asset = Resources.Load<VisualTreeAsset>("WalletConnect/Web3Modal/Views/DeepLinkView/DeepLinkView");
+        }
+
+        public DeepLinkView(string visualTreePath)
+        {
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "WalletConnect/Web3Modal/Views/DeepLinkView/DeepLinkView");
             asset.CloneTree(this);
 
             name = Name;

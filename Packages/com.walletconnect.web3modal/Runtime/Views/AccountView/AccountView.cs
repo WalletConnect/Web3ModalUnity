@@ -15,7 +15,7 @@ namespace WalletConnect.UI
         public static readonly string NameExplorerButton = $"{Name}__explorer-button";
         public static readonly string NameCopyLink = $"{Name}__profile-address-copy-link";
         public static readonly string NameButtons = $"{Name}__buttons";
-        
+
         public VisualElement Profile { get; }
         public Label ProfileAddress { get; }
         public Image ProfileAvatarImage { get; }
@@ -24,19 +24,23 @@ namespace WalletConnect.UI
         public Button ExplorerButton { get; }
         public IconLink CopyLink { get; }
         public VisualElement Buttons { get; }
-        
-        
+
+
         public new class UxmlFactory : UxmlFactory<AccountView>
         {
         }
 
-        public AccountView()
+        public AccountView() : this(null)
         {
-            var asset = Resources.Load<VisualTreeAsset>("WalletConnect/Web3Modal/Views/AccountView/AccountView");
+        }
+
+        public AccountView(string visualTreePath)
+        {
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "WalletConnect/Web3Modal/Views/AccountView/AccountView");
             asset.CloneTree(this);
 
             name = Name;
-            
+
             Profile = this.Q<VisualElement>(NameProfile);
             ProfileAddress = Profile.Q<Label>(NameProfileAddress);
             ProfileAvatarImage = Profile.Q<Image>(NameProfileAvatarImage);
@@ -56,7 +60,7 @@ namespace WalletConnect.UI
         {
             ProfileBalanceValue.text = value.FontWeight500();
         }
-        
+
         public void SetBalanceSymbol(string value)
         {
             ProfileBalanceSymbol.text = value.FontWeight500();

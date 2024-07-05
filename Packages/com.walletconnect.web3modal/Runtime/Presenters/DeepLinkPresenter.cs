@@ -19,6 +19,7 @@ namespace WalletConnect.Web3Modal
         private string _continueInText;
         private bool _isLoadingDeepLink;
         private Coroutine _loadingCoroutine;
+        private bool _disposed;
 
         private const string ContinueInTextTemplate = "Continue in {0}";
 
@@ -129,5 +130,29 @@ namespace WalletConnect.Web3Modal
             StopLoadingCoroutine();
         }
 #endif
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+#if UNITY_IOS || UNITY_ANDROID
+                if (_isLoadingDeepLink)
+                {
+                    StopLoadingCoroutine();
+                }
+#endif
+
+                _connectionProposal?.Dispose();
+
+                View.CopyLinkClicked -= OnCopyLinkClicked;
+                View.TryAgainLinkClicked -= OnTryAgainLinkClicked;
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace WalletConnect.Web3Modal
         private readonly Dictionary<ViewType, VisualElement> _leftSlotItems = new();
 
         private Coroutine _snackbarCoroutine;
+        private bool _disposed;
 
         public ModalHeaderPresenter(RouterController routerController, Modal parent) : base(routerController, parent)
         {
@@ -122,6 +123,22 @@ namespace WalletConnect.Web3Modal
                 View.style.borderBottomWidth = args.newPresenter.HeaderBorder
                     ? 1
                     : 0;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Router.ViewChanged -= ViewChangedHandler;
+                Web3Modal.NotificationController.Notification -= NotificationHandler;
+                Web3Modal.ModalController.OpenStateChanged -= ModalOpenStateChangedHandler;
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
         }
     }
 }

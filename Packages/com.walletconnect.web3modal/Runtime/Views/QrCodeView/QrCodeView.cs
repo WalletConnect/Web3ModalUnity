@@ -28,10 +28,14 @@ namespace WalletConnect.UI
         public new class UxmlFactory : UxmlFactory<QrCodeView>
         {
         }
-
-        public QrCodeView()
+        
+        public QrCodeView() : this(null)
         {
-            var asset = Resources.Load<VisualTreeAsset>("WalletConnect/Web3Modal/Views/QrCodeView/QrCodeView");
+        }
+
+        public QrCodeView(string visualTreePath)
+        {
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "WalletConnect/Web3Modal/Views/QrCodeView/QrCodeView");
             asset.CloneTree(this);
 
             name = Name;

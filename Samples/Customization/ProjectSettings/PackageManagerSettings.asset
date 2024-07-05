@@ -31,7 +31,6 @@ MonoBehaviour:
     m_Url: https://package.openupm.com
     m_Scopes:
     - com.nethereum.unity
-    - com.walletconnect.core
     - com.walletconnect.nethereum
     - com.walletconnect.ui
     - com.walletconnect.web3modal
