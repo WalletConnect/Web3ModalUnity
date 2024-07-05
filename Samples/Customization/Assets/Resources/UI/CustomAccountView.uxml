@@ -29,7 +29,5 @@
         </ui:VisualElement>
         <ui:VisualElement name="account-view__buttons"/>
     </ui:VisualElement>
-    <ui:VisualElement name="custom-account-view-second-container">
-        <!-- <ui:Image name="custom-account-view-second-container__banner"/> -->
-    </ui:VisualElement>
+    <ui:VisualElement name="custom-account-view-second-container"/>
 </ui:UXML>
