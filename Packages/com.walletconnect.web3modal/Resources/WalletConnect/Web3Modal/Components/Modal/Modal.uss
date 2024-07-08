@@ -2,16 +2,17 @@
     width: 100%;
     height: 0;
     border-radius: var(--wui-border-radius-l);
-    border-color: var(--wui-gray-glass-005);
-    background-color: var(--wui-color-modal-bg);
+    border-color: var(--wui-modal-border-color);
+    border-width: var(--wui-modal-border-width);
+    background-color: var(--wui-modal-bg-color);
     overflow: hidden;
     transition-property: height;
-    transition-duration: 150ms;
+    transition-duration: 175ms;
 }
 
 .modal--type-mobile {
     position: absolute;
-    max-height: 90%;
+    max-height: var(--wui-modal-max-height-mobile);
     bottom: 0;
     left: 0;
     right: 0;
@@ -21,7 +22,7 @@
 
 .modal--type-desktop {
     align-self: center;
-    width: 360px;
+    width: var(--wui-modal-width-desktop);
 }
 
 #modal__body {

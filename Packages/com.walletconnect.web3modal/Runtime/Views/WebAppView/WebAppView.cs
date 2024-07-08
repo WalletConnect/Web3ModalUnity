@@ -42,10 +42,14 @@ namespace WalletConnect.UI
         public new class UxmlFactory : UxmlFactory<WebAppView>
         {
         }
-
-        public WebAppView()
+        
+        public WebAppView() : this(null)
         {
-            var asset = Resources.Load<VisualTreeAsset>("WalletConnect/Web3Modal/Views/WebAppView/WebAppView");
+        }
+
+        public WebAppView(string visualTreePath)
+        {
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "WalletConnect/Web3Modal/Views/WebAppView/WebAppView");
             asset.CloneTree(this);
 
             name = Name;

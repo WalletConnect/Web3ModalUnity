@@ -13,7 +13,7 @@ namespace WalletConnect.Web3Modal
     public class WalletPresenter : Presenter<WalletView>
     {
         private Wallet _wallet;
-        
+
         private readonly Tabbed _tabbed;
         private readonly VisualElement _tabsContainer;
 
@@ -27,24 +27,11 @@ namespace WalletConnect.Web3Modal
         private readonly VisualElement _qrCodeContent;
         private readonly VisualElement _deepLinkContent;
         private readonly VisualElement _webAppContent;
-        private readonly QrCodeView _qrCodeView;
-        private readonly DeepLinkView _deepLinkView;
-        private readonly WebAppView _webAppView;
 
         private readonly Dictionary<VisualElement, PresenterBase> _tabContentToViewController = new();
 
-        public WalletPresenter(RouterController router, VisualElement parent) : base(router)
+        public WalletPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
-            // --- View
-            View = new WalletView
-            {
-                style =
-                {
-                    display = DisplayStyle.None
-                }
-            };;
-            parent.Add(View);
-
             // --- Tabbed View References
             _tabbed = View.Q<Tabbed>();
             _tabsContainer = View.Q<VisualElement>(className: Tabbed.ClassNameTabsContainer);
@@ -59,13 +46,9 @@ namespace WalletConnect.Web3Modal
             _deepLinkContent = View.Q<VisualElement>("DeepLinkContent");
             _webAppContent = View.Q<VisualElement>("WebAppContent");
 
-            _qrCodeView = _qrCodeContent.Q<QrCodeView>();
-            _deepLinkView = _deepLinkContent.Q<DeepLinkView>();
-            _webAppView = _webAppContent.Q<WebAppView>();
-
-            _qrCodePresenter = new QrCodePresenter(router, _qrCodeView);
-            _deepLinkPresenter = new DeepLinkPresenter(router, _deepLinkView);
-            _webAppPresenter = new WebAppPresenter(router, _webAppView);
+            _qrCodePresenter = new QrCodePresenter(router, _qrCodeContent, false);
+            _deepLinkPresenter = new DeepLinkPresenter(router, _deepLinkContent, false);
+            _webAppPresenter = new WebAppPresenter(router, _webAppContent, false);
 
             _tabContentToViewController.Add(_qrCodeContent, _qrCodePresenter);
             _tabContentToViewController.Add(_deepLinkContent, _deepLinkPresenter);

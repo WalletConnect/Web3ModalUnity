@@ -12,7 +12,6 @@
                                            variant="Shade"
                 />
             </ui:VisualElement>
-
         </ui:VisualElement>
         <ui:VisualElement name="account-view__profile-balance-container">
             <ui:Label name="account-view__profile-balance-value"/>

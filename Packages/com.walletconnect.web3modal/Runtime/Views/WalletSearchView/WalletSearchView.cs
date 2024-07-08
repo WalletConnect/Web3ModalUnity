@@ -37,10 +37,14 @@ namespace WalletConnect.UI
         public new class UxmlFactory : UxmlFactory<WalletSearchView>
         {
         }
-
-        public WalletSearchView()
+        
+        public WalletSearchView() : this(null)
         {
-            var asset = Resources.Load<VisualTreeAsset>("WalletConnect/Web3Modal/Views/WalletSearchView/WalletSearchView");
+        }
+
+        public WalletSearchView(string visualTreePath)
+        {
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "WalletConnect/Web3Modal/Views/WalletSearchView/WalletSearchView");
             asset.CloneTree(this);
 
             AddToClassList(Name);
@@ -58,7 +62,7 @@ namespace WalletConnect.UI
             // --- ScrollView
             scrollView = this.Q<ScrollView>();
             scrollView.mode = ScrollViewMode.Vertical;
-            scrollView.mouseWheelScrollSize = 50;
+            scrollView.mouseWheelScrollSize = 65;
             scrollView.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             scrollView.verticalScrollerVisibility = ScrollerVisibility.Hidden;
 

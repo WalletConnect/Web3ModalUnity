@@ -3,9 +3,6 @@
 * {
     -unity-font-definition: resource("Fonts & Materials/Inter/Inter-Regular SDF");
 
-    --w3m-accent: #3396ff;
-    --w3m-default: #000;
-
     --wui-color-success-100: #26d962;
     --wui-color-error-100: #f25a67;
 
@@ -33,7 +30,6 @@
     --wui-color-bg-275: #363b3b;
     --wui-color-bg-300: #3b4040;
 
-    --wui-color-modal-bg: rgb(25, 26, 26);
 
     --wui-color-accent-100: #3396ff;
 
@@ -83,6 +79,32 @@
     --wui-letter-spacing-large: -0.8px;
     --wui-letter-spacing-medium-title: -0.96px;
     --wui-letter-spacing-2xl: -1.6px;
+}
+
+Modal {
+    --wui-modal-bg-color: rgb(25, 26, 26);
+    --wui-modal-border-color: var(--wui-gray-glass-005);
+    --wui-modal-border-width: 1px;
+    --wui-modal-width-desktop: 360px;
+    --wui-modal-max-height-mobile: 90%;
+}
+
+ModalHeader {
+    --wui-modal-header-border-color: var(--wui-gray-glass-005);
+}
+
+CardSelect {
+    --wui-card-select-bg-color: var(--wui-gray-glass-002);
+    --wui-card-select-bg-color-hover: var(--wui-gray-glass-005);
+    --wui-card-select-border-color: rgba(0, 0, 0, 0);
+    --wui-card-select-border-width: 1px;
+    --wui-card-select-image-border-color: var(--wui-gray-glass-010);
+    --wui-card-select-image-border-width: 1px;
+}
+
+QrCode {
+    --wui-qrcode-bg-color: white;
+    --wui-qrcode-fg-color: black;
 }
 
 .text-micro {

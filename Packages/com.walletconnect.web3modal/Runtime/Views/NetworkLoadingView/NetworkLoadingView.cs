@@ -19,10 +19,14 @@ namespace WalletConnect.UI
         public new class UxmlFactory : UxmlFactory<NetworkLoadingView>
         {
         }
-
-        public NetworkLoadingView()
+        
+        public NetworkLoadingView() : this(null)
         {
-            var asset = Resources.Load<VisualTreeAsset>("WalletConnect/Web3Modal/Views/NetworkLoadingView/NetworkLoadingView");
+        }
+
+        public NetworkLoadingView(string visualTreePath)
+        {
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "WalletConnect/Web3Modal/Views/NetworkLoadingView/NetworkLoadingView");
             asset.CloneTree(this);
 
             name = Name;

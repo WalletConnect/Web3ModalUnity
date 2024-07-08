@@ -16,11 +16,17 @@ namespace WalletConnect.Web3Modal
 
         private const string ContinueInTextTemplate = "Continue in {0}";
 
-        public WebAppPresenter(RouterController router, WebAppView webAppView) : base(router)
+        public WebAppPresenter(RouterController router, VisualElement parent, bool hideView = true) : base(router, parent, hideView)
         {
-            View = webAppView;
+            View.style.display = DisplayStyle.Flex;
+            
             View.OpenLinkClicked += OnOpenLinkClicked;
             View.CopyLinkClicked += OnCopyLinkClicked;
+        }
+
+        protected override WebAppView CreateViewInstance()
+        {
+            return Parent.Q<WebAppView>();
         }
 
         protected override void OnVisibleCore()

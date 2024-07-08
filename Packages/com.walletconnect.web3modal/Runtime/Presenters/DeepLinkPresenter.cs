@@ -19,12 +19,12 @@ namespace WalletConnect.Web3Modal
         private string _continueInText;
         private bool _isLoadingDeepLink;
         private Coroutine _loadingCoroutine;
+        private bool _disposed;
 
         private const string ContinueInTextTemplate = "Continue in {0}";
 
-        public DeepLinkPresenter(RouterController router, DeepLinkView deepLinkView) : base(router)
+        public DeepLinkPresenter(RouterController router, VisualElement parent, bool hideView = true) : base(router, parent, hideView)
         {
-            View = deepLinkView;
             View.CopyLinkClicked += OnCopyLinkClicked;
             View.TryAgainLinkClicked += OnTryAgainLinkClicked;
 
@@ -34,6 +34,11 @@ namespace WalletConnect.Web3Modal
 #if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
             UnityEventsDispatcher.Instance.ApplicationFocus += OnApplicationHandler;
 #endif
+        }
+
+        protected override DeepLinkView CreateViewInstance()
+        {
+            return Parent.Q<DeepLinkView>();
         }
 
         protected override void OnVisibleCore()
@@ -125,5 +130,29 @@ namespace WalletConnect.Web3Modal
             StopLoadingCoroutine();
         }
 #endif
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+#if UNITY_IOS || UNITY_ANDROID
+                if (_isLoadingDeepLink)
+                {
+                    StopLoadingCoroutine();
+                }
+#endif
+
+                _connectionProposal?.Dispose();
+
+                View.CopyLinkClicked -= OnCopyLinkClicked;
+                View.TryAgainLinkClicked -= OnTryAgainLinkClicked;
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
+        }
     }
 }

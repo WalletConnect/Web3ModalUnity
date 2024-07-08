@@ -20,7 +20,7 @@ namespace WalletConnect.Web3Modal
         public static BlockchainApiController BlockchainApiController { get; protected set; }
         public static NotificationController NotificationController { get; protected set; }
         public static NetworkController NetworkController { get; protected set; }
-        
+
         public static EvmService Evm { get; protected set; }
 
         public static Web3ModalConfig Config { get; private set; }
@@ -75,7 +75,7 @@ namespace WalletConnect.Web3Modal
                 throw new Exception("Already initialized"); // TODO: use custom ex type
 
             SdkMetadata.Type = "w3m";
-            SdkMetadata.Version = "unity-w3m-v0.3.2"; // TODO: update this from CI
+            SdkMetadata.Version = "unity-w3m-v0.4.0"; // TODO: update this from CI
 
             Config = config ?? throw new ArgumentNullException(nameof(config));
 
