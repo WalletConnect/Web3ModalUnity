@@ -31,6 +31,7 @@ MonoBehaviour:
     m_Url: https://package.openupm.com
     m_Scopes:
     - com.nethereum.unity
+    - com.walletconnect.core
     - com.walletconnect.nethereum
     - com.walletconnect.ui
     - com.walletconnect.web3modal
@@ -42,6 +43,6 @@ MonoBehaviour:
   m_RegistryInfoDraft:
     m_Modified: 0
     m_ErrorMessage: 
-    m_UserModificationsInstanceId: -836
+    m_UserModificationsInstanceId: -834
     m_OriginalInstanceId: -838
   m_LoadAssets: 0

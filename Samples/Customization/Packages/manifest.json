@@ -6,8 +6,7 @@
     "com.unity.timeline": "1.7.6",
     "com.unity.ugui": "1.0.0",
     "com.unity.visualscripting": "1.9.4",
-    "com.walletconnect.core": "file:/Users/gleb/git/WalletConnectUnity/Packages/com.walletconnect.core",
-    "com.walletconnect.web3modal": "file:/Users/gleb/git/Web3ModalUnity/Packages/com.walletconnect.web3modal",
+    "com.walletconnect.web3modal": "0.4.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -38,7 +37,8 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0"
+    "com.unity.modules.xr": "1.0.0",
+    "com.walletconnect.core": "3.1.9"
   },
   "scopedRegistries": [
     {
@@ -46,6 +46,7 @@
       "url": "https://package.openupm.com",
       "scopes": [
         "com.nethereum.unity",
+        "com.walletconnect.core",
         "com.walletconnect.nethereum",
         "com.walletconnect.ui",
         "com.walletconnect.web3modal"

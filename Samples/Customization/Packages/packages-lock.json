@@ -1,18 +1,5 @@
 {
   "dependencies": {
-    "com.nethereum.unity": {
-      "version": "4.19.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://package.openupm.com"
-    },
-    "com.unity.2d.sprite": {
-      "version": "1.0.0",
-      "depth": 2,
-      "source": "builtin",
-      "dependencies": {}
-    },
     "com.unity.collab-proxy": {
       "version": "2.4.3",
       "depth": 0,
@@ -145,25 +132,6 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
-    "com.unity.vectorgraphics": {
-      "version": "2.0.0-preview.24",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.2d.sprite": "1.0.0",
-        "com.unity.ugui": "1.0.0",
-        "com.unity.modules.animation": "1.0.0",
-        "com.unity.modules.imageconversion": "1.0.0",
-        "com.unity.modules.physics": "1.0.0",
-        "com.unity.modules.physics2d": "1.0.0",
-        "com.unity.modules.ui": "1.0.0",
-        "com.unity.modules.uielements": "1.0.0",
-        "com.unity.modules.unitywebrequest": "1.0.0",
-        "com.unity.modules.unitywebrequesttexture": "1.0.0",
-        "com.unity.modules.unitywebrequestwww": "1.0.0"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.visualscripting": {
       "version": "1.9.4",
       "depth": 0,
@@ -175,31 +143,11 @@
       "url": "https://packages.unity.com"
     },
     "com.walletconnect.core": {
-      "version": "file:/Users/gleb/git/WalletConnectUnity/Packages/com.walletconnect.core",
+      "version": "3.1.9",
       "depth": 0,
-      "source": "local",
+      "source": "registry",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.2.1"
-      }
-    },
-    "com.walletconnect.nethereum": {
-      "version": "1.0.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.nethereum.unity": "4.19.1",
-        "com.walletconnect.core": "3.1.7"
-      },
-      "url": "https://package.openupm.com"
-    },
-    "com.walletconnect.ui": {
-      "version": "1.1.8",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.walletconnect.core": "3.1.8",
-        "com.unity.textmeshpro": "3.0.0",
-        "com.unity.ugui": "1.0.0"
       },
       "url": "https://package.openupm.com"
     },
