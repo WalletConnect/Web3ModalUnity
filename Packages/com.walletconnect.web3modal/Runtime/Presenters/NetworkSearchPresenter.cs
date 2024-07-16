@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using WalletConnect.UI;
+using WalletConnectSharp.Common.Model.Errors;
 using WalletConnectUnity.Core;
 using WalletConnectUnity.UI;
 
@@ -116,6 +117,14 @@ namespace WalletConnect.Web3Modal
                     Router.OpenView(ViewType.NetworkLoading);
 
                 await changeChainTask;
+            }
+            catch (WalletConnectException e)
+            {
+                // If user declines network switch, MetaMask returns a long json error message.
+                // The message is not user-friendly, so we show a default error message instead.
+                var defaultErrorMessage = SdkErrors.MessageFromType(e.CodeType);
+                Web3Modal.NotificationController.Notify(NotificationType.Error, defaultErrorMessage);
+                Router.GoBack();
             }
             catch (Exception e)
             {
