@@ -55,7 +55,7 @@ namespace WalletConnect.UI
                 else
                 {
                     WCLoadingAnimator.Instance.Unsubscribe(_qrcodeImage);
-                    _qrcodeImage.image = QRCode.EncodeTexture(value, _fgColor, _bgColor);
+                    _qrcodeImage.image = QRCode.EncodeTexture(value, _fgColor, _bgColor,256,256);
                     _data = value;
                 }
             }
