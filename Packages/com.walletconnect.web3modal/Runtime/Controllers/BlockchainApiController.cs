@@ -40,7 +40,6 @@ namespace WalletConnect.Web3Modal
             if (!string.IsNullOrWhiteSpace(_clientIdQueryParam))
                 path += _clientIdQueryParam;
 
-            Debug.Log($"Send identity request to {path}");
             return await _httpClient.GetAsync<GetIdentityResponse>(path);
         }
 
