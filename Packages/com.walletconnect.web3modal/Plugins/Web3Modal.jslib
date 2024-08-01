@@ -38,10 +38,7 @@ mergeInto(LibraryManager.library, {
             let result = await callFn(_web3ModalConfig, methodName, parameterObj);
             
             if (result === undefined || result === null) {
-                const error = new Error("Result is null or undefined");
-                let errorJson = JSON.stringify(error, ['name', 'message']);
-                let errorStrPtr = stringToNewUTF8(errorJson);
-                {{{makeDynCall('viii', 'callbackPtr')}}} (id, undefined, errorStrPtr);
+                {{{makeDynCall('viii', 'callbackPtr')}}} (id, undefined, undefined);
                 return;
             }
             

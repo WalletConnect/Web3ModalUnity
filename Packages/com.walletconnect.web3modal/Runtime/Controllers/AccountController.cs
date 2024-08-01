@@ -65,7 +65,7 @@ namespace WalletConnect.Web3Modal
         private NetworkController _networkController;
         private BlockchainApiController _blockchainApiController;
 
-        private UnityHttpClient _httpClient = new();
+        private readonly UnityHttpClient _httpClient = new();
         
         private string _address;
         private string _accountId;
@@ -87,9 +87,11 @@ namespace WalletConnect.Web3Modal
             _connectorController = connectorController ?? throw new ArgumentNullException(nameof(connectorController));
             _networkController = networkController ?? throw new ArgumentNullException(nameof(networkController));
             _blockchainApiController = blockchainApiController ?? throw new ArgumentNullException(nameof(blockchainApiController));
-            
+
+#if !UNITY_WEBGL || UNITY_EDITOR
             _connectorController.AccountConnected += ConnectorAccountConnectedHandler;
             _connectorController.AccountChanged += ConnectorAccountChangedHandler;
+#endif
         }
 
         private async void ConnectorAccountConnectedHandler(object sender, Connector.AccountConnectedEventArgs e)
@@ -124,6 +126,9 @@ namespace WalletConnect.Web3Modal
 
         public async Task UpdateProfile()
         {
+            if (string.IsNullOrWhiteSpace(Address))
+                return;
+            
             var identity = await _blockchainApiController.GetIdentityAsync(Address);
             ProfileName = string.IsNullOrWhiteSpace(identity.Name)
                 ? Address.Truncate()
@@ -151,8 +156,19 @@ namespace WalletConnect.Web3Modal
 
         public async Task UpdateBalance()
         {
+            if (string.IsNullOrWhiteSpace(Address))
+                return;
+            
             var response = await _blockchainApiController.GetBalanceAsync(Address);
-            var balance = response.Balances.FirstOrDefault(x => x.chainId == ChainId && string.IsNullOrWhiteSpace(x.address));
+            
+            if (response.Balances.Length == 0)
+            {
+                Balance = "0.000";
+                BalanceSymbol = _networkController.ActiveChain.NativeCurrency.symbol;
+                return;
+            }
+            
+            var balance = Array.Find(response.Balances,x => x.chainId == ChainId && string.IsNullOrWhiteSpace(x.address));
 
             if (string.IsNullOrWhiteSpace(balance.quantity.numeric))
             {
