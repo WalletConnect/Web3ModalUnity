@@ -124,15 +124,12 @@ namespace WalletConnect.Web3Modal
             var contract = Web3.Eth.GetContract(contractAbi, contractAddress);
             var function = contract.GetFunction(methodName);
 
-            var receipt = await function.SendTransactionAndWaitForReceiptAsync(
-                from: null, // will be automatically filled by interceptor
-                gas: new HexBigInteger(gas),
-                value: new HexBigInteger(value),
-                receiptRequestCancellationToken: CancellationToken.None,
+            return await function.SendTransactionAsync(
+                null, // will be automatically filled by interceptor
+                new HexBigInteger(gas),
+                new HexBigInteger(value),
                 arguments
             );
-            
-            return receipt.TransactionHash;
         }
         
         
