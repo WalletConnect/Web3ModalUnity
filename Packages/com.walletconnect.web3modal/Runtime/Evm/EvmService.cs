@@ -89,6 +89,11 @@ namespace WalletConnect.Web3Modal
             return WriteContractAsync(contractAddress, contractAbi, methodName, default, default, arguments);
         }
         
+        public Task<string> WriteContractAsync(string contractAddress, string contractAbi, string methodName, BigInteger gas = default, params object[] arguments)
+        {
+            return WriteContractAsyncCore(contractAddress, contractAbi, methodName, default, gas, arguments);
+        }
+        
         public Task<string> WriteContractAsync(string contractAddress, string contractAbi, string methodName, BigInteger value = default, BigInteger gas = default, params object[] arguments)
         {
             return WriteContractAsyncCore(contractAddress, contractAbi, methodName, value, gas, arguments);

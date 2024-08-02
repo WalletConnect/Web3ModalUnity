@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using WalletConnect.Web3Modal.Http;
@@ -24,6 +25,9 @@ namespace WalletConnect.Web3Modal
 
         public async Task<GetIdentityResponse> GetIdentityAsync(string address)
         {
+            if (string.IsNullOrWhiteSpace(address))
+                throw new ArgumentNullException(nameof(address));
+            
             var projectId = ProjectConfiguration.Load().Id;
             var path = $"identity/{address}?projectId={projectId}";
 
@@ -45,6 +49,9 @@ namespace WalletConnect.Web3Modal
 
         public async Task<GetBalanceResponse> GetBalanceAsync(string address)
         {
+            if (string.IsNullOrWhiteSpace(address))
+                throw new ArgumentNullException(nameof(address));
+            
             var projectId = ProjectConfiguration.Load().Id;
             return await _httpClient.GetAsync<GetBalanceResponse>($"account/{address}/balance?projectId={projectId}&currency=usd", headers: _getBalanceHeaders);
         }

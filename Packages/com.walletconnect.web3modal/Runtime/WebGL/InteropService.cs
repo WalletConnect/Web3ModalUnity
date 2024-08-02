@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AOT;
 using Newtonsoft.Json;
 using UnityEngine;
+using WalletConnect.Web3Modal.Utils;
 
 namespace WalletConnect.Web3Modal.WebGl
 {
@@ -14,6 +15,11 @@ namespace WalletConnect.Web3Modal.WebGl
         private static readonly Dictionary<int, PendingInteropCall> PendingInteropCalls = new();
 
         private readonly ExternalMethod _externalMethod;
+
+        private readonly JsonConverter[] _jsonConverts =
+        {
+            new ByteArrayJsonConverter()
+        };
 
         public InteropService(ExternalMethod externalMethod)
         {
@@ -46,9 +52,13 @@ namespace WalletConnect.Web3Modal.WebGl
                 if (!Equals(requestParameter, default(TReq)))
                 {
                     if (typeof(TReq) == typeof(string))
+                    {
                         paramStr = requestParameter as string;
+                    }
                     else
-                        paramStr = JsonConvert.SerializeObject(requestParameter);
+                    {
+                        paramStr = JsonConvert.SerializeObject(requestParameter, _jsonConverts);
+                    }
                 }
 
                 _externalMethod(id, methodName, paramStr, TcsCallback);
