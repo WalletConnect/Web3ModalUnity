@@ -69,7 +69,7 @@ mergeInto(LibraryManager.library, {
         const enableOnramp = parameters.enableOnramp;
         
         // Load the scripts and initialize the configuration
-        import("https://cdn.jsdelivr.net/npm/@web3modal/cdn@5.0.1/dist/wagmi.js").then(CDNW3M => {
+        import("https://cdn.jsdelivr.net/npm/@web3modal/cdn@5.0.11/dist/wagmi.js").then(CDNW3M => {
             const WagmiCore = CDNW3M['WagmiCore'];
             const Chains = CDNW3M['Chains'];
             const Web3modal = CDNW3M['Web3modal'];
