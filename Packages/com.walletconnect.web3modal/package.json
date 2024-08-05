@@ -1,6 +1,6 @@
 {
   "name": "com.walletconnect.web3modal",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "displayName": "Web3Modal",
   "unity": "2022.3",
   "author": "WalletConnect",
@@ -15,8 +15,8 @@
   ],
   "changelogUrl": "https://github.com/WalletConnect/Web3ModalUnity/blob/main/Packages/com.walletconnect.web3modal/CHANGELOG.md",
   "dependencies": {
-    "com.walletconnect.core": "3.1.10",
-    "com.walletconnect.ui": "1.1.10",
+    "com.walletconnect.core": "3.1.11",
+    "com.walletconnect.ui": "1.1.11",
     "com.walletconnect.nethereum": "1.0.1",
     "com.nethereum.unity": "4.19.1",
     "com.unity.vectorgraphics": "2.0.0-preview.24"

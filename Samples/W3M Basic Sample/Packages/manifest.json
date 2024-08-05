@@ -11,7 +11,7 @@
     "com.unity.timeline": "1.7.6",
     "com.unity.ugui": "1.0.0",
     "com.walletconnect.nethereum": "1.0.1",
-    "com.walletconnect.ui": "1.1.10",
+    "com.walletconnect.ui": "1.1.11",
     "com.walletconnect.web3modal": "file:../../../Packages/com.walletconnect.web3modal",
     "io.sentry.unity": "2.0.7",
     "com.unity.modules.ai": "1.0.0",
