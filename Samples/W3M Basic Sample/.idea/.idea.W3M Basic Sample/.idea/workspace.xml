@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f6a9f9f1-27e5-4166-ab4f-03cb9a66d280" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../AppKit Sample/Assets/Scripts/DebugConsoleController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../AppKit Sample/Assets/Scripts/DebugConsoleController.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../AppKit Sample/mono_crash.78d81416e.0.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AppKit Sample/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/../AppKit Sample/Assets/Scenes/SampleScene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AppKit Sample/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/../AppKit Sample/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AppKit Sample/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../AppKit Sample/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AppKit Sample/ProjectSettings/PackageManagerSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/../AppKit Sample/ProjectSettings/PackageManagerSettings.asset" afterDir="false" />
-    </list>
+    <list default="true" id="f6a9f9f1-27e5-4166-ab4f-03cb9a66d280" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
