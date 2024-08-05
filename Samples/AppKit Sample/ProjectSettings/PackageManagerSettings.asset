@@ -33,6 +33,7 @@ MonoBehaviour:
     - com.nethereum.unity
     - com.openupm
     - com.walletconnect
+    - com.yasirkula.ingamedebugconsole
     - io.sentry.unity
     m_IsDefault: 0
     m_Capabilities: 0
