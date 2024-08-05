@@ -17,7 +17,8 @@ MonoBehaviour:
     Name: Unity AppKit Sample
     Description: Unity AppKit Sample
     Url: https://walletconnect.com
-    Icons: []
+    Icons:
+    - https://raw.githubusercontent.com/WalletConnect/WalletConnectUnity/project/modal-sample/.github/media/unity-logo.png
     Redirect:
       Native: 
       Universal: 
