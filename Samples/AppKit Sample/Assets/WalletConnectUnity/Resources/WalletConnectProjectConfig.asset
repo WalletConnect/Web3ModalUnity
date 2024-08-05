@@ -20,7 +20,7 @@ MonoBehaviour:
     Icons:
     - https://raw.githubusercontent.com/WalletConnect/WalletConnectUnity/project/modal-sample/.github/media/unity-logo.png
     Redirect:
-      Native: 
+      Native: w3m-unity
       Universal: 
     VerifyUrl: 
   <RelayUrl>k__BackingField: wss://relay.walletconnect.com
