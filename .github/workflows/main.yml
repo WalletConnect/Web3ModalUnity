@@ -1,6 +1,7 @@
 name: Build Sample Project
 
-on: [push, pull_request, workflow_dispatch]
+# on: [push, pull_request, workflow_dispatch]
+on: [pull_request, workflow_dispatch]
 
 jobs:
   buildForAllSupportedPlatforms:
@@ -17,7 +18,7 @@ jobs:
           # - StandaloneWindows64 # Build a Windows 64-bit standalone.
           # - StandaloneLinux64 # Build a Linux 64-bit standalone.
           # - iOS # Build an iOS player.
-          - Android # Build an Android .apk standalone app.
+          # - Android # Build an Android .apk standalone app.
           - WebGL # WebGL.
     steps:
       - if: matrix.targetPlatform == 'Android' || matrix.targetPlatform == 'WebGL'
@@ -64,4 +65,4 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: Build/WebGL/
+          working-directory: Build/WebGL/WebGL
