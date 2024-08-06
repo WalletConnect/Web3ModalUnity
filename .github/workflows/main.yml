@@ -1,7 +1,6 @@
 name: Build Sample Project
 
-# on: [push, pull_request, workflow_dispatch]
-on: [pull_request, workflow_dispatch]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   buildForAllSupportedPlatforms:
