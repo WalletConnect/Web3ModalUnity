@@ -263,6 +263,12 @@ namespace WalletConnect.Web3Modal.Sample
         
         public async void OnReadContractClicked()
         {
+            if (Web3Modal.NetworkController.ActiveChain.ChainId != "1")
+            {
+                Notification.ShowMessage("Please switch to Ethereum mainnet.");
+                return;
+            }
+            
             const string contractAddress = "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"; // on Ethereum mainnet
             const string yugaLabsAddress = "0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1";
             const string abi = CryptoPunksAbi;
