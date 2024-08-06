@@ -2,10 +2,7 @@ name: Build Sample Project
 
 on:
   pull_request:
-    types: [opened, reopened]
-  push:
-    branches:
-      - 'refs/pull/*/merge'
+    types: [opened, reopened, review_requested, synchronize]
   workflow_dispatch:
 
 jobs:
