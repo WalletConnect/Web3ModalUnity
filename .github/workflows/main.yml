@@ -20,6 +20,8 @@ jobs:
           - Android # Build an Android .apk standalone app.
           - WebGL # WebGL.
     steps:
+      - if: matrix.targetPlatform == 'Android' || matrix.targetPlatform == 'WebGL'
+        uses: jlumbroso/free-disk-space@v1.3.1
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -28,8 +30,6 @@ jobs:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
           restore-keys: Library-
-      - if: matrix.targetPlatform == 'Android' || matrix.targetPlatform == 'WebGL'
-        uses: jlumbroso/free-disk-space@v1.3.1
       - uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
