@@ -1,6 +1,12 @@
 name: Build Sample Project
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  pull_request:
+    types: [opened, reopened]
+  push:
+    branches:
+      - 'refs/pull/*/merge'
+  workflow_dispatch:
 
 jobs:
   buildForAllSupportedPlatforms:
@@ -64,5 +70,6 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          github-comment: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-comment: true
           working-directory: Build/WebGL/WebGL
