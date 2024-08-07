@@ -88,13 +88,13 @@ jobs:
         with:
           name: Build-Android
           path: Build/Android
+      - name: Install dotnet-script
+        run: dotnet tool install -g dotnet-script
       - name: Generate QR Code
         id: generate_qr
         run: |
           apk_url=$(gh api -X GET "repos/${{ github.repository }}/actions/artifacts" | jq -r '.artifacts[] | select(.name=="Build-Android") | .archive_download_url')
-          echo $apk_url > apk_url.txt
-          pip install qrcode[pil]
-          python -m qrcode --output=qr_code.png $apk_url
+          dotnet-script ./scripts/generate-qr.csx $apk_url qr_code.png
       - name: Upload QR Code
         uses: actions/upload-artifact@v3
         with:
