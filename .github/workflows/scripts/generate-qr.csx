@@ -1,24 +1,48 @@
 #!/usr/bin/env dotnet-script
 
-#r "nuget: QRCoder"
+#r "nuget: ZXing.Net, 0.16.9"
+#r "nuget: ZXing.Net.Bindings.SkiaSharp, 0.16.9"
+#r "nuget: SkiaSharp, 2.88.3"
 
-using QRCoder;
 using System;
 using System.IO;
+using ZXing;
+using ZXing.QrCode;
+using ZXing.SkiaSharp;
+using ZXing.SkiaSharp.Rendering;
+using SkiaSharp;
 
-if (args.Length != 2)
+if (Args.Count != 2)
 {
     Console.WriteLine("Usage: dotnet-script generate-qr.csx <url> <output-file>");
     return;
 }
 
-string url = args[0];
-string outputFile = args[1];
+string url = Args[0];
+string outputFile = Args[1];
 
-QRCodeGenerator qrGenerator = new QRCodeGenerator();
-QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
-PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
-byte[] qrCodeImage = qrCode.GetGraphic(20);
+var qrCodeEncodingOptions = new QrCodeEncodingOptions
+{
+    Height = 512,
+    Width = 512,
+    Margin = 4
+};
 
-File.WriteAllBytes(outputFile, qrCodeImage);
+var barcodeWriter = new BarcodeWriter<SKBitmap>
+{
+    Format = BarcodeFormat.QR_CODE,
+    Options = qrCodeEncodingOptions,
+    Renderer = new SKBitmapRenderer()
+};
+
+using (var bitmap = barcodeWriter.Write(url))
+{
+    using (var image = SKImage.FromBitmap(bitmap))
+    using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+    using (var stream = File.OpenWrite(outputFile))
+    {
+        data.SaveTo(stream);
+    }
+}
+
 Console.WriteLine($"QR Code saved to {outputFile}");
