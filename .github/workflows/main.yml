@@ -94,7 +94,7 @@ jobs:
         id: generate_qr
         run: |
           apk_url=$(gh api -X GET "repos/${{ github.repository }}/actions/artifacts" | jq -r '.artifacts[] | select(.name=="Build-Android") | .archive_download_url')
-          dotnet-script ./scripts/generate-qr.csx $apk_url qr_code.png
+          dotnet-script ./.github/workflows/scripts/generate-qr.csx $apk_url qr_code.png
       - name: Upload QR Code
         uses: actions/upload-artifact@v3
         with:
@@ -105,4 +105,5 @@ jobs:
           apk_url=$(gh api -X GET "repos/${{ github.repository }}/actions/artifacts" | jq -r '.artifacts[] | select(.name=="Build-Android") | .archive_download_url')
           gh pr comment ${{ github.event.pull_request.number }} --body "APK is available for download [here](${apk_url}). ![QR Code](https://raw.githubusercontent.com/${{ github.repository }}/$(git rev-parse HEAD)/qr_code.png)"
         env:
+          GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
