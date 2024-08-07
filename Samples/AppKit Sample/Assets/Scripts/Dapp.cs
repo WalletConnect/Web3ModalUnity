@@ -4,8 +4,10 @@ using System.Numerics;
 using Nethereum.ABI.EIP712;
 using Nethereum.JsonRpc.Client;
 using Nethereum.Web3;
+using Skibitsky.Unity;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace WalletConnect.Web3Modal.Sample
@@ -35,11 +37,14 @@ namespace WalletConnect.Web3Modal.Sample
 
         private async void Start()
         {
-            Debug.Log("Init Web3Modal...");
+            if (!Web3Modal.IsInitialized)
+            {
+                Notification.ShowMessage("Web3Modal is not initialized. Please initialize Web3Modal first.");
+                return;
+            }
+            
             try
             {
-                await Web3Modal.InitializeAsync();
-
                 _initializingLabel.gameObject.SetActive(false);
 
                 Web3Modal.ChainChanged += (_, e) =>
