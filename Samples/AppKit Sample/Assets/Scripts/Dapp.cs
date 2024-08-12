@@ -4,10 +4,8 @@ using System.Numerics;
 using Nethereum.ABI.EIP712;
 using Nethereum.JsonRpc.Client;
 using Nethereum.Web3;
-using Skibitsky.Unity;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace WalletConnect.Web3Modal.Sample
