@@ -42,7 +42,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
           customParameters: -Development -test ${{ secrets.TEST_SECRET }}
-          buildMethod: UnityBuilderAction.Builder.Build
+          buildMethod: UnityBuilderAction.Builder.BuildProject
       - uses: actions/upload-artifact@v3
         with:
           name: Build-${{ matrix.targetPlatform }}
