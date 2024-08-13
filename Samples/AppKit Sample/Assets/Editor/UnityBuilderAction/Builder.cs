@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using mixpanel;
 using UnityBuilderAction.Input;
 using UnityBuilderAction.Reporting;
 using UnityBuilderAction.Versioning;
@@ -10,84 +12,105 @@ using UnityEngine;
 
 namespace UnityBuilderAction
 {
-  static class Builder
-  {
-    public static void BuildProject()
+    internal static class Builder
     {
-      // Gather values from args
-      var options = ArgumentsParser.GetValidatedOptions();
+        public static void BuildProject()
+        {
+            // Gather values from args
+            var options = ArgumentsParser.GetValidatedOptions();
 
-      // Gather values from project
-      var scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
-      
-      // Get all buildOptions from options
-      BuildOptions buildOptions = BuildOptions.None;
-      foreach (string buildOptionString in Enum.GetNames(typeof(BuildOptions))) {
-        if (options.ContainsKey(buildOptionString)) {
-          BuildOptions buildOptionEnum = (BuildOptions) Enum.Parse(typeof(BuildOptions), buildOptionString);
-          buildOptions |= buildOptionEnum;
-        }
-      }
+            InjectSecrets(options);
+
+            // Gather values from project
+            var scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
+
+            // Get all buildOptions from options
+            var buildOptions = BuildOptions.None;
+            foreach (var buildOptionString in Enum.GetNames(typeof(BuildOptions)))
+            {
+                if (options.ContainsKey(buildOptionString))
+                {
+                    var buildOptionEnum = (BuildOptions)Enum.Parse(typeof(BuildOptions), buildOptionString);
+                    buildOptions |= buildOptionEnum;
+                }
+            }
 
 #if UNITY_2021_2_OR_NEWER
-      // Determine subtarget
-      StandaloneBuildSubtarget buildSubtarget;
-      if (!options.TryGetValue("standaloneBuildSubtarget", out var subtargetValue) || !Enum.TryParse(subtargetValue, out buildSubtarget)) {
-        buildSubtarget = default;
-      }
+            // Determine subtarget
+            StandaloneBuildSubtarget buildSubtarget;
+            if (!options.TryGetValue("standaloneBuildSubtarget", out var subtargetValue) || !Enum.TryParse(subtargetValue, out buildSubtarget))
+            {
+                buildSubtarget = default;
+            }
 #endif
 
-      // Define BuildPlayer Options
-      var buildPlayerOptions = new BuildPlayerOptions {
-        scenes = scenes,
-        locationPathName = options["customBuildPath"],
-        target = (BuildTarget) Enum.Parse(typeof(BuildTarget), options["buildTarget"]),
-        options = buildOptions,
+            // Define BuildPlayer Options
+            var buildPlayerOptions = new BuildPlayerOptions
+            {
+                scenes = scenes,
+                locationPathName = options["customBuildPath"],
+                target = (BuildTarget)Enum.Parse(typeof(BuildTarget), options["buildTarget"]),
+                options = buildOptions,
 #if UNITY_2021_2_OR_NEWER
-        subtarget = (int) buildSubtarget
+                subtarget = (int)buildSubtarget
 #endif
-      };
+            };
 
-      // Set version for this build
-      VersionApplicator.SetVersion(options["buildVersion"]);
-      
-      // Apply Android settings
-      if (buildPlayerOptions.target == BuildTarget.Android)
-      {
-        VersionApplicator.SetAndroidVersionCode(options["androidVersionCode"]);
-        AndroidSettings.Apply(options);
-      }
-      
-      // Execute default AddressableAsset content build, if the package is installed.
-      // Version defines would be the best solution here, but Unity 2018 doesn't support that,
-      // so we fall back to using reflection instead.
-      var addressableAssetSettingsType = Type.GetType(
-        "UnityEditor.AddressableAssets.Settings.AddressableAssetSettings,Unity.Addressables.Editor");
-      if (addressableAssetSettingsType != null)
-      {
-        // ReSharper disable once PossibleNullReferenceException, used from try-catch
-        try
-        {
-          addressableAssetSettingsType.GetMethod("CleanPlayerContent", BindingFlags.Static | BindingFlags.Public)
-                .Invoke(null, new object[] {null});
-          addressableAssetSettingsType.GetMethod("BuildPlayerContent", new Type[0]).Invoke(null, new object[0]);
+            // Set version for this build
+            VersionApplicator.SetVersion(options["buildVersion"]);
+
+            // Apply Android settings
+            if (buildPlayerOptions.target == BuildTarget.Android)
+            {
+                VersionApplicator.SetAndroidVersionCode(options["androidVersionCode"]);
+                AndroidSettings.Apply(options);
+            }
+
+            // Execute default AddressableAsset content build, if the package is installed.
+            // Version defines would be the best solution here, but Unity 2018 doesn't support that,
+            // so we fall back to using reflection instead.
+            var addressableAssetSettingsType = Type.GetType(
+                "UnityEditor.AddressableAssets.Settings.AddressableAssetSettings,Unity.Addressables.Editor");
+            if (addressableAssetSettingsType != null)
+            {
+                // ReSharper disable once PossibleNullReferenceException, used from try-catch
+                try
+                {
+                    addressableAssetSettingsType.GetMethod("CleanPlayerContent", BindingFlags.Static | BindingFlags.Public)
+                        .Invoke(null, new object[]
+                        {
+                            null
+                        });
+                    addressableAssetSettingsType.GetMethod("BuildPlayerContent", new Type[0]).Invoke(null, new object[0]);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Failed to run default addressables build:\n{e}");
+                }
+            }
+
+            // Perform build
+            var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
+
+            // Summary
+            var summary = buildReport.summary;
+            StdOutReporter.ReportSummary(summary);
+
+            // Result
+            var result = summary.result;
+            StdOutReporter.ExitWithResult(result);
         }
-        catch (Exception e)
+
+        private static void InjectSecrets(Dictionary<string, string> options)
         {
-          Debug.LogError($"Failed to run default addressables build:\n{e}");
+            if (options.TryGetValue("mixpanelToken", out var mixpanelToken))
+            {
+                var mixpanelSettings = MixpanelSettings.Instance;
+                mixpanelSettings.RuntimeToken = mixpanelToken;
+                EditorUtility.SetDirty(mixpanelSettings);
+            }
+
+            AssetDatabase.SaveAssets();
         }
-      }
-
-      // Perform build
-      BuildReport buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
-
-      // Summary
-      BuildSummary summary = buildReport.summary;
-      StdOutReporter.ReportSummary(summary);
-
-      // Result
-      BuildResult result = summary.result;
-      StdOutReporter.ExitWithResult(result);
     }
-  }
 }
