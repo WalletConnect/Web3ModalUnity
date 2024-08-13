@@ -23,8 +23,7 @@ jobs:
           - Android # Build an Android .apk standalone app.
           - WebGL # WebGL.
     steps:
-      - if: matrix.targetPlatform == 'Android' || matrix.targetPlatform == 'WebGL'
-        uses: jlumbroso/free-disk-space@v1.3.1
+      - uses: jlumbroso/free-disk-space@v1.3.1
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
