@@ -42,7 +42,8 @@ jobs:
           buildsPath: Build
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
-          customParameters: -Development
+          customParameters: -Development -test SomeValue
+          buildMethod: UnityBuilderAction.BuildScript.Build
       - uses: actions/upload-artifact@v3
         with:
           name: Build-${{ matrix.targetPlatform }}
