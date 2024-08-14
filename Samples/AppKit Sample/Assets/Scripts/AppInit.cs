@@ -1,5 +1,4 @@
 using mixpanel;
-using Sentry;
 using Skibitsky.Unity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,8 +17,6 @@ namespace WalletConnect.Web3Modal.Sample
             InitDebugConsole();
             ConfigureMixpanel();
             SceneManager.LoadScene(_mainScene);
-
-            Debug.LogError("Test error log");
         }
 
         private void InitDebugConsole()

@@ -202,8 +202,8 @@ Camera:
   m_GameObject: {fileID: 78148689}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.34901962, g: 0.34901962, b: 0.34901962, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -397,11 +397,6 @@ MonoBehaviour:
     sceneName: AppKit Menu
     buildIndex: 2
     assetPath: Assets/Scenes/AppKit Menu.unity
-  _settingsAdditiveScene:
-    sceneAsset: {fileID: 102900000, guid: e4585ed332e2a42dfb642ec502636746, type: 3}
-    sceneName: Settings Scene
-    buildIndex: 3
-    assetPath: Assets/Scenes/Settings Scene.unity
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

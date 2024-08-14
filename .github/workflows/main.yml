@@ -2,7 +2,7 @@ name: Build Sample Project
 
 on:
   pull_request:
-    types: [opened, reopened, review_requested, synchronize]
+    types: [opened, reopened, synchronize]
   workflow_dispatch:
 
 jobs:
