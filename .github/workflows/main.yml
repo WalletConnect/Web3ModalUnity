@@ -41,7 +41,7 @@ jobs:
           buildsPath: Build
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
-          customParameters: -Development -mixpanelToken ${{ secrets.MIXPANEL_TOKEN }}
+          customParameters: -Development -mixpanelToken ${{ secrets.MIXPANEL_TOKEN }} -sentryToken ${{ secrets.SENTRY_TOKEN }}
           buildMethod: UnityBuilderAction.Builder.BuildProject
       - uses: actions/upload-artifact@v3
         with:
