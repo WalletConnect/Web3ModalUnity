@@ -9,12 +9,13 @@ namespace UnityBuilderAction.Input
     {
         private static string EOL = Environment.NewLine;
 
-        private static readonly string[] Secrets =
+        private static readonly HashSet<string> Secrets = new()
         {
             "androidKeystorePass",
             "androidKeyaliasName",
             "androidKeyaliasPass",
-            "mixpanelToken"
+            "mixpanelToken",
+            "sentryToken"
         };
 
         public static Dictionary<string, string> GetValidatedOptions()

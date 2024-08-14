@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using mixpanel;
+using Sentry;
+using Sentry.Unity;
 using UnityBuilderAction.Input;
 using UnityBuilderAction.Reporting;
 using UnityBuilderAction.Versioning;
@@ -107,7 +109,15 @@ namespace UnityBuilderAction
             {
                 var mixpanelSettings = MixpanelSettings.Instance;
                 mixpanelSettings.RuntimeToken = mixpanelToken;
+                mixpanelSettings.DebugToken = mixpanelToken;
                 EditorUtility.SetDirty(mixpanelSettings);
+            }
+
+            if (options.TryGetValue("sentryToken", out var sentryToken))
+            {
+                var sentryOptions = Resources.Load<ScriptableSentryUnityOptions>("Sentry/SentryOptions");
+                sentryOptions.Dsn = sentryToken;
+                EditorUtility.SetDirty(sentryOptions);
             }
 
             AssetDatabase.SaveAssets();
