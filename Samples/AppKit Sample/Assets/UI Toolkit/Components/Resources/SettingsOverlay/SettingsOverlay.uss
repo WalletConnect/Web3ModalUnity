@@ -11,7 +11,7 @@
     width: 100%;
     max-width: 300px;
     flex-direction: column;
-    margin: 24 12 24 12px;
+    padding: 24 12 24 12px;
     align-self: center;
 }
 

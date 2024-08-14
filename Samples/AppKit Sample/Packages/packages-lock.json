@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.bgtools.playerprefseditor": {
+      "version": "1.2.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
     "com.mixpanel.unity": {
       "version": "3.5.2",
       "depth": 0,

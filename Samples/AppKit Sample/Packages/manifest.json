@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.mixpanel.unity": "3.5.2",
+    "com.bgtools.playerprefseditor": "1.2.2",
     "com.skibitsky.scene-reference": "1.1.1",
     "com.unity.ide.rider": "3.0.31",
     "com.unity.ide.visualstudio": "2.0.22",
@@ -44,13 +44,15 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0"
+    "com.unity.modules.xr": "1.0.0",
+    "com.mixpanel.unity": "3.5.2"
   },
   "scopedRegistries": [
     {
       "name": "package.openupm.com",
       "url": "https://package.openupm.com",
       "scopes": [
+        "com.bgtools.playerprefseditor",
         "com.mixpanel.unity",
         "com.nethereum.unity",
         "com.openupm",

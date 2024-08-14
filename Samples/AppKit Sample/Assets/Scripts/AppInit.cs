@@ -1,3 +1,4 @@
+using mixpanel;
 using Skibitsky.Unity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,6 +15,7 @@ namespace WalletConnect.Web3Modal.Sample
         private void Start()
         {
             InitDebugConsole();
+            ConfigureMixpanel();
             SceneManager.LoadScene(_mainScene);
         }
 
@@ -23,6 +25,19 @@ namespace WalletConnect.Web3Modal.Sample
             DontDestroyOnLoad(gameObject);
             _debugConsole.SetActive(true);
 #endif
+        }
+
+        private void ConfigureMixpanel()
+        {
+            Application.logMessageReceived += (logString, stackTrace, type) =>
+            {
+                var props = new Value
+                {
+                    ["type"] = type.ToString(),
+                    ["scene"] = SceneManager.GetActiveScene().name
+                };
+                Mixpanel.Track(logString, props);
+            };
         }
     }
 }
