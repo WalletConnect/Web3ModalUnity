@@ -461,6 +461,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Sample App Settings
       objectReference: {fileID: 0}
+    - target: {fileID: 5646204827564164080, guid: cd8fd27d7d8b64bb68e3ab851d5f2af6, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7501974493997193593, guid: cd8fd27d7d8b64bb68e3ab851d5f2af6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

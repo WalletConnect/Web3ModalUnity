@@ -4,33 +4,128 @@ using System.Numerics;
 using Nethereum.ABI.EIP712;
 using Nethereum.JsonRpc.Client;
 using Nethereum.Web3;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
+using ButtonUtk = UnityEngine.UIElements.Button;
 
 namespace WalletConnect.Web3Modal.Sample
 {
     public class Dapp : MonoBehaviour
     {
-        private bool _resumed;
+        [SerializeField] private UIDocument _uiDocument;
 
-        [SerializeField] private TMP_Text _activeChainId;
-        [SerializeField] private TMP_Text _initializingLabel;
-
-        [Space] [SerializeField] private Button _connectButton;
-        [SerializeField] private Button _networkButton;
-        [SerializeField] private Button _accountButton;
-        [SerializeField] private Button _signTypedDataButton;
-        [SerializeField] private Button _transactionButton;
-        [SerializeField] private Button _personalSignButton;
-        [SerializeField] private Button _getBalanceButton;
-        [SerializeField] private Button _readContractButton;
-        [SerializeField] private Button _disconnectButton;
+        private ButtonStruct[] _buttons;
+        private VisualElement _buttonsContainer;
 
         private void Awake()
         {
             Application.targetFrameRate = Screen.currentResolution.refreshRate;
-            _connectButton.interactable = false;
+
+            _buttonsContainer = _uiDocument.rootVisualElement.Q<VisualElement>("ButtonsContainer");
+
+            BuildButtons();
+        }
+
+        private void BuildButtons()
+        {
+            _buttons = new[]
+            {
+                new ButtonStruct
+                {
+                    Text = "Connect",
+                    OnClick = OnConnectButton,
+                    AccountRequired = false
+                },
+                new ButtonStruct
+                {
+                    Text = "Network",
+                    OnClick = OnNetworkButton
+                },
+                new ButtonStruct
+                {
+                    Text = "Account",
+                    OnClick = OnAccountButton,
+                    AccountRequired = true
+                },
+                new ButtonStruct
+                {
+                    Text = "Personal Sign",
+                    OnClick = OnPersonalSignButton,
+                    AccountRequired = true
+                },
+                new ButtonStruct
+                {
+                    Text = "Sign Typed Data",
+                    OnClick = OnSignTypedDataV4Button,
+                    AccountRequired = true
+                },
+                new ButtonStruct
+                {
+                    Text = "Send Transaction",
+                    OnClick = OnSendTransactionButton,
+                    AccountRequired = true
+                },
+                new ButtonStruct
+                {
+                    Text = "Get Balance",
+                    OnClick = OnGetBalanceButton,
+                    AccountRequired = true
+                },
+                new ButtonStruct
+                {
+                    Text = "Read Contract",
+                    OnClick = OnReadContractClicked,
+                    AccountRequired = true,
+                    ChainIds = new HashSet<string>
+                    {
+                        "eip155:1"
+                    }
+                },
+                new ButtonStruct
+                {
+                    Text = "Disconnect",
+                    OnClick = OnDisconnectButton,
+                    AccountRequired = true
+                }
+            };
+        }
+
+        private void RefreshButtons()
+        {
+            _buttonsContainer.Clear();
+
+            foreach (var button in _buttons)
+            {
+                if (button.ChainIds != null && !button.ChainIds.Contains(Web3Modal.NetworkController?.ActiveChain?.ChainId))
+                    continue;
+
+                var buttonUtk = new ButtonUtk
+                {
+                    text = button.Text
+                };
+                buttonUtk.clicked += button.OnClick;
+
+                if (button.AccountRequired.HasValue)
+                {
+                    switch (button.AccountRequired)
+                    {
+                        case true when !Web3Modal.IsAccountConnected:
+                            buttonUtk.SetEnabled(false);
+                            break;
+                        case true when Web3Modal.IsAccountConnected:
+                            buttonUtk.SetEnabled(true);
+                            break;
+                        case false when Web3Modal.IsAccountConnected:
+                            buttonUtk.SetEnabled(false);
+                            break;
+                        case false when !Web3Modal.IsAccountConnected:
+                            buttonUtk.SetEnabled(true);
+                            break;
+                    }
+                }
+
+                _buttonsContainer.Add(buttonUtk);
+            }
         }
 
         private async void Start()
@@ -40,68 +135,30 @@ namespace WalletConnect.Web3Modal.Sample
                 Notification.ShowMessage("Web3Modal is not initialized. Please initialize Web3Modal first.");
                 return;
             }
-            
+
+            RefreshButtons();
+
             try
             {
-                _initializingLabel.gameObject.SetActive(false);
-
                 Web3Modal.ChainChanged += (_, e) =>
                 {
+                    RefreshButtons();
+
                     if (e.Chain == null)
                     {
-                        _activeChainId.text = "Unsupported chain";
+                        Notification.ShowMessage("Unsupported chain");
                         return;
                     }
-
-                    _activeChainId.text = e.Chain.ChainId;
                 };
 
-                Web3Modal.AccountConnected += async (_, e) =>
-                {
-                    _connectButton.interactable = false;
-                    _accountButton.interactable = true;
-                    _signTypedDataButton.interactable = true;
-                    _transactionButton.interactable = true;
-                    _personalSignButton.interactable = true;
-                    _getBalanceButton.interactable = true;
-                    _readContractButton.interactable = true;
-                    _disconnectButton.interactable = true;
+                Web3Modal.AccountConnected += async (_, e) => { RefreshButtons(); };
 
-                    var account = await e.GetAccount();
-                    _activeChainId.text = account.ChainId;
-                };
+                Web3Modal.AccountDisconnected += (_, _) => { RefreshButtons(); };
 
-                Web3Modal.AccountDisconnected += (_, _) =>
-                {
-                    _connectButton.interactable = true;
-                    _accountButton.interactable = false;
-                    _signTypedDataButton.interactable = false;
-                    _transactionButton.interactable = false;
-                    _personalSignButton.interactable = false;
-                    _getBalanceButton.interactable = false;
-                    _readContractButton.interactable = false;
-                    _disconnectButton.interactable = false;
+                Web3Modal.AccountChanged += (_, e) => { RefreshButtons(); };
 
-                    _activeChainId.text = string.Empty;
-                };
-
-                Web3Modal.AccountChanged += (_, e) =>
-                {
-                    var account = e.Account;
-                    _activeChainId.text = account.ChainId;
-                };
-
-                _resumed = await Web3Modal.ConnectorController.TryResumeSessionAsync();
-                
-                _networkButton.interactable = true;
-                _connectButton.interactable = !_resumed;
-                _accountButton.interactable = _resumed;
-                _signTypedDataButton.interactable = _resumed;
-                _transactionButton.interactable = _resumed;
-                _personalSignButton.interactable = _resumed;
-                _getBalanceButton.interactable = _resumed;
-                _readContractButton.interactable = _resumed;
-                _disconnectButton.interactable = _resumed;
+                var sessionResumed = await Web3Modal.ConnectorController.TryResumeSessionAsync();
+                Debug.Log($"Session resumed: {sessionResumed}");
             }
             catch (Exception e)
             {
@@ -149,7 +206,7 @@ namespace WalletConnect.Web3Modal.Sample
         public async void OnPersonalSignButton()
         {
             Debug.Log("[Web3Modal Sample] OnPersonalSignButton");
-            
+
             try
             {
                 var account = await Web3Modal.GetAccountAsync();
@@ -157,7 +214,7 @@ namespace WalletConnect.Web3Modal.Sample
                 const string message = "Hello from Unity!";
                 var signature = await Web3Modal.Evm.SignMessageAsync(message);
                 var isValid = await Web3Modal.Evm.VerifyMessageSignatureAsync(account.Address, message, signature);
-                
+
                 Notification.ShowMessage($"Signature valid: {isValid}");
             }
             catch (RpcResponseException e)
@@ -187,13 +244,13 @@ namespace WalletConnect.Web3Modal.Sample
         public async void OnSendTransactionButton()
         {
             Debug.Log("[Web3Modal Sample] OnSendTransactionButton");
-            
+
             const string toAddress = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
 
             try
             {
                 Notification.ShowMessage("Sending transaction...");
-                
+
                 var value = Web3.Convert.ToWei(0.001);
                 var result = await Web3Modal.Evm.SendTransactionAsync(toAddress, value);
                 Debug.Log("Transaction hash: " + result);
@@ -248,13 +305,13 @@ namespace WalletConnect.Web3Modal.Sample
             typedData.SetMessage(mail);
 
             var jsonMessage = typedData.ToJson();
-            
+
             try
-            { 
+            {
                 var signature = await Web3Modal.Evm.SignTypedDataAsync(jsonMessage);
-                
+
                 var isValid = await Web3Modal.Evm.VerifyTypedDataSignatureAsync(account.Address, jsonMessage, signature);
-                
+
                 Notification.ShowMessage($"Signature valid: {isValid}");
             }
             catch (Exception e)
@@ -263,21 +320,21 @@ namespace WalletConnect.Web3Modal.Sample
                 Debug.LogException(e, this);
             }
         }
-        
+
         public async void OnReadContractClicked()
         {
-            if (Web3Modal.NetworkController.ActiveChain.ChainId != "1")
+            if (Web3Modal.NetworkController.ActiveChain.ChainId != "eip155:1")
             {
                 Notification.ShowMessage("Please switch to Ethereum mainnet.");
                 return;
             }
-            
+
             const string contractAddress = "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"; // on Ethereum mainnet
             const string yugaLabsAddress = "0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1";
             const string abi = CryptoPunksAbi;
-            
+
             Notification.ShowMessage("Reading smart contract state...");
-            
+
             try
             {
                 var tokenName = await Web3Modal.Evm.ReadContractAsync<string>(contractAddress, abi, "name");
@@ -288,7 +345,7 @@ namespace WalletConnect.Web3Modal.Sample
                     yugaLabsAddress
                 });
                 var result = $"Yuga Labs owns: {balance} {tokenName} tokens active chain.";
-                
+
                 Notification.ShowMessage(result);
             }
             catch (Exception e)
@@ -313,9 +370,17 @@ namespace WalletConnect.Web3Modal.Sample
                 PrimaryType = nameof(Mail)
             };
         }
-        
+
         public const string CryptoPunksAbi =
             @"[{""constant"":true,""inputs"":[{""name"":""_owner"",""type"":""address""}],""name"":""balanceOf"",""outputs"":[{""name"":""balance"",""type"":""uint256""}],""payable"":false,""stateMutability"":""view"",""type"":""function""},
         {""constant"":true,""inputs"":[],""name"":""name"",""outputs"":[{""name"":"""",""type"":""string""}],""payable"":false,""stateMutability"":""view"",""type"":""function""}]";
+    }
+
+    internal struct ButtonStruct
+    {
+        public string Text;
+        public Action OnClick;
+        public bool? AccountRequired;
+        public HashSet<string> ChainIds;
     }
 }

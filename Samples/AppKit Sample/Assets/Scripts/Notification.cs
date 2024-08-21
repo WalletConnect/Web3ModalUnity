@@ -1,12 +1,16 @@
-using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace WalletConnect.Web3Modal.Sample
 {
     public class Notification : MonoBehaviour
     {
-        [SerializeField] private GameObject _root;
-        [SerializeField] private TMP_Text _messageText;
+        [SerializeField] private UIDocument _uiDocument;
+
+        public VisualElement NotificationContainer;
+
+        private Label _messageLabel;
+        private Button _buttonHide;
 
         public static Notification Instance
         {
@@ -19,12 +23,16 @@ namespace WalletConnect.Web3Modal.Sample
             }
         }
 
-        public GameObject Root
-        {
-            get => _root;
-        }
-
         private static Notification _instance;
+
+        private void Awake()
+        {
+            NotificationContainer = _uiDocument.rootVisualElement.Q<VisualElement>("NotificationContainer");
+            _messageLabel = _uiDocument.rootVisualElement.Q<Label>("NotificationText");
+            _buttonHide = _uiDocument.rootVisualElement.Q<Button>("NotificationButton");
+
+            _buttonHide.clicked += OnButtonHide;
+        }
 
         public static void ShowMessage(string message)
         {
@@ -35,13 +43,13 @@ namespace WalletConnect.Web3Modal.Sample
         {
             Debug.Log(message, this);
 
-            _messageText.text = message;
-            _root.SetActive(true);
+            _messageLabel.text = message;
+            NotificationContainer.style.display = DisplayStyle.Flex;
         }
 
         public static void Hide()
         {
-            Instance.Root.SetActive(false);
+            Instance.NotificationContainer.style.display = DisplayStyle.None;
         }
 
         public void OnButtonHide()
