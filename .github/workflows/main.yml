@@ -1,6 +1,9 @@
 name: Build Sample Project
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
 
 jobs:
   buildForAllSupportedPlatforms:
@@ -12,16 +15,15 @@ jobs:
         projectPath:
           - 'Samples/AppKit Sample'
         targetPlatform:
-          - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
+          # - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
           # - StandaloneWindows # Build a Windows standalone.
-          # - StandaloneWindows64 # Build a Windows 64-bit standalone.
+          - StandaloneWindows64 # Build a Windows 64-bit standalone.
           # - StandaloneLinux64 # Build a Linux 64-bit standalone.
           # - iOS # Build an iOS player.
           - Android # Build an Android .apk standalone app.
           - WebGL # WebGL.
     steps:
-      - if: matrix.targetPlatform == 'Android' || matrix.targetPlatform == 'WebGL'
-        uses: jlumbroso/free-disk-space@v1.3.1
+      - uses: jlumbroso/free-disk-space@v1.3.1
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -39,7 +41,8 @@ jobs:
           buildsPath: Build
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
-          customParameters: -Development
+          customParameters: -Development -mixpanelToken ${{ secrets.MIXPANEL_TOKEN }} -sentryToken ${{ secrets.SENTRY_TOKEN }}
+          buildMethod: UnityBuilderAction.Builder.BuildProject
       - uses: actions/upload-artifact@v3
         with:
           name: Build-${{ matrix.targetPlatform }}
@@ -49,6 +52,8 @@ jobs:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
     needs: buildForAllSupportedPlatforms
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -64,4 +69,6 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: Build/WebGL/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-comment: true
+          working-directory: Build/WebGL/WebGL
