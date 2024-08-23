@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,15 +14,18 @@ namespace WalletConnect.Web3Modal
     {
         private WalletConnectConnectionProposal _connectionProposal;
         private Wallet _wallet;
+        private bool _disposed;
 
         private const string ContinueInTextTemplate = "Continue in {0}";
 
         public WebAppPresenter(RouterController router, VisualElement parent, bool hideView = true) : base(router, parent, hideView)
         {
             View.style.display = DisplayStyle.Flex;
-            
+
             View.OpenLinkClicked += OnOpenLinkClicked;
             View.CopyLinkClicked += OnCopyLinkClicked;
+
+            Web3Modal.AccountConnected += AccountConnectedHandler;
         }
 
         protected override WebAppView CreateViewInstance()
@@ -57,6 +61,37 @@ namespace WalletConnect.Web3Modal
         {
             GUIUtility.systemCopyBuffer = _connectionProposal.Uri;
             Web3Modal.NotificationController.Notify(NotificationType.Success, "Link copied to clipboard");
+        }
+
+        private void AccountConnectedHandler(object sender, Connector.AccountConnectedEventArgs e)
+        {
+            if (!IsVisible)
+                return;
+
+            Web3Modal.EventsController.SendEvent(new Event
+            {
+                name = "CONNECT_SUCCESS",
+                properties = new Dictionary<string, object>
+                {
+                    { "method", "web" },
+                    { "name", _wallet.Name },
+                    { "explorer_id", _wallet.Id }
+                }
+            });
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Web3Modal.AccountConnected -= AccountConnectedHandler;
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
         }
     }
 }

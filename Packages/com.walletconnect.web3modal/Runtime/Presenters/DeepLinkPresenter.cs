@@ -1,7 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using WalletConnect.UI;
+using WalletConnect.Web3Modal.Utils;
 using WalletConnectUnity.Core;
 using WalletConnectUnity.Core.Networking;
 using WalletConnectUnity.Core.Utils;
@@ -30,6 +32,8 @@ namespace WalletConnect.Web3Modal
 
             _waitForSeconds5 = new WaitForSecondsRealtime(5f);
             _waitForSeconds05 = new WaitForSecondsRealtime(0.5f);
+
+            Web3Modal.AccountConnected += AccountConnectedHandler;
 
 #if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
             UnityEventsDispatcher.Instance.ApplicationFocus += OnApplicationHandler;
@@ -131,6 +135,32 @@ namespace WalletConnect.Web3Modal
         }
 #endif
 
+        private void AccountConnectedHandler(object sender, Connector.AccountConnectedEventArgs e)
+        {
+            if (!IsVisible)
+                return;
+
+            Web3Modal.EventsController.SendEvent(new Event
+            {
+                name = "CONNECT_SUCCESS",
+                properties = new Dictionary<string, object>
+                {
+                    {
+                        "method",
+#if UNITY_IOS || UNITY_VISIONOS || UNITY_ANDROID
+                        "mobile"
+#elif UNITY_STANDALONE
+                        "desktop"
+#else
+                        "undefined"
+#endif
+                    },
+                    { "name", _wallet.Name },
+                    { "explorer_id", _wallet.Id }
+                }
+            });
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (_disposed)
@@ -149,6 +179,8 @@ namespace WalletConnect.Web3Modal
 
                 View.CopyLinkClicked -= OnCopyLinkClicked;
                 View.TryAgainLinkClicked -= OnTryAgainLinkClicked;
+
+                Web3Modal.AccountConnected -= AccountConnectedHandler;
             }
 
             _disposed = true;

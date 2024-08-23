@@ -34,6 +34,15 @@ namespace WalletConnect.Web3Modal
         {
             Web3Modal.NotificationController.Notify(NotificationType.Error, e.Message);
             RefreshConnection();
+
+            Web3Modal.EventsController.SendEvent(new Event
+            {
+                name = "CONNECT_ERROR",
+                properties = new System.Collections.Generic.Dictionary<string, object>
+                {
+                    { "message", e.Message }
+                }
+            });
         }
 
         private IEnumerator RefreshOnIntervalRoutine()

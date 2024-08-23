@@ -14,7 +14,7 @@ namespace WalletConnect.Web3Modal
     public class ConnectPresenter : Presenter<VisualElement>
     {
         private bool _disposed;
-        
+
         public override string Title
         {
             get => "Connect wallet";
@@ -143,7 +143,14 @@ namespace WalletConnect.Web3Modal
 
         protected virtual ListItem BuildAllWalletsListItem(int responseCount)
         {
-            var allWalletsListItem = new ListItem("All wallets", (Sprite)null, () => Router.OpenView(ViewType.WalletSearch));
+            var allWalletsListItem = new ListItem("All wallets", (Sprite)null, () =>
+            {
+                Router.OpenView(ViewType.WalletSearch);
+                Web3Modal.EventsController.SendEvent(new Event
+                {
+                    name = "CLICK_ALL_WALLETS"
+                });
+            });
             var roundedCount = MathF.Round((float)responseCount / 10) * 10;
             allWalletsListItem.RightSlot.Add(new Tag($"{roundedCount}+", Tag.TagType.Info));
             return allWalletsListItem;

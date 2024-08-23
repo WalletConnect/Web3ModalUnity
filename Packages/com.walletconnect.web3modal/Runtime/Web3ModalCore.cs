@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using WalletConnectUnity.Core;
@@ -31,6 +32,7 @@ namespace WalletConnect.Web3Modal
             BlockchainApiController = new BlockchainApiController();
             NotificationController = new NotificationController();
             NetworkController = new NetworkControllerCore();
+            EventsController = new EventsController();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             Evm = new WagmiEvmService();
@@ -41,6 +43,7 @@ namespace WalletConnect.Web3Modal
             await Task.WhenAll(
                 ConnectorController.InitializeAsync(Config),
                 ModalController.InitializeAsync(),
+                EventsController.InitializeAsync(Config, ApiController),
                 NetworkController.InitializeAsync(ConnectorController, Config.supportedChains),
                 AccountController.InitializeAsync(ConnectorController, NetworkController, BlockchainApiController)
             );
@@ -49,6 +52,11 @@ namespace WalletConnect.Web3Modal
 
             ConnectorController.AccountConnected += AccountConnectedHandler;
             ConnectorController.AccountDisconnected += AccountDisconnectedHandler;
+
+            EventsController.SendEvent(new Event
+            {
+                name = "MODAL_LOADED"
+            });
         }
 
         protected override void OpenModalCore(ViewType viewType = ViewType.None)

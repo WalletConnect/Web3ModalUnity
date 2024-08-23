@@ -172,6 +172,11 @@ namespace WalletConnect.Web3Modal
         protected virtual void OnNetworkButtonClick()
         {
             Router.OpenView(ViewType.NetworkSearch);
+
+            Web3Modal.EventsController.SendEvent(new Event
+            {
+                name = "CLICK_NETWORKS"
+            });
         }
 
         protected virtual void OnBlockExplorerButtonClick()
