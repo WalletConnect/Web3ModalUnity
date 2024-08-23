@@ -21,6 +21,7 @@ namespace WalletConnect.Web3Modal
         public async Task InitializeAsync(Web3ModalConfig config, ApiController apiController)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
+            _state = AnalyticsState.Disabled;
             return;
 #endif
 
@@ -68,7 +69,7 @@ namespace WalletConnect.Web3Modal
 
                 var requestJson = JsonConvert.SerializeObject(request);
 
-                Debug.Log($"[EventsController] Sending event: {@event.name}");
+                Debug.Log($"[EventsController] Sending event: {@event.name}.\n\nRequest payload:\n {requestJson}");
 
                 await _httpClient.PostAsync("e", requestJson);
             }
@@ -104,7 +105,7 @@ namespace WalletConnect.Web3Modal
         [JsonProperty("event")]
         public string name;
 
-        [JsonProperty("properties")]
+        [JsonProperty("properties", NullValueHandling = NullValueHandling.Ignore)]
         public IDictionary<string, object> properties;
     }
 }

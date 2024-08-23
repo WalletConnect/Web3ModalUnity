@@ -15,12 +15,11 @@ namespace WalletConnect.Web3Modal
 #if UNITY_WEBGL
     public class WebGlConnector : Connector
     {
-
         [DllImport("__Internal")]
         private static extern void Initialize(string parameters, Action callback);
 
         private static TaskCompletionSource<bool> _initializationTaskCompletionSource;
-        
+
         private string _lastAccountStatus;
 
         public WebGlConnector()
@@ -36,17 +35,18 @@ namespace WalletConnect.Web3Modal
                 .Where(c => !string.IsNullOrWhiteSpace(c.ViemName))
                 .Select(c => c.ViemName)
                 .ToArray();
-            
+
             var parameters = new WebGlInitializeParameters
             {
                 projectId = walletConnectConfig.Id,
                 metadata = walletConnectConfig.Metadata,
                 chains = viemChainNames,
                 enableOnramp = web3ModalConfig.enableOnramp,
+                enableAnalytics = web3ModalConfig.enableAnalytics
             };
-            
+
             var parametersJson = JsonConvert.SerializeObject(parameters);
-            
+
 #pragma warning disable S2696
             _initializationTaskCompletionSource = new TaskCompletionSource<bool>();
 #pragma warning restore S2696
@@ -54,10 +54,10 @@ namespace WalletConnect.Web3Modal
             Initialize(parametersJson, InitializationCallback);
 
             await _initializationTaskCompletionSource.Task;
-            
+
             WagmiInterop.InitializeEvents();
             ModalInterop.InitializeEvents();
-            
+
             WagmiInterop.WatchAccountTriggered += WatchAccountTriggeredHandler;
             WagmiInterop.WatchChainIdTriggered += WatchChainIdTriggeredHandler;
         }
@@ -79,9 +79,9 @@ namespace WalletConnect.Web3Modal
             if (getAccountResult.isConnecting)
             {
                 var tcs = new TaskCompletionSource<bool>();
-                
+
                 WagmiInterop.WatchAccountTriggered += WagmiInteropOnWatchAccountTriggered;
-                
+
                 void WagmiInteropOnWatchAccountTriggered(GetAccountReturnType arg)
                 {
                     if (arg.isConnecting)
@@ -91,6 +91,7 @@ namespace WalletConnect.Web3Modal
 
                     WagmiInterop.WatchAccountTriggered -= WagmiInteropOnWatchAccountTriggered;
                 }
+
                 var result = await tcs.Task;
 
                 return result;
@@ -125,12 +126,12 @@ namespace WalletConnect.Web3Modal
                 .Select(addr => new Account(addr, chainId))
                 .ToArray();
         }
-        
+
         private void WatchAccountTriggeredHandler(GetAccountReturnType arg)
         {
             var previousLastAccountStatus = _lastAccountStatus;
             _lastAccountStatus = arg.status;
-            
+
             var account = new Account(arg.address, $"eip155:{arg.chainId}");
 
             if (_lastAccountStatus == "connected" && previousLastAccountStatus != "connected")
@@ -155,11 +156,11 @@ namespace WalletConnect.Web3Modal
         {
             if (ethChainId == default)
                 return;
-            
+
             var chainId = $"eip155:{ethChainId}";
             OnChainChanged(new ChainChangedEventArgs(chainId));
         }
-        
+
         [MonoPInvokeCallback(typeof(Action))]
         public static void InitializationCallback()
         {
@@ -173,8 +174,9 @@ namespace WalletConnect.Web3Modal
         public string projectId;
         public Metadata metadata;
         public string[] chains;
-        
+
         public bool enableOnramp;
+        public bool enableAnalytics;
     }
 #endif
 }
