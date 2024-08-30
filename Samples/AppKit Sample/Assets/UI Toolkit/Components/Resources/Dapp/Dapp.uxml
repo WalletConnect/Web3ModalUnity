@@ -7,7 +7,7 @@
         <ui:ScrollView name="ButtonsContainer" mode="Vertical" vertical-scroller-visibility="Hidden"/>
 
     </ui:VisualElement>
-    <ui:VisualElement name="NotificationContainer" picking-mode="Ignore">
+    <ui:VisualElement name="NotificationContainer">
         <ui:Label name="NotificationText" text="Notification"/>
         <ui:Button name="NotificationButton" text="Close"/>
     </ui:VisualElement>
