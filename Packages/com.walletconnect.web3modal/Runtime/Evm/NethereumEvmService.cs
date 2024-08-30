@@ -1,6 +1,7 @@
+using System;
 using System.Numerics;
-using System.Threading;
 using System.Threading.Tasks;
+using Nethereum.Contracts;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Signer;
@@ -123,7 +124,7 @@ namespace WalletConnect.Web3Modal
         {
             var contract = Web3.Eth.GetContract(contractAbi, contractAddress);
             var function = contract.GetFunction(methodName);
-
+            
             return await function.SendTransactionAsync(
                 null, // will be automatically filled by interceptor
                 new HexBigInteger(gas),
@@ -139,6 +140,24 @@ namespace WalletConnect.Web3Modal
         {
             var transactionInput = new TransactionInput(data, addressTo, new HexBigInteger(value));
             return Web3.Client.SendRequestAsync<string>("eth_sendTransaction", null, transactionInput);
+        }
+
+
+        // -- Estimate Gas ---------------------------------------------
+        
+        protected override async Task<BigInteger> EstimateGasAsyncCore(string addressTo, BigInteger value, string data = null)
+        {
+            var transactionInput = new TransactionInput(data, addressTo, new HexBigInteger(value));
+            return await Web3.Eth.Transactions.EstimateGas.SendRequestAsync(transactionInput);
+        }
+
+        protected override async Task<BigInteger> EstimateGasAsyncCore(string contractAddress, string contractAbi, string methodName, BigInteger value = default, params object[] arguments)
+        {
+            var contract = Web3.Eth.GetContract(contractAbi, contractAddress);
+            var function = contract.GetFunction(methodName);
+            
+            var transactionInput = new TransactionInput(function.GetData(arguments), contractAddress, new HexBigInteger(value));
+            return await Web3.Eth.Transactions.EstimateGas.SendRequestAsync(transactionInput);
         }
     }
 }

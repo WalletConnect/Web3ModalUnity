@@ -83,6 +83,12 @@ namespace WalletConnect.Web3Modal.Sample
                 },
                 new ButtonStruct
                 {
+                    Text = "Write Contract",
+                    OnClick = OnWriteContractClicked,
+                    AccountRequired = true
+                },
+                new ButtonStruct
+                {
                     Text = "Disconnect",
                     OnClick = OnDisconnectButton,
                     AccountRequired = true
@@ -212,9 +218,14 @@ namespace WalletConnect.Web3Modal.Sample
                 var account = await Web3Modal.GetAccountAsync();
 
                 const string message = "Hello from Unity!";
-                var signature = await Web3Modal.Evm.SignMessageAsync(message);
-                var isValid = await Web3Modal.Evm.VerifyMessageSignatureAsync(account.Address, message, signature);
 
+                Debug.Log("Signing message...");
+                var signature = await Web3Modal.Evm.SignMessageAsync(message);
+
+                Debug.Log("Verifying signature...");
+                var isValid = await Web3Modal.Evm.VerifyMessageSignatureAsync(account.Address, message, signature);
+                
+                Debug.Log($"Signature valid: {isValid}");
                 Notification.ShowMessage($"Signature valid: {isValid}");
             }
             catch (RpcResponseException e)
@@ -353,6 +364,32 @@ namespace WalletConnect.Web3Modal.Sample
                 Notification.ShowMessage($"Contract reading error.\n{e.Message}");
                 Debug.LogException(e, this);
             }
+        }
+
+        public async void OnWriteContractClicked()
+        {
+            const string contractAddress = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984";
+            const string recipientAddress = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
+            const string abi = @"[{""constant"":false,""inputs"":[{""name"":""to"",""type"":""address""},{""name"":""value"",""type"":""uint256""}],""name"":""transfer"",""outputs"":[{""name"":"""",""type"":""bool""}],""payable"":false,""stateMutability"":""nonpayable"",""type"":""function""}]";
+            
+            BigInteger amount = 1;
+
+            Debug.Log("Let's estimate gas...");
+            
+            var gas = await Web3Modal.Evm.EstimateGasAsync(contractAddress, abi, "transfer", value: default, recipientAddress, amount);
+            
+            Debug.Log($"Estimated gas: {gas}");
+            
+
+
+            // // Arguments for the transfer method. The order of the arguments must match the order in the method signature.
+            // // Method signature: `function transfer(address _to, uint256 _value) public returns (bool success)`
+            // var arguments = new object[]
+            // {
+            //     recipientAddress,
+            //     amount
+            // };
+            // var result = await Web3Modal.Evm.WriteContractAsync(contractAddress, abi, "transfer", arguments);
         }
 
         private TypedData<Domain> GetMailTypedDefinition()

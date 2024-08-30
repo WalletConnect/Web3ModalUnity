@@ -238,6 +238,21 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
         {
             return InteropCallAsync<SendTransactionParameter, string>(WagmiMethods.SendTransaction, parameter);
         }
+        
+        
+        // -- Estimate Gas --------------------------------------------
+        
+        public static Task<string> EstimateGasAsync(string to, string value = "0", string data = null)
+        {
+            var parameter = new EstimateGasParameter
+            {
+                to = to,
+                value = value,
+                data = data
+            };
+
+            return InteropCallAsync<EstimateGasParameter, string>(WagmiMethods.EstimateGas, parameter);
+        }
     }
 #endif
 }
