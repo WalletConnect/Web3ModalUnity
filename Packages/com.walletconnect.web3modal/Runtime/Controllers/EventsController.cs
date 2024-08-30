@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using WalletConnect.Web3Modal.Http;
-using WalletConnectUnity.Core;
 
 namespace WalletConnect.Web3Modal
 {
@@ -54,6 +53,10 @@ namespace WalletConnect.Web3Modal
 
         public async void SendEvent(Event @event)
         {
+#if !UNITY_IOS && !UNITY_ANDROID
+            // Temporary disable analytics for non-mobile platforms
+            return;
+#endif
             try
             {
                 if (_state == AnalyticsState.Disabled)
