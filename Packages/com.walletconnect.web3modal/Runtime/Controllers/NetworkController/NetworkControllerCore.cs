@@ -26,6 +26,15 @@ namespace WalletConnect.Web3Modal
                 await Web3Modal.ConnectorController.ChangeActiveChainAsync(chain);
             else
                 ActiveChain = chain;
+
+            Web3Modal.EventsController.SendEvent(new Event
+            {
+                name = "SWITCH_NETWORK",
+                properties = new Dictionary<string, object>
+                {
+                    { "network", chain.ChainId }
+                }
+            });
         }
 
         protected override void ConnectorChainChangedHandlerCore(object sender, Connector.ChainChangedEventArgs e)
@@ -43,7 +52,7 @@ namespace WalletConnect.Web3Modal
             if (ActiveChain == null)
             {
                 var defaultAccount = await e.GetAccount();
-                
+
                 if (Chains.TryGetValue(defaultAccount.ChainId, out var defaultAccountChain))
                 {
                     ActiveChain = defaultAccountChain;

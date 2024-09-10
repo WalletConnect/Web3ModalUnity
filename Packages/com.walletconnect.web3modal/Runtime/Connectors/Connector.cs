@@ -122,6 +122,11 @@ namespace WalletConnect.Web3Modal
         protected virtual void OnAccountDisconnected(AccountDisconnectedEventArgs e)
         {
             AccountDisconnected?.Invoke(this, e);
+
+            Web3Modal.EventsController.SendEvent(new Event
+            {
+                name = "DISCONNECT_SUCCESS"
+            });
         }
 
         protected virtual void OnAccountChanged(AccountChangedEventArgs e)

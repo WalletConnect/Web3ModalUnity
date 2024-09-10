@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -77,14 +78,35 @@ namespace WalletConnect.Web3Modal
         {
             base.OnVisibleCore();
 
-            if (WalletUtils.TryGetLastViewedWallet(out var wallet))
-            {
-                _wallet = wallet;
-                Title = wallet.Name;
+            if (!WalletUtils.TryGetLastViewedWallet(out var wallet))
+                throw new Exception("Wallet not found"); // TODO: use custom ex type
 
-                ConfigureTabs(wallet);
-                ConfigureGetWalletContainer(wallet);
-            }
+            _wallet = wallet;
+            Title = wallet.Name;
+
+            ConfigureTabs(wallet);
+            ConfigureGetWalletContainer(wallet);
+
+            SendAnalyticsEvent(wallet);
+        }
+
+        private void SendAnalyticsEvent(Wallet wallet)
+        {
+            var eventProperties = new Dictionary<string, object>
+            {
+                { "name", wallet.Name },
+                { "explorer_id", wallet.Id }
+            };
+
+            var walletPlatform = EventUtils.GetWalletPlatform(wallet);
+            if (walletPlatform != null)
+                eventProperties.Add("platform", walletPlatform);
+
+            Web3Modal.EventsController.SendEvent(new Event
+            {
+                name = "SELECT_WALLET",
+                properties = eventProperties
+            });
         }
 
         private void ConfigureGetWalletContainer(Wallet wallet)
@@ -103,6 +125,11 @@ namespace WalletConnect.Web3Modal
 
         protected void OnGetWalletClicked()
         {
+            Web3Modal.EventsController.SendEvent(new Event
+            {
+                name = "CLICK_GET_WALLET"
+            });
+
 #if UNITY_IOS
             Application.OpenURL(_wallet.AppStore);
 #elif UNITY_ANDROID

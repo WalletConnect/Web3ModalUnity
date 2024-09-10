@@ -95,7 +95,7 @@ namespace WalletConnect.Web3Modal.Http
         public UnityHttpClient(params HttpClientDecorator[] decorators) : this(null, TimeSpan.FromSeconds(5), decorators)
         {
         }
-        
+
         public UnityHttpClient(Uri basePath, TimeSpan timeout, params HttpClientDecorator[] decorators)
         {
             _basePath = basePath;
@@ -115,6 +115,14 @@ namespace WalletConnect.Web3Modal.Http
             return context
                 .GetNextDecorator()
                 .SendAsync(context, cancellationToken, _next);
+        }
+
+        public async Task PostAsync(string path, string value, IDictionary<string, string> parameters = null, IDictionary<string, string> headers = null)
+        {
+            path = path.AppendQueryString(parameters);
+
+            var request = new HttpRequestContext(path, "POST", value, "application/json", headers, _decorators);
+            await InvokeRecursive(request, CancellationToken.None);
         }
 
         public async Task<T> PostAsync<T>(string path, string value, IDictionary<string, string> parameters = null, IDictionary<string, string> headers = null)

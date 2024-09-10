@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using WalletConnect.UI;
@@ -14,10 +15,13 @@ namespace WalletConnect.Web3Modal
         }
 
         private WalletConnectConnectionProposal _connectionProposal;
+        private bool _disposed;
 
         public QrCodePresenter(RouterController router, VisualElement parent, bool hideView = true) : base(router, parent, hideView)
         {
             View.copyLink.Clicked += OnCopyLinkClicked;
+
+            Web3Modal.AccountConnected += AccountConnectedHandler;
         }
 
         protected override QrCodeView CreateViewInstance()
@@ -63,6 +67,36 @@ namespace WalletConnect.Web3Modal
         private void OnConnectionProposalUpdated(ConnectionProposal connectionProposal)
         {
             View.qrCode.Data = _connectionProposal.Uri;
+        }
+
+        private void AccountConnectedHandler(object sender, Connector.AccountConnectedEventArgs e)
+        {
+            if (!IsVisible)
+                return;
+
+            Web3Modal.EventsController.SendEvent(new Event
+            {
+                name = "CONNECT_SUCCESS",
+                properties = new Dictionary<string, object>
+                {
+                    { "method", "qrcode" },
+                    { "name", "WalletConnect" }
+                }
+            });
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Web3Modal.AccountConnected -= AccountConnectedHandler;
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
         }
     }
 }

@@ -123,7 +123,18 @@ namespace WalletConnect.Web3Modal
 
         protected override async Task DisconnectAsyncCore()
         {
-            await WalletConnectInstance.DisconnectAsync();
+            try
+            {
+                await WalletConnectInstance.DisconnectAsync();
+            }
+            catch (Exception)
+            {
+                Web3Modal.EventsController.SendEvent(new Event
+                {
+                    name = "DISCONNECT_ERROR"
+                });
+                throw;
+            }
         }
 
         protected override async Task ChangeActiveChainAsyncCore(Chain chain)
@@ -154,7 +165,7 @@ namespace WalletConnect.Web3Modal
             var ciapAddresses = WalletConnectInstance.SignClient.AddressProvider.AllAddresses();
             return Task.FromResult(ciapAddresses.Select(ciapAddress => new Account(ciapAddress.Address, ciapAddress.ChainId)).ToArray());
         }
-        
+
         private Account GetCurrentAccount()
         {
             var ciapAddress = WalletConnectInstance.SignClient.AddressProvider.CurrentAddress();
@@ -162,7 +173,7 @@ namespace WalletConnect.Web3Modal
         }
 
         private static bool ActiveSessionSupportsMethod(string method)
-        { 
+        {
             var @namespace = WalletConnectInstance.SignClient.AddressProvider.DefaultNamespace;
             var activeSession = WalletConnectInstance.ActiveSession;
             return activeSession.Namespaces[@namespace].Methods.Contains(method);

@@ -11,9 +11,10 @@ namespace WalletConnect.Web3Modal
 
         public ushort connectViewWalletsCountMobile = 3;
         public ushort connectViewWalletsCountDesktop = 2;
-        
+
         public bool enableOnramp = true; // Currently supported only in WebGL
-        
+        public bool enableAnalytics = true;
+
         public Chain[] supportedChains =
         {
             ChainConstants.Chains.Ethereum,
