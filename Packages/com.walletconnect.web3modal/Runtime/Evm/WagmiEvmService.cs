@@ -57,6 +57,11 @@ namespace WalletConnect.Web3Modal
             return WagmiInterop.SendTransactionAsync(addressTo, value.ToString(), data);
         }
 
+        protected override Task<string> SendRawTransactionAsyncCore(string signedTransaction)
+        {
+            throw new System.NotImplementedException();
+        }
+
         protected override async Task<BigInteger> EstimateGasAsyncCore(string addressTo, BigInteger value, string data = null)
         {
             var result = await  WagmiInterop.EstimateGasAsync(addressTo, value.ToString(), data);
@@ -70,10 +75,14 @@ namespace WalletConnect.Web3Modal
             
             var functionBuilder = new FunctionBuilder(contractAddress, function);
             var data = functionBuilder.GetData(arguments);
-
-            Debug.Log($"Wagmi data: {data}");
-
+            
             var result = await WagmiInterop.EstimateGasAsync(contractAddress, value.ToString(), data);
+            return BigInteger.Parse(result);
+        }
+
+        protected override async Task<BigInteger> GetGasPriceAsyncCore()
+        {
+            var result = await WagmiInterop.GetGasPriceAsync();
             return BigInteger.Parse(result);
         }
     }

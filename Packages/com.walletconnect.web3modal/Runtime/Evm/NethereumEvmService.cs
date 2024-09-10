@@ -141,6 +141,14 @@ namespace WalletConnect.Web3Modal
             var transactionInput = new TransactionInput(data, addressTo, new HexBigInteger(value));
             return Web3.Client.SendRequestAsync<string>("eth_sendTransaction", null, transactionInput);
         }
+        
+        
+        // -- Send Raw Transaction ------------------------------------
+
+        protected override Task<string> SendRawTransactionAsyncCore(string signedTransaction)
+        {
+            return Web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(signedTransaction);
+        }
 
 
         // -- Estimate Gas ---------------------------------------------
@@ -158,6 +166,15 @@ namespace WalletConnect.Web3Modal
             
             var transactionInput = new TransactionInput(function.GetData(arguments), contractAddress, new HexBigInteger(value));
             return await Web3.Eth.Transactions.EstimateGas.SendRequestAsync(transactionInput);
+        }
+        
+        
+        // -- Get Gas Price -------------------------------------------
+
+        protected override async Task<BigInteger> GetGasPriceAsyncCore()
+        {
+            var hexBigInt = await Web3.Eth.GasPrice.SendRequestAsync();
+            return hexBigInt.Value;
         }
     }
 }

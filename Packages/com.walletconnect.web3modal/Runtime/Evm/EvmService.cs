@@ -111,6 +111,17 @@ namespace WalletConnect.Web3Modal
         }
         
         
+        // -- Send Raw Transaction ------------------------------------
+        
+        public Task<string> SendRawTransactionAsync(string signedTransaction)
+        {
+            if (string.IsNullOrWhiteSpace(signedTransaction))
+                throw new ArgumentNullException(nameof(signedTransaction));
+            
+            return SendRawTransactionAsyncCore(signedTransaction);
+        }
+        
+        
         // -- Estimate Gas --------------------------------------------
         
         public Task<BigInteger> EstimateGasAsync(string addressTo, BigInteger value, string data = null)
@@ -133,6 +144,14 @@ namespace WalletConnect.Web3Modal
             return EstimateGasAsyncCore(contractAddress, contractAbi, methodName, value, arguments);
         }
         
+        
+        // -- Gas Price ------------------------------------------------
+        
+        public Task<BigInteger> GetGasPriceAsync()
+        {
+            return GetGasPriceAsyncCore();
+        }
+        
         protected abstract Task InitializeAsyncCore();
         protected abstract Task<BigInteger> GetBalanceAsyncCore(string address);
         protected abstract Task<string> SignMessageAsyncCore(string message);
@@ -142,7 +161,9 @@ namespace WalletConnect.Web3Modal
         protected abstract Task<TReturn> ReadContractAsyncCore<TReturn>(string contractAddress, string contractAbi, string methodName, object[] arguments = null);
         protected abstract Task<string> WriteContractAsyncCore(string contractAddress, string contractAbi, string methodName, BigInteger value = default, BigInteger gas = default, params object[] arguments);
         protected abstract Task<string> SendTransactionAsyncCore(string addressTo, BigInteger value, string data = null);
+        protected abstract Task<string> SendRawTransactionAsyncCore(string signedTransaction);
         protected abstract Task<BigInteger> EstimateGasAsyncCore(string addressTo, BigInteger value, string data = null);
         protected abstract Task<BigInteger> EstimateGasAsyncCore(string contractAddress, string contractAbi, string methodName, BigInteger value = default, params object[] arguments);
+        protected abstract Task<BigInteger> GetGasPriceAsyncCore();
     }
 }

@@ -253,6 +253,14 @@ namespace WalletConnect.Web3Modal.WebGl.Wagmi
 
             return InteropCallAsync<EstimateGasParameter, string>(WagmiMethods.EstimateGas, parameter);
         }
+        
+        
+        // -- Get Gas Price -------------------------------------------
+        
+        public static Task<string> GetGasPriceAsync()
+        {
+            return InteropCallAsync<object, string>(WagmiMethods.GetGasPrice, null);
+        }
     }
 #endif
 }
