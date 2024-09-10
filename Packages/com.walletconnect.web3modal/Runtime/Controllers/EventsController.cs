@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using WalletConnect.Web3Modal.Http;
+using WalletConnectSharp.Common.Logging;
 
 namespace WalletConnect.Web3Modal
 {
@@ -12,9 +13,8 @@ namespace WalletConnect.Web3Modal
         private const string BasePath = "https://pulse.walletconnect.org/";
         private const int TimoutSeconds = 5;
 
-        private readonly UnityHttpClient _httpClient = new(new Uri(BasePath), TimeSpan.FromSeconds(TimoutSeconds), new Web3ModalApiHeaderDecorator());
+        private readonly UnityHttpClient _httpClient = new(new Uri(BasePath), TimeSpan.FromSeconds(TimoutSeconds), new PulseApiHeaderDecorator());
 
-        // private Queue<Event> _eventsQueue = new();
         private AnalyticsState _state = AnalyticsState.Loading;
 
         public async Task InitializeAsync(Web3ModalConfig config, ApiController apiController)
@@ -53,10 +53,6 @@ namespace WalletConnect.Web3Modal
 
         public async void SendEvent(Event @event)
         {
-#if !UNITY_IOS && !UNITY_ANDROID
-            // Temporary disable analytics for non-mobile platforms
-            return;
-#endif
             try
             {
                 if (_state == AnalyticsState.Disabled)
@@ -66,13 +62,15 @@ namespace WalletConnect.Web3Modal
                 {
                     eventId = Guid.NewGuid().ToString(),
                     timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+#if UNITY_ANDROID || UNITY_IOS || UNITY_VISIONOS
                     bundleId = Application.identifier,
+#endif
                     props = @event
                 };
 
                 var requestJson = JsonConvert.SerializeObject(request);
 
-                Debug.Log($"[EventsController] Sending event: {@event.name}.\n\nRequest payload:\n {requestJson}");
+                WCLogger.Log($"[EventsController] Sending event: {@event.name}.\n\nRequest payload:\n {requestJson}");
 
                 await _httpClient.PostAsync("e", requestJson);
             }
