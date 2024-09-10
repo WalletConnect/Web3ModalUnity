@@ -212,9 +212,14 @@ namespace WalletConnect.Web3Modal.Sample
                 var account = await Web3Modal.GetAccountAsync();
 
                 const string message = "Hello from Unity!";
-                var signature = await Web3Modal.Evm.SignMessageAsync(message);
-                var isValid = await Web3Modal.Evm.VerifyMessageSignatureAsync(account.Address, message, signature);
 
+                Debug.Log("Signing message...");
+                var signature = await Web3Modal.Evm.SignMessageAsync(message);
+
+                Debug.Log("Verifying signature...");
+                var isValid = await Web3Modal.Evm.VerifyMessageSignatureAsync(account.Address, message, signature);
+                
+                Debug.Log($"Signature valid: {isValid}");
                 Notification.ShowMessage($"Signature valid: {isValid}");
             }
             catch (RpcResponseException e)
