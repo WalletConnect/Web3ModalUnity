@@ -15,8 +15,8 @@
       "url": "https://package.openupm.com"
     },
     "com.nethereum.unity": {
-      "version": "4.19.1",
-      "depth": 1,
+      "version": "4.19.2",
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://package.openupm.com"
@@ -179,7 +179,7 @@
       "url": "https://packages.unity.com"
     },
     "com.walletconnect.core": {
-      "version": "3.1.11",
+      "version": "3.1.12",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -188,18 +188,18 @@
       "url": "https://package.openupm.com"
     },
     "com.walletconnect.nethereum": {
-      "version": "1.0.1",
-      "depth": 0,
+      "version": "1.0.2",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.nethereum.unity": "4.19.1",
-        "com.walletconnect.core": "3.1.7"
+        "com.nethereum.unity": "4.19.2",
+        "com.walletconnect.core": "3.1.12"
       },
       "url": "https://package.openupm.com"
     },
     "com.walletconnect.ui": {
-      "version": "1.1.11",
-      "depth": 0,
+      "version": "1.1.12",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.walletconnect.core": "3.1.11",
@@ -213,9 +213,9 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.walletconnect.core": "3.1.11",
-        "com.walletconnect.ui": "1.1.11",
-        "com.walletconnect.nethereum": "1.0.1",
+        "com.walletconnect.core": "3.1.12",
+        "com.walletconnect.ui": "1.1.12",
+        "com.walletconnect.nethereum": "1.0.2",
         "com.nethereum.unity": "4.19.1",
         "com.unity.vectorgraphics": "2.0.0-preview.24"
       }
