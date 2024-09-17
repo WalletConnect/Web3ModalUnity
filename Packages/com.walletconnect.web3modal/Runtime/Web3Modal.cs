@@ -9,6 +9,7 @@ using WalletConnectUnity.Nethereum;
 
 namespace WalletConnect.Web3Modal
 {
+    [Obsolete("Web3Modal is now considered deprecated and will reach End-of-Life on February 17th 2025. For more details, including migration guides please see: https://docs.reown.com")]
     public abstract class Web3Modal : MonoBehaviour
     {
         public static Web3Modal Instance { get; protected set; }
@@ -76,7 +77,7 @@ namespace WalletConnect.Web3Modal
                 throw new Exception("Already initialized"); // TODO: use custom ex type
 
             SdkMetadata.Type = "w3m";
-            SdkMetadata.Version = "unity-w3m-v0.4.4"; // TODO: update this from CI
+            SdkMetadata.Version = "unity-w3m-v0.4.5"; // TODO: update this from CI
 
             Config = config ?? throw new ArgumentNullException(nameof(config));
 

@@ -1,4 +1,8 @@
-# Web3Modal Unity
+# Depreceted - Web3Modal Unity
+
+Web3Modal is now considered deprecated and will reach End-of-Life on February 17th 2025. For more details, including migration guides please see: https://docs.reown.com/advanced/walletconnect-deprecations
+
+---
 
 [![openupm](https://img.shields.io/npm/v/com.walletconnect.web3modal?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.walletconnect.web3modal/)
 
